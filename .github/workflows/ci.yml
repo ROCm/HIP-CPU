@@ -22,7 +22,7 @@ jobs:
                 mkdir build
                 cd build
                 cmake ../ -DCMAKE_BUILD_TYPE=RelWithDebInfo
-                cmake --build ./ --config RelWithDebInfo --target all -- -j
+                cmake --build ./ --config RelWithDebInfo --target all -- -j 3
 
             - name: Run Tests
               run: |
