@@ -28,7 +28,7 @@ jobs:
               run: |
                 cd ${{github.workspace}}/build
                 ctest -C RelWithDebInfo --output-on-failure
-    test:
+
         name: Windows
         runs-on: windows-latest
         steps:
