@@ -1,0 +1,29 @@
+name: CI
+
+on:
+    push:
+        branches:
+            - master
+
+jobs:
+    test:
+        name: Ubuntu
+        runs-on: ubuntu-20.04
+        steps:
+            - name: Fetch TBB
+              run: sudo apt-get install libtbb-dev
+
+            - name: Checkout HIP CPU Runtime
+              uses: actions/checkout@v2
+
+            - name: Build HIP CPU Runtime tests
+              run: |
+                cd ${{github.workspace}}
+                mkdir build
+                cd build
+                cmake ../ -DCMAKE_BUILD_TYPE=RelWithDebInfo
+
+            - name: Run Tests
+              run: |
+                cd ${{github.workspace}}/build
+                ctest
