@@ -6,7 +6,7 @@ on:
             - master
 
 jobs:
-    test:
+    test-Ubuntu:
         name: Ubuntu
         runs-on: ubuntu-20.04
         steps:
@@ -28,7 +28,7 @@ jobs:
               run: |
                 cd ${{github.workspace}}/build
                 ctest -C RelWithDebInfo --output-on-failure
-
+    test-Windows:
         name: Windows
         runs-on: windows-latest
         steps:
