@@ -20,7 +20,7 @@
 #if !defined(__clang__) && !defined(_MSC_VER)
     #define LIBCO_MPROTECT
 #endif
-#include "../external/libco/libco.h"
+#include "../../../../external/libco/libco.h"
 #if defined(_MSC_VER)
     #pragma warning(pop)
 #else

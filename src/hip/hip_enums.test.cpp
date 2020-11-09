@@ -5,4 +5,4 @@
 
 #include "../../include/hip/hip_enums.h"
 
-#include <catch2/catch.hpp>
+#include "../../external/catch2/catch.hpp"

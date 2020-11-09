@@ -13,14 +13,6 @@
 
 #include <cstdint>
 
-namespace hip
-{
-    namespace constants
-    {
-        inline constexpr auto hipCPUDeviceID{INT32_MAX};
-    } // Namespace hip::constants.
-} // Namespace hip.
-
 inline constexpr int warpSize{64}; // TODO: this is untrue and a problem.
 
 inline const auto HIP_LAUNCH_PARAM_BUFFER_POINTER{reinterpret_cast<void*>(1)};

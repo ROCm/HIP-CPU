@@ -12,6 +12,10 @@
 #include "tile.hpp"
 #include "../../../../include/hip/hip_constants.h"
 
+#if __has_include(<intrin.h>)
+    #include <intrin.h>
+#endif
+
 #include <atomic>
 #include <bitset>
 #include <chrono>
@@ -26,15 +30,14 @@ namespace hip
         inline
         std::uint64_t ballot(std::int32_t x) noexcept
         {
-            thread_local static std::bitset<64> r{};
-
             const auto tidx{id(Fiber::this_fiber()) % warpSize};
+            auto& lds{Tile::scratchpad<std::bitset<warpSize>, 1>()[0]};
 
-            r[tidx] = static_cast<bool>(x);
+            lds[tidx] = static_cast<bool>(x);
 
             barrier(Tile::this_tile());
 
-            return r.to_ullong();
+            return lds.to_ullong();
         }
 
         template<
@@ -44,33 +47,47 @@ namespace hip
                 sizeof(T) <= sizeof(std::uint64_t)>* = nullptr>
         inline
         std::uint32_t bit_scan_forward(T x) noexcept
-        {
+        {   // TODO: the standard library probably forwards to the intrinsics.
             [[maybe_unused]]
-            constexpr auto bscan{[](T x) constexpr noexcept -> std::uint32_t { // TODO: endianness.
+            constexpr auto bscan{[](T x) constexpr noexcept { // TODO: endianness.
                 std::bitset<sizeof(T) / CHAR_BIT> tmp(x);
                 for (auto i = std::size(tmp) - 1; i != 0; --i) {
-                    if (tmp[i]) return i + 1;
+                    if (tmp[i]) return static_cast<std::uint32_t>(i + 1);
                 }
 
-                return 0;
+                return 0u;
             }};
 
-            #if defined(_MSC_VER) && !defined(__clang__)
-                unsigned long r{0};
-
-                if constexpr (sizeof(T) <= 4) _BitScanForward(&r, x);
-                else _BitScanForward64(&r, x);
-
-                return r;
-            #elif defined(__has_builtin)
-                #if __has_builtin(__builtin_ffs)
-                    return __builtin_ffs(x);
+            if constexpr (sizeof(T) == sizeof(std::uint32_t)) {
+                #if defined(_MSC_VER) && !defined(__clang__)
+                    unsigned long r{0};
+                    return static_cast<std::uint32_t>(
+                        _BitScanForward(&r, x) ? (r + 1) : 0);
+                #elif defined(__has_builtin)
+                    #if __has_builtin(__builtin_ffs)
+                        return __builtin_ffs(x);
+                    #else
+                        return bscan(x);
+                    #endif
                 #else
                     return bscan(x);
                 #endif
-            #else
-                return bscan(x);
-            #endif
+            }
+            else {
+                #if defined(_MSC_VER) && !defined(__clang__)
+                    unsigned long r{0};
+                    return static_cast<std::uint32_t>(
+                        _BitScanForward64(&r, x) ? (r + 1) : 0);
+                #elif defined(__has_builtin)
+                    #if __has_builtin(__builtin_ffs)
+                        return __builtin_ffsll(x);
+                    #else
+                        return bscan(x);
+                    #endif
+                #else
+                    return bscan(x);
+                #endif
+            }
         }
 
         inline
@@ -88,32 +105,85 @@ namespace hip
 
         template<typename T, std::enable_if_t<std::is_integral_v<T>>* = nullptr>
         inline
-        std::int32_t count_leading_zeroes(T x) noexcept
+        std::uint32_t count_leading_zeroes(T x) noexcept
         {
             [[maybe_unused]]
-            constexpr auto lz_cnt{[](auto&& x) constexpr noexcept { // TODO: endianness.
-                std::bitset<sizeof(T) / CHAR_BIT> tmp(x);
+            constexpr auto lzcnt{[](auto&& x) constexpr noexcept {
+                std::bitset<sizeof(T) * CHAR_BIT> tmp(x);
 
-                auto cnt{0};
-                for (auto i = 0u; i != std::size(tmp) && !tmp[i]; ++i, ++cnt);
+                auto n{std::size(tmp)};
+                while (n--) {
+                    if (tmp[n]) {
+                        return static_cast<std::uint32_t>(size(tmp) - n - 1);
+                    }
+                }
 
-                return cnt;
+                return static_cast<std::uint32_t>(size(tmp));
             }};
 
-            #if defined(_MSC_VER)
-                if constexpr (sizeof(T) == sizeof(std::int32_t)) {
+            if constexpr (sizeof(T) == sizeof(std::uint32_t)) {
+                #if defined(_MSC_VER)
                     return __lzcnt(x);
-                }
-                else return __lzcnt64(x);
-            #elif defined(__has_builtin)
-                #if __has_builtin(__builtin_clz)
-                    return __builtin_clz(x);
+                #elif defined(__has_builtin)
+                    #if __has_builtin(__builtin_clz)
+                        return __builtin_clz(x);
+                    #else
+                        return lzcnt(x);
+                    #endif
                 #else
-                    return lz_cnt(x);
+                    return lzcnt(x);
                 #endif
-            #else
-                return lz_cnt(x);
-            #endif
+            }
+            else {
+                #if defined(_MSC_VER)
+                    return static_cast<std::uint32_t>(__lzcnt64(x));
+                #elif defined(__has_builtin)
+                    #if __has_builtin(__builtin_clzll)
+                        return __builtin_clzll(x);
+                    #else
+                        return lzcnt(x);
+                    #endif
+                #else
+                    return lzcnt(x);
+                #endif
+            }
+        }
+
+        template<typename T, std::enable_if_t<std::is_integral_v<T>>* = nullptr>
+        inline
+        std::uint32_t pop_count(T x) noexcept
+        {
+            [[maybe_unused]]
+            constexpr auto popcnt{[](auto&& x) constexpr noexcept {
+                return std::bitset<sizeof(T) / CHAR_BIT>(x).count();
+            }};
+
+            if constexpr (sizeof(T) == sizeof(std::uint32_t)) {
+                #if defined(_MSC_VER)
+                    return __popcnt(x);
+                #elif defined(__has_builtin)
+                    #if __has_builtin(__builtin_popcount)
+                        return __builtin_popcount(x);
+                    #else
+                        return popcnt(x);
+                    #endif
+                #else
+                    return popcnt(x);
+                #endif
+            }
+            else {
+                #if defined(_MSC_VER)
+                    return static_cast<std::uint32_t>(__popcnt64(x));
+                #elif defined(__has_builtin)
+                    #if __has_builtin(__builtin_popcountll)
+                        return __builtin_popcountll(x);
+                    #else
+                        return popcnt(x);
+                    #endif
+                #else
+                    return popcnt(x);
+                #endif
+            }
         }
 
         template<

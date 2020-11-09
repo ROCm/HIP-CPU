@@ -4,7 +4,7 @@
  * -------------------------------------------------------------------------- */
 #include <hip/hip_runtime.h>
 
-#include <catch2/catch.hpp>
+#include "../external/catch2/catch.hpp"
 
 constexpr auto byte_cnt{sizeof(int) * 1024 * 1024};
 constexpr auto stream_cnt{2};

@@ -4,7 +4,7 @@
  * -------------------------------------------------------------------------- */
 #include <hip/hip_runtime.h>
 
-#include <catch2/catch.hpp>
+#include "../external/catch2/catch.hpp"
 
 __global__
 void run_printf() { printf("Hello World\n"); }

@@ -1,4 +1,10 @@
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 find_package(Threads REQUIRED)
+
+include(CTest)
+enable_testing()
 
 add_executable(performance_tests catch_benchmarking_main.cpp benchmarks.cpp)
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
@@ -19,18 +25,19 @@ else ()
     target_link_libraries(performance_tests PRIVATE dl tbb)
 endif ()
 target_include_directories(
-    performance_tests PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/../include
-        ${CMAKE_CURRENT_SOURCE_DIR}/../external)
+    performance_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 target_link_libraries(performance_tests PRIVATE Threads::Threads)
 
 add_executable(
     legacy_tests
         catch_main.cpp
         hip_atomics.cpp
+        hip_device_ballot.cpp
         hip_device_clock.cpp
+        hip_device_clz.cpp
         hip_device_dynamic_shared.cpp
         hip_device_dynamic_shared_2.cpp
+        hip_device_ffs.cpp
         hip_device_fma.cpp
         hip_device_get_limit.cpp
         hip_device_half_half2.cpp
@@ -38,6 +45,7 @@ add_executable(
         hip_device_math_double.cpp
         hip_device_math_float.cpp
         hip_device_memset.cpp
+        hip_device_popc.cpp
         hip_device_printf.cpp
         hip_device_std_complex.cpp
         hip_device_synchronize.cpp
@@ -59,9 +67,7 @@ if (NOT ${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
     target_link_libraries(legacy_tests PRIVATE dl tbb)
 endif ()
 target_include_directories(
-    legacy_tests PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/../include
-        ${CMAKE_CURRENT_SOURCE_DIR}/../external)
+    legacy_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 target_link_libraries(legacy_tests PRIVATE Threads::Threads)
 
 add_test(NAME legacy_tests COMMAND legacy_tests)

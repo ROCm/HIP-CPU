@@ -5,4 +5,4 @@
 
 #include "../../include/hip/hip_defines.h"
 
-#include <catch2/catch.hpp>
+#include "../../external/catch2/catch.hpp"

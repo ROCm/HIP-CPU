@@ -4,7 +4,7 @@
  * -------------------------------------------------------------------------- */
 #include <hip/hip_runtime.h>
 
-#include <catch2/catch.hpp>
+#include "../external/catch2/catch.hpp"
 
 #include <cstdlib>
 #include <vector>
@@ -59,7 +59,7 @@ constexpr auto threads_per_block{256u};
 TEMPLATE_TEST_CASE(
     "Dynamic SharedMem I", "[device][dynamic_shared]", float, double)
 {
-    REQUIRE(hipSetDevice(hip::constants::hipCPUDeviceID) == hipSuccess);
+    REQUIRE(hipSetDevice(0) == hipSuccess);
 
     const auto N{GENERATE(1024, 65536)};
     const auto groupElements{GENERATE(4, 8, 16, 32, 64)};

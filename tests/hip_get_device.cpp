@@ -4,7 +4,7 @@
  * -------------------------------------------------------------------------- */
 #include <hip/hip_runtime.h>
 
-#include <catch2/catch.hpp>
+#include "../external/catch2/catch.hpp"
 
 TEST_CASE("hipGetDevice()", "[host][hipDevice]")
 {
@@ -17,6 +17,6 @@ TEST_CASE("hipGetDevice()", "[host][hipDevice]")
     for (auto i = 0; i != numDevices; ++i) {
         REQUIRE(hipSetDevice(i) == hipSuccess);
         REQUIRE(hipGetDevice(&device) == hipSuccess);
-        REQUIRE(device == hip::constants::hipCPUDeviceID); // TODO: Temporary HIP-CPU specific.
+        REQUIRE(device == i);
     }
 }

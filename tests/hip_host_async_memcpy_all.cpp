@@ -4,7 +4,7 @@
  * -------------------------------------------------------------------------- */
 #include <hip/hip_runtime.h>
 
-#include <catch2/catch.hpp>
+#include "../external/catch2/catch.hpp"
 
 #include <algorithm>
 #include <cstdlib>
@@ -462,7 +462,7 @@ void test_chunkedAsyncExample(
 
 TEST_CASE("Async memcpy", "[host][memcpy][async]")
 {
-    REQUIRE(hipSetDevice(hip::constants::hipCPUDeviceID) == hipSuccess);
+    REQUIRE(hipSetDevice(0) == hipSuccess);
 
     simpleNegTest();
 }

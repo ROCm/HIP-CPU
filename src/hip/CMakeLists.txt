@@ -1,4 +1,10 @@
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 find_package(Threads REQUIRED)
+
+include(CTest)
+enable_testing()
 
 add_executable(
     public_interface_tests
@@ -23,9 +29,7 @@ else ()
         public_interface_tests PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
 endif ()
 target_include_directories(
-    public_interface_tests PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../include
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../external)
+    public_interface_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
 target_link_libraries(public_interface_tests PRIVATE Threads::Threads)
 
 add_test(NAME public_interface_tests COMMAND public_interface_tests)

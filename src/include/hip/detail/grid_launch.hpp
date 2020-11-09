@@ -33,7 +33,7 @@ namespace hip
             F fn,
             std::tuple<Args...> args)
         {
-            if (!stream) stream = &Runtime::null_stream;
+            if (!stream) stream = Runtime::null_stream();
 
             stream->enqueue(Task{
                 [=, fn = std::move(fn), args = std::move(args)](auto&&) {

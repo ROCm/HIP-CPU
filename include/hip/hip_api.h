@@ -44,13 +44,25 @@ decltype(auto) __clock64() noexcept
 }
 
 inline
-std::int32_t __clz(std::int32_t x) noexcept
+std::uint32_t __clz(std::int32_t x) noexcept
 {
     return hip::detail::count_leading_zeroes(x);
 }
 
 inline
-std::int32_t __clz(std::uint32_t x) noexcept
+std::uint32_t __clz(std::uint32_t x) noexcept
+{
+    return hip::detail::count_leading_zeroes(x);
+}
+
+inline
+std::uint32_t __clzll(std::int64_t x) noexcept
+{
+    return hip::detail::count_leading_zeroes(x);
+}
+
+inline
+std::uint32_t __clzll(std::uint64_t x) noexcept
 {
     return hip::detail::count_leading_zeroes(x);
 }
@@ -68,13 +80,13 @@ std::uint32_t __ffs(std::uint32_t x) noexcept
 }
 
 inline
-std::uint32_t __ffs(std::int64_t x) noexcept
+std::uint32_t __ffsll(std::int64_t x) noexcept
 {
     return hip::detail::bit_scan_forward(x);
 }
 
 inline
-std::uint32_t __ffs(std::uint64_t x) noexcept
+std::uint32_t __ffsll(std::uint64_t x) noexcept
 {
     return hip::detail::bit_scan_forward(x);
 }
@@ -83,6 +95,18 @@ inline
 double __longlong_as_double(std::int64_t x) noexcept
 {
     return hip::detail::bit_cast<double>(x);
+}
+
+inline
+std::uint32_t __popc(std::uint32_t x) noexcept
+{
+    return hip::detail::pop_count(x);
+}
+
+inline
+std::uint32_t __popcll(std::uint64_t x) noexcept
+{
+    return hip::detail::pop_count(x);
 }
 
 template<

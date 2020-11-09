@@ -16,7 +16,5 @@ else ()
     target_link_libraries(${name} PRIVATE dl tbb)
 endif ()
 target_include_directories(
-    ${name} PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../include
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../external)
+    ${name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
 target_link_libraries(${name} PRIVATE Threads::Threads)

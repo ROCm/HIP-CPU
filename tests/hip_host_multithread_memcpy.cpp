@@ -4,7 +4,7 @@
  * -------------------------------------------------------------------------- */
 #include <hip/hip_runtime.h>
 
-#include <catch2/catch.hpp>
+#include "../external/catch2/catch.hpp"
 
 #include <cstdlib>
 #include <vector>
@@ -49,7 +49,7 @@ void vectorADDReverse(const T* A_d, const T* B_d, T* C_d, size_t n)
 
 TEST_CASE("Serial, sync memcpy, same stream.", "[host][multithread][memcpy]")
 {
-    REQUIRE(hipSetDevice(hip::constants::hipCPUDeviceID) == hipSuccess);
+    REQUIRE(hipSetDevice(0) == hipSuccess);
     REQUIRE(hipDeviceReset() == hipSuccess);
 
     hipStream_t stream;
@@ -106,7 +106,7 @@ TEST_CASE("Serial, sync memcpy, same stream.", "[host][multithread][memcpy]")
 
 TEST_CASE("Serial, async memcpy, same stream.", "[host][multithread][memcpy]")
 {
-    REQUIRE(hipSetDevice(hip::constants::hipCPUDeviceID) == hipSuccess);
+    REQUIRE(hipSetDevice(0) == hipSuccess);
     REQUIRE(hipDeviceReset() == hipSuccess);
 
     hipStream_t stream;
@@ -195,7 +195,7 @@ TEST_CASE("Serial, async memcpy, same stream.", "[host][multithread][memcpy]")
 TEST_CASE(
     "Serialised, async memcpy, null stream.", "[host][multithread][memcpy]")
 {
-    REQUIRE(hipSetDevice(hip::constants::hipCPUDeviceID) == hipSuccess);
+    REQUIRE(hipSetDevice(0) == hipSuccess);
     REQUIRE(hipDeviceReset() == hipSuccess);
 
     const auto test{[&]() {
@@ -261,7 +261,7 @@ TEST_CASE(
     "Serialised, async memcpy, different streams.",
     "[host][multithread][memcpy]")
 {
-    REQUIRE(hipSetDevice(hip::constants::hipCPUDeviceID) == hipSuccess);
+    REQUIRE(hipSetDevice(0) == hipSuccess);
     REQUIRE(hipDeviceReset() == hipSuccess);
 
     hipStream_t stream0{};
@@ -358,7 +358,7 @@ TEST_CASE(
 
 TEST_CASE("Parallel, async memcpy, null stream.", "[host][multithread][memcpy]")
 {
-    REQUIRE(hipSetDevice(hip::constants::hipCPUDeviceID) == hipSuccess);
+    REQUIRE(hipSetDevice(0) == hipSuccess);
     REQUIRE(hipDeviceReset() == hipSuccess);
 
     const auto test{[&]() {
@@ -425,7 +425,7 @@ TEST_CASE("Parallel, async memcpy, null stream.", "[host][multithread][memcpy]")
 
 TEST_CASE("Parallel, async memcpy, same stream.", "[host][multithread][memcpy]")
 {
-    REQUIRE(hipSetDevice(hip::constants::hipCPUDeviceID) == hipSuccess);
+    REQUIRE(hipSetDevice(0) == hipSuccess);
     REQUIRE(hipDeviceReset() == hipSuccess);
 
     hipStream_t s{};
@@ -523,7 +523,7 @@ TEST_CASE("Parallel, async memcpy, same stream.", "[host][multithread][memcpy]")
 TEST_CASE(
     "Parallel, async memcpy, different streams.", "[host][multithread][memcpy]")
 {
-    REQUIRE(hipSetDevice(hip::constants::hipCPUDeviceID) == hipSuccess);
+    REQUIRE(hipSetDevice(0) == hipSuccess);
     REQUIRE(hipDeviceReset() == hipSuccess);
 
     hipStream_t stream0{};

@@ -4,7 +4,7 @@
  * -------------------------------------------------------------------------- */
 #include <hip/hip_runtime.h>
 
-#include <catch2/catch.hpp>
+#include "../external/catch2/catch.hpp"
 
 #include <cstdint>
 #include <cstdlib>
@@ -547,7 +547,7 @@ TEMPLATE_TEST_CASE(
     unsigned char,
     int)
 {
-    REQUIRE(hipSetDevice(hip::constants::hipCPUDeviceID) == hipSuccess);
+    REQUIRE(hipSetDevice(0) == hipSuccess);
 
     REQUIRE(hipDeviceReset() == hipSuccess);
 
@@ -559,7 +559,7 @@ TEMPLATE_TEST_CASE(
 
 TEST_CASE("memcpy test sizes 64KiB boundary", "[host][memcpy][sizes][64K]")
 {
-    REQUIRE(hipSetDevice(hip::constants::hipCPUDeviceID) == hipSuccess);
+    REQUIRE(hipSetDevice(0) == hipSuccess);
 
     REQUIRE(hipDeviceReset() == hipSuccess);
 

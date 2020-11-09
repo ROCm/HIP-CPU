@@ -4,7 +4,7 @@
  * -------------------------------------------------------------------------- */
 #include <hip/hip_vector_types.h>
 
-#include <catch2/catch.hpp>
+#include "../external/catch2/catch.hpp"
 
 #include <iostream>
 #include <limits>

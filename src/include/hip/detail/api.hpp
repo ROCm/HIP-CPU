@@ -21,6 +21,7 @@
 #include "../../../../include/hip/hip_types.h"
 
 #include <algorithm>
+#include <chrono>
 #include <climits>
 #include <cstdint>
 #include <cstdlib>
@@ -80,7 +81,7 @@ namespace hip
             if (size == 0) return hipSuccess;
             if (!dst || !src) return hipErrorInvalidValue;
 
-            if (!stream) stream = &Runtime::null_stream;
+            if (!stream) stream = Runtime::null_stream();
 
             stream->enqueue(hip::detail::Task{[=](auto&&) {
                 std::memcpy(dst, src, size);
@@ -103,7 +104,7 @@ namespace hip
             if (height * width == 0) return hipSuccess;
             if (!dst || !src) return hipErrorInvalidValue;
 
-            if (!stream) stream = &Runtime::null_stream;
+            if (!stream) stream = Runtime::null_stream();
 
             stream->enqueue(Task{ // TODO: optimise.
                 [=,
@@ -251,7 +252,8 @@ namespace hip
 
             using MS =
                 std::chrono::duration<float, std::chrono::milliseconds::period>;
-            *ms = std::chrono::duration_cast<MS>(time(*t1) - time(*t0)).count();
+            *ms = std::chrono::duration_cast<MS>(
+                timestamp(*t1) - timestamp(*t0)).count();
 
             return hipSuccess;
         }
@@ -324,9 +326,7 @@ namespace hip
             hipDeviceProp_t* p, std::int32_t d_id) noexcept
         {
             if (!p) return hipErrorInvalidValue;
-            if (d_id != constants::hipCPUDeviceID) {
-                return hipErrorInvalidDevice;
-            }
+            if (d_id != 0) return hipErrorInvalidDevice; // Only 1 device for now.
 
             const auto n{System::cpu_name()};
             const auto it{std::copy_n(
@@ -416,11 +416,7 @@ namespace hip
         inline
         hipError_t disable_peer_access(std::int32_t d_id) noexcept
         {
-            if (d_id == hip::constants::hipCPUDeviceID) {
-                return hipErrorInvalidDevice;
-            }
-
-            return hipSuccess;
+            return d_id ? hipSuccess : hipErrorInvalidDevice;
         }
 
         inline
@@ -428,11 +424,8 @@ namespace hip
             std::int32_t p_id, std::uint32_t flags) noexcept
         {
             if (flags) return hipErrorInvalidValue;
-            if (p_id == hip::constants::hipCPUDeviceID) {
-                return hipErrorInvalidDevice;
-            }
 
-            return hipSuccess;
+            return (p_id != 0) ? hipSuccess : hipErrorInvalidDevice;
         }
 
         inline
@@ -452,7 +445,7 @@ namespace hip
 
             static const auto props{[]() {
                 hipDeviceProp_t r{};
-                device_properties(&r, hip::constants::hipCPUDeviceID);
+                device_properties(&r, 0); // Only 1 device.
 
                 return r;
             }()};
@@ -467,8 +460,10 @@ namespace hip
         }
 
         inline
-        hipError_t get_device(Device* /*device*/, std::int32_t /*device_id*/)
+        hipError_t get_device(Device* device, std::int32_t /*device_id*/)
         {
+            *device = 0; // Only 1 device.
+
             return hipSuccess;
         }
 
@@ -477,7 +472,7 @@ namespace hip
         {
             if (!d_id) return hipErrorInvalidValue;
 
-            *d_id = hip::constants::hipCPUDeviceID;
+            *d_id = 0; // Only 1 device.
 
             return hipSuccess;
         }
@@ -537,13 +532,7 @@ namespace hip
         {
             if (!px) return hipErrorInvalidHandle;
 
-            if (!into) into = &Runtime::null_stream;
-
-            Task tmp{[=](auto&&) {
-                time(*px) = std::chrono::high_resolution_clock::now();
-            }};
-            is_done(*px) = tmp.get_future();
-            into->enqueue(std::move(tmp));
+            Runtime::push_task(px, into);
 
             return hipSuccess;
         }
@@ -551,7 +540,7 @@ namespace hip
         inline
         hipError_t last_error() noexcept
         {
-            return std::exchange(hip::detail::Runtime::last_error, hipSuccess);
+            return Runtime::set_last_error(hipSuccess);
         }
 
         inline
@@ -641,7 +630,7 @@ namespace hip
 
             static const auto props{[]() {
                 hipDeviceProp_t r{};
-                device_properties(&r, hip::constants::hipCPUDeviceID);
+                device_properties(&r, 0); // Only 1 device.
 
                 return r;
             }()};
@@ -665,7 +654,7 @@ namespace hip
 
             static const auto props{[]() {
                 hipDeviceProp_t r{};
-                device_properties(&r, hip::constants::hipCPUDeviceID);
+                device_properties(&r, 0); // Only 1 device.
 
                 return r;
             }()};
@@ -693,7 +682,7 @@ namespace hip
         inline
         hipError_t peek_error() noexcept
         {
-            return hip::detail::Runtime::last_error;
+            return Runtime::last_error();
         }
 
         inline
@@ -705,18 +694,7 @@ namespace hip
         inline
         hipError_t set_device(std::int32_t d_id) noexcept
         {
-            if (d_id == hip::constants::hipCPUDeviceID) return hipSuccess;
-
-            static const auto device_cnt{[]() {
-                std::int32_t r{};
-                device_count(&r);
-
-                return r;
-            }()};
-
-            if (d_id >= device_cnt) return hipErrorInvalidDevice;
-
-            return hipSuccess;
+            return (d_id == 0) ? hipSuccess : hipErrorInvalidDevice; // Only 1 device.
         }
 
         inline
@@ -735,7 +713,7 @@ namespace hip
         {
             if (!e) return hipErrorInvalidHandle;
 
-            if (!s) s = &Runtime::null_stream;
+            if (!s) s = Runtime::null_stream();
 
             s->enqueue(Task{[=](auto&&) { wait(e); }});
 
@@ -755,7 +733,7 @@ namespace hip
         inline
         hipError_t synchronize_device()
         {
-            Runtime::synchronize().get();
+            Runtime::synchronize();
 
             return hipSuccess;
         }
@@ -923,6 +901,7 @@ namespace hip
             if (!e) return hipErrorInvalidHandle;
             if (!is_done(*e).valid()) return hipErrorInvalidHandle;
 
+            if (is_all_synchronising(*e)) synchronize_device();
             is_done(*e).wait();
 
             return hipSuccess;

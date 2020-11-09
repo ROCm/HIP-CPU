@@ -1,3 +1,8 @@
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+find_package(Threads REQUIRED)
+
 add_subdirectory(bit_extract)
 add_subdirectory(hip_bus_bandwidth)
 add_subdirectory(hip_dispatch_enqueue_rate_mt)

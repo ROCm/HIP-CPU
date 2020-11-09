@@ -97,11 +97,11 @@ namespace hip
                 typename F,
                 typename... Args,
                 std::enable_if_t<std::is_invocable_v<F, Args...>>* = nullptr>
-            static
             __HIP_FLATTENED_FUNCTION__
+            static
             void for_each_fiber(
                 const F& fn, const std::tuple<Args...>& args) noexcept;
-            template<typename T>
+            template<typename T, std::size_t n = warpSize>
             static
             decltype(auto) scratchpad() noexcept;
             static
@@ -164,11 +164,11 @@ namespace hip
             Fiber::this_fiber_().set_id_(0);
         }
 
-        template<typename T>
+        template<typename T, std::size_t n>
         inline
         decltype(auto) Tile::scratchpad() noexcept
         {   // TODO: use named variable for maximum block size.
-            thread_local static T r[1024 / warpSize][warpSize];
+            thread_local static T r[1024 / warpSize][n];
 
             const auto widx{id(hip::detail::Fiber::this_fiber()) / warpSize};
 

@@ -5,4 +5,4 @@
 
 #include "../../include/hip/hip_device_launch_parameters.h"
 
-#include <catch2/catch.hpp>
+#include "../../external/catch2/catch.hpp"
