@@ -27,4 +27,23 @@ jobs:
             - name: Run Tests
               run: |
                 cd ${{github.workspace}}/build
-                ctest
+                ctest -C RelWithDebInfo --output-on-failure
+    test:
+        name: Windows
+        runs-on: windows-latest
+        steps:
+            - name: Checkout HIP CPU Runtime
+              uses: actions/checkout@v2
+
+            - name: Build HIP CPU Runtime tests
+              run: |
+                cd ${{github.workspace}}
+                mkdir build
+                cd build
+                cmake ../ -DCMAKE_BUILD_TYPE=RelWithDebInfo
+                cmake --build ./ --config RelWithDebInfo -target all -- -j 3
+
+            - name: Run Tests
+              run: |
+                cd ${{github.workspace}}/build
+                ctest -C RelWithDebInfo --output-on-failure
