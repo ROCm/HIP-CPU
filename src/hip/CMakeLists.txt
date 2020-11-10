@@ -6,6 +6,11 @@ find_package(Threads REQUIRED)
 include(CTest)
 enable_testing()
 
+if (${CMAKE_HOST_APPLE}) # Add brew-ed TBB.
+    include_directories(/usr/local/include)
+    link_directories(/usr/local/lib)
+endif()
+
 add_executable(
     public_interface_tests
         catch_main.cpp

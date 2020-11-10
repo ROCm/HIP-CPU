@@ -123,7 +123,7 @@ namespace hip
             #endif
 
             auto tmp{atomic_add(p, T{0})};
-            while (v < tmp) {
+            while (tmp < v) {
                 const auto tmp1{atomic_add(p, T{0})};
 
                 if (tmp1 != tmp) { tmp = tmp1; continue; }

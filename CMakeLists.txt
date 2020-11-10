@@ -25,7 +25,10 @@ target_include_directories(
 target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
 
 if (NOT ${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+    target_compile_options(${PROJECT_NAME} INTERFACE -fopenmp-simd)
     target_link_libraries(${PROJECT_NAME} INTERFACE dl pthread tbb)
+else ()
+    target_compile_options(${PROJECT_NAME} INTERFACE /openmp:experimental)
 endif ()
 
 option(
@@ -34,7 +37,6 @@ option(
         ${is_top_level})
 
 if (hip_cpu_rt_INSTALL_LIBRARY)
-
     install(
         TARGETS ${PROJECT_NAME}
         EXPORT ${PROJECT_NAME}_Targets
@@ -87,6 +89,7 @@ if (hip_cpu_rt_BUILD_EXAMPLES)
 endif ()
 
 if (hip_cpu_rt_BUILD_TESTING)
+    enable_testing()
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tests)
 endif ()

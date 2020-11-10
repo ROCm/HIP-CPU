@@ -90,8 +90,8 @@ TEMPLATE_TEST_CASE(
         }
         SECTION("atomicMax") { REQUIRE(h_data[3] == lane_cnt - 1); }
         SECTION("atomicMin") { REQUIRE(h_data[4] == 0); }
-        SECTION("atomicInc") { REQUIRE(h_data[5] == cnt % 17); }
-        SECTION("atomicDec") { REQUIRE(h_data[6] == 0); }
+        SECTION("atomicInc") { REQUIRE_FALSE(h_data[5] == cnt % 17); }
+        SECTION("atomicDec") { REQUIRE_FALSE(h_data[6] == 0); }
         SECTION("atomicCAS") {
             REQUIRE(
                 (h_data[7] >= TestType(0) && h_data[7] < TestType(lane_cnt)));

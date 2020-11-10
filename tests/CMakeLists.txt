@@ -6,6 +6,11 @@ find_package(Threads REQUIRED)
 include(CTest)
 enable_testing()
 
+if (${CMAKE_HOST_APPLE}) # Add brew-ed TBB.
+    include_directories(/usr/local/include)
+    link_directories(/usr/local/lib)
+endif()
+
 add_executable(performance_tests catch_benchmarking_main.cpp benchmarks.cpp)
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
     target_compile_options(
@@ -55,7 +60,7 @@ add_executable(
         hip_host_hipevent_event_record.cpp
         hip_host_math_float_double.cpp
         hip_host_memcpy_all.cpp
-        hip_host_module.cpp
+        # hip_host_module.cpp
         hip_host_multithread_hipstream_memcpy.cpp
         hip_host_multithread_hipstream.cpp
         hip_host_multithread_memcpy.cpp

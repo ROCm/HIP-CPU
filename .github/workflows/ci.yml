@@ -6,6 +6,28 @@ on:
             - master
 
 jobs:
+    test-macOS:
+        name: macOS
+        runs-on: macos-11.0
+        steps:
+            - name: Fetch TBB
+              run: brew install tbb
+
+            - name: Checkout HIP CPU Runtime
+              uses: actions/checkout@v2
+
+            - name: Build HIP CPU Runtime tests
+              run: |
+                cd ${{github.workspace}}
+                mkdir build
+                cd build
+                cmake ../ -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_COMPILER=g++-9
+                cmake --build ${{github.workspace}}/build --config RelWithDebInfo -j 3
+
+            - name: Run Tests
+              run: |
+                cd ${{github.workspace}}/build
+                ctest -C RelWithDebInfo --output-on-failure
     test-Ubuntu:
         name: Ubuntu
         runs-on: ubuntu-20.04
@@ -22,7 +44,7 @@ jobs:
                 mkdir build
                 cd build
                 cmake ../ -DCMAKE_BUILD_TYPE=RelWithDebInfo
-                cmake --build ./ --config RelWithDebInfo --target all -- -j 3
+                cmake --build ${{github.workspace}}/build --config RelWithDebInfo -j 3
 
             - name: Run Tests
               run: |
@@ -41,7 +63,7 @@ jobs:
                 mkdir build
                 cd build
                 cmake ../ -DCMAKE_BUILD_TYPE=RelWithDebInfo
-                cmake --build ./ --config RelWithDebInfo -target all -- -j 3
+                cmake --build ${{github.workspace}}/build --config RelWithDebInfo
 
             - name: Run Tests
               run: |

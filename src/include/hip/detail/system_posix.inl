@@ -8,6 +8,9 @@
     #error Private HIP-CPU RT implementation headers must not be included directly.
 #endif
 
+#if defined(__APPLE__)
+    #include <sys/sysctl.h>
+#endif
 #include <sys/utsname.h>
 #include <unistd.h>
 
@@ -79,10 +82,28 @@ namespace hip
                 struct { std::int32_t size; } l3;
             } r{};
 
-            r.instruction.size = sysconf(_SC_LEVEL1_ICACHE_SIZE);
-            r.l1.size = sysconf(_SC_LEVEL1_DCACHE_SIZE);
-            r.l2.size = sysconf(_SC_LEVEL2_CACHE_SIZE);
-            r.l3.size = sysconf(_SC_LEVEL3_CACHE_SIZE);
+            #if defined(__APPLE__)
+                std::uint64_t tmp{};
+                auto tmp_sz{sizeof(tmp)};
+
+                if (!sysctlbyname("hw.l1icachesize", &tmp, &tmp_sz, 0, 0)) {
+                    r.instruction.size = static_cast<std::int32_t>(tmp);
+                }
+                if (!sysctlbyname("hw.l1dcachesize", &tmp, &tmp_sz, 0, 0)) {
+                    r.l1.size = static_cast<std::int32_t>(tmp);
+                }
+                if (!sysctlbyname("hw.l2cachesize", &tmp, &tmp_sz, 0, 0)) {
+                    r.l2.size = static_cast<std::int32_t>(tmp);
+                }
+                if (!sysctlbyname("hw.l3cachesize", &tmp, &tmp_sz, 0, 0)) {
+                    r.l3.size = static_cast<std::int32_t>(tmp);
+                }
+            #else
+                r.instruction.size = sysconf(_SC_LEVEL1_ICACHE_SIZE);
+                r.l1.size = sysconf(_SC_LEVEL1_DCACHE_SIZE);
+                r.l2.size = sysconf(_SC_LEVEL2_CACHE_SIZE);
+                r.l3.size = sysconf(_SC_LEVEL3_CACHE_SIZE);
+            #endif
 
             if (r.instruction.size == -1) r = {};
             else if (r.l1.size == -1) r = {};
@@ -146,7 +167,11 @@ namespace hip
         decltype(auto) System::memory() noexcept
         {
             struct { std::int64_t available; std::int64_t total; } r{
-                sysconf(_SC_AVPHYS_PAGES) * sysconf(_SC_PAGESIZE),
+                #if defined(__APPLE__)
+                    sysconf(_SC_PHYS_PAGES) * sysconf(_SC_PAGESIZE),
+                #else
+                    sysconf(_SC_AVPHYS_PAGES) * sysconf(_SC_PAGESIZE),
+                #endif
                 sysconf(_SC_PHYS_PAGES) * sysconf(_SC_PAGESIZE)
             };
 

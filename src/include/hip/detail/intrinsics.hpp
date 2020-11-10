@@ -12,7 +12,7 @@
 #include "tile.hpp"
 #include "../../../../include/hip/hip_constants.h"
 
-#if __has_include(<intrin.h>)
+#if defined(_MSC_VER)
     #include <intrin.h>
 #endif
 
@@ -50,8 +50,8 @@ namespace hip
         {   // TODO: the standard library probably forwards to the intrinsics.
             [[maybe_unused]]
             constexpr auto bscan{[](T x) constexpr noexcept { // TODO: endianness.
-                std::bitset<sizeof(T) / CHAR_BIT> tmp(x);
-                for (auto i = std::size(tmp) - 1; i != 0; --i) {
+                std::bitset<sizeof(T) * CHAR_BIT> tmp(x);
+                for (decltype(std::size(tmp)) i = 0; i != std::size(tmp); ++i) {
                     if (tmp[i]) return static_cast<std::uint32_t>(i + 1);
                 }
 
@@ -107,6 +107,8 @@ namespace hip
         inline
         std::uint32_t count_leading_zeroes(T x) noexcept
         {
+            if (x == T{0}) return sizeof(T) * CHAR_BIT;
+
             [[maybe_unused]]
             constexpr auto lzcnt{[](auto&& x) constexpr noexcept {
                 std::bitset<sizeof(T) * CHAR_BIT> tmp(x);
@@ -155,7 +157,7 @@ namespace hip
         {
             [[maybe_unused]]
             constexpr auto popcnt{[](auto&& x) constexpr noexcept {
-                return std::bitset<sizeof(T) / CHAR_BIT>(x).count();
+                return std::bitset<sizeof(T) * CHAR_BIT>(x).count();
             }};
 
             if constexpr (sizeof(T) == sizeof(std::uint32_t)) {

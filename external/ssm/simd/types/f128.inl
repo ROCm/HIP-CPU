@@ -115,9 +115,9 @@ inline f128 rsqrt(f128 a) {
 #else
 	const f128 three = _mm_set1_ps(3.0f);
 	const f128 half = _mm_set1_ps(0.5f);
-	const f128 res = _mm_rsqrt_ps(a); 
-	const f128 muls = _mm_mul_ps(_mm_mul_ps(a, res), res); 
-	return _mm_mul_ps(_mm_mul_ps(half, res), _mm_sub_ps(three, muls)); 
+	const f128 res = _mm_rsqrt_ps(a);
+	const f128 muls = _mm_mul_ps(_mm_mul_ps(a, res), res);
+	return _mm_mul_ps(_mm_mul_ps(half, res), _mm_sub_ps(three, muls));
 #endif
 }
 
@@ -126,8 +126,8 @@ inline f128 dot(f128 a, f128 b) {
 	return _mm_dp_ps(a, b, 0xFF);
 #elif SSM_ARCH & SSM_ARCH_SSE3_BIT
 	const f128 mul1 = mul(a, b);
-	const f128 hadd = _mm_hadd_ps(mul1, mul1)
-	return _mm_hadd_ps(hadd, hadd)
+	const f128 hadd = _mm_hadd_ps(mul1, mul1);
+	return _mm_hadd_ps(hadd, hadd);
 #else
 	const f128 mul0 = mul(a, b);
 	const f128 swp0 = shuffle<2, 3, 0, 1>(mul0, mul0);

@@ -3,6 +3,11 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 find_package(Threads REQUIRED)
 
+if (${CMAKE_HOST_APPLE}) # Add brew-ed TBB.
+    include_directories(/usr/local/include)
+    link_directories(/usr/local/lib)
+endif()
+
 add_subdirectory(bit_extract)
 add_subdirectory(hip_bus_bandwidth)
 add_subdirectory(hip_dispatch_enqueue_rate_mt)
