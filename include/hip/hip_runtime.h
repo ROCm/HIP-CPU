@@ -13,6 +13,7 @@
 
 #include "hip_api.h"
 #include "hip_atomic.h"
+#include "hip_complex.h"
 #include "hip_constants.h"
 #include "hip_defines.h"
 #include "hip_device_launch_parameters.h"
