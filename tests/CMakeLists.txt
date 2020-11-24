@@ -75,50 +75,50 @@ target_include_directories(
     legacy_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 target_link_libraries(legacy_tests PRIVATE Threads::Threads)
 
-add_test(NAME "legacy::atomic*()" COMMAND legacy_tests [device][atomic])
-add_test(NAME "legacy::ballot()" COMMAND legacy_tests [device][ballot])
-add_test(NAME "legacy::clock()" COMMAND legacy_tests [device][clock])
-add_test(NAME "legacy::clz()" COMMAND legacy_tests [device][clz])
+add_test(NAME "legacy_atomic" COMMAND legacy_tests [device][atomic])
+add_test(NAME "legacy_ballot" COMMAND legacy_tests [device][ballot])
+add_test(NAME "legacy_clock" COMMAND legacy_tests [device][clock])
+add_test(NAME "legacy_clz" COMMAND legacy_tests [device][clz])
 add_test(
-    NAME "legacy::Dynamic SharedMem I"
+    NAME "legacy_Dynamic_SharedMem_I"
     COMMAND legacy_tests [device][dynamic_shared_1])
 add_test(
-    NAME "legacy::Dynamic SharedMem II"
+    NAME "legacy_Dynamic_SharedMem_II"
     COMMAND legacy_tests [device][dynamic_shared_2])
-add_test(NAME "legacy::ffs()" COMMAND legacy_tests [device][ffs])
-add_test(NAME "legacy::fma(float)" COMMAND legacy_tests [device][fmaf])
-add_test(NAME "legacy::fma(__half)" COMMAND legacy_tests [device][fmah])
+add_test(NAME "legacy_ffs" COMMAND legacy_tests [device][ffs])
+add_test(NAME "legacy_fma_float" COMMAND legacy_tests [device][fmaf])
+add_test(NAME "legacy_fma___half" COMMAND legacy_tests [device][fmah])
 add_test(
-    NAME "legacy::hipDeviceGetLimit()"
+    NAME "legacy_hipDeviceGetLimit"
     COMMAND legacy_tests [host][hipDevice][get_limit])
-add_test(NAME "legacy::__half && __half2" COMMAND legacy_tests [device][half])
+add_test(NAME "legacy___half_&&___half2" COMMAND legacy_tests [device][half])
 add_test(
-    NAME "legacy::hipDeviceMalloc()" COMMAND legacy_tests [device][hipMalloc])
-add_test(NAME "legacy::double math" COMMAND legacy_tests [device][math][double])
-add_test(NAME "legacy::float math" COMMAND legacy_tests [device][math][float])
-add_test(NAME "legacy::half math" COMMAND legacy_tests [device][math][half])
+    NAME "legacy_hipDeviceMalloc" COMMAND legacy_tests [device][hipMalloc])
+add_test(NAME "legacy_double_math" COMMAND legacy_tests [device][math][double])
+add_test(NAME "legacy_float_math" COMMAND legacy_tests [device][math][float])
+add_test(NAME "legacy_half_math" COMMAND legacy_tests [device][math][half])
 add_test(
-    NAME "legacy::hipDeviceMemset()" COMMAND legacy_tests [device][hipMemset])
-add_test(NAME "legacy::popc()" COMMAND legacy_tests [device][popc])
-add_test(NAME "legacy::printf()" COMMAND legacy_tests [device][printf])
+    NAME "legacy_hipDeviceMemset" COMMAND legacy_tests [device][hipMemset])
+add_test(NAME "legacy_popc" COMMAND legacy_tests [device][popc])
+add_test(NAME "legacy_printf" COMMAND legacy_tests [device][printf])
 add_test(
-    NAME "legacy::std::complex" COMMAND legacy_tests [device][std::complex])
+    NAME "legacy_std_complex" COMMAND legacy_tests [device][std::complex])
 add_test(
-    NAME "legacy::hipDeviceSynchronize()"
+    NAME "legacy_hipDeviceSynchronize"
     COMMAND legacy_tests [host][hipDevice])
 add_test(
-    NAME "legacy::hipGetDevice()"
+    NAME "legacy_hipGetDevice"
     COMMAND legacy_tests [host][hipDevice][get_device])
-add_test(NAME "legacy::async memcpy" COMMAND legacy_tests [host][memcpy_async])
-add_test(NAME "legacy::hipEvent_t" COMMAND legacy_tests [host][hipEvent_t])
-# add_test(NAME "legacy::module API" COMMAND legacy_tests [host][module])
-add_test(NAME "legacy::hipStream_t" COMMAND legacy_tests [host][hipStream_t])
-add_test(NAME "legacy::host math" COMMAND legacy_tests [host][math])
-add_test(NAME "legacy::memcpy" COMMAND legacy_tests [host][memcpy])
+add_test(NAME "legacy_async_memcpy" COMMAND legacy_tests [host][memcpy_async])
+add_test(NAME "legacy_hipEvent_t" COMMAND legacy_tests [host][hipEvent_t])
+# add_test(NAME "legacy_module_API" COMMAND legacy_tests [host][module])
+add_test(NAME "legacy_hipStream_t" COMMAND legacy_tests [host][hipStream_t])
+add_test(NAME "legacy_host_math" COMMAND legacy_tests [host][math])
+add_test(NAME "legacy_memcpy" COMMAND legacy_tests [host][memcpy])
 add_test(
-    NAME "legacy::hipSetDeviceFlags()"
+    NAME "legacy_hipSetDeviceFlags"
     COMMAND legacy_tests [host][hipDevice][set_device_flags])
 add_test(
-    NAME "legacy::hipSetDevice()"
+    NAME "legacy_hipSetDevice"
     COMMAND legacy_tests [host][hipDevice][set_device])
-add_test(NAME "legacy::vector types" COMMAND legacy_tests [host][vector_types])
+add_test(NAME "legacy_vector_types" COMMAND legacy_tests [host][vector_types])
