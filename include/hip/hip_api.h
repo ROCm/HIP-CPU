@@ -269,7 +269,7 @@ hipError_t hipEventElapsedTime(float* ms, hipEvent_t start, hipEvent_t stop)
 }
 
 inline
-hipError_t hipEventRecord(hipEvent_t event, hipStream_t stream)
+hipError_t hipEventRecord(hipEvent_t event, hipStream_t stream = nullptr)
 {
     return hip::detail::insert_event(event, stream);
 }
