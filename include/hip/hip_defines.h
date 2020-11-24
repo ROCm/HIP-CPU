@@ -31,9 +31,17 @@
 #endif
 #if defined(NDEBUG)
     #if defined(__clang__) || defined(__GNUC__)
-        #define __forceinline__ [[gnu::always_inline]]
+        #define __forceinline__ __attribute__((always_inline)) inline
     #else
-        #define __forceinline__ [[msvc::forceinline]]
+        #if defined(__has_cpp_attribute)
+            #if __has_cpp_attribute(msvc::forceinline)
+                #define __forceinline__ [[msvc::forceinline]] inline
+            #else
+                #define __forceinline__ __forceinline
+            #endif
+        #else
+            #define __forceinline__ __forceinline
+        #endif
     #endif
 #else
     #define __forceinline__
@@ -46,13 +54,13 @@
         #define __HIP_API__ __declspec(dllimport)
     #endif
 #else
-    #define __HIP_API__
+    #define __HIP_API__ __attribute__((visibility("default")))
 #endif
 
 #define __host__
 
 #if defined(__clang__)
-    #define __global__ __attribute__((flatten, vectorcall))
+    #define __global__ __attribute__((flatten))//, vectorcall))
 #elif defined(__GNUC__)
     #if __GNUC__ != 10
         #define __global__ __attribute__((flatten, simd))
