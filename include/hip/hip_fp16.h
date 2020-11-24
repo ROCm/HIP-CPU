@@ -989,3 +989,43 @@ __half __ushort_as_half(std::uint16_t x) noexcept
     return hip::detail::bit_cast<__half>(x);
 }
 // END CONVERSION INTRINSICS
+
+// BEGIN HALF MATH FUNCTIONS
+inline
+__half hcos(__half x) noexcept
+{
+    return hip::detail::cos(x);
+}
+
+inline
+__half hexp(__half x) noexcept
+{
+    return hip::detail::exp(x);
+}
+
+inline
+__half hlog(__half x) noexcept
+{
+    return hip::detail::log(x);
+}
+
+inline
+__half hsin(__half x) noexcept
+{
+    return hip::detail::sin(x);
+}
+
+inline
+__half hsqrt(__half x) noexcept
+{
+    return hip::detail::sqrt(x);
+}
+// END HALF MATH FUNCTIONS
+
+// BEGIN HALF2 MATH FUNCTIONS
+inline
+__half2 h2exp(__half2 x) noexcept
+{
+    return hip::detail::exp(x);
+}
+// END HALF2 MATH FUNCTIONS
