@@ -25,8 +25,11 @@ target_include_directories(
 target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
 
 if (NOT ${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+    find_package(Threads REQUIRED)
+
     target_compile_options(${PROJECT_NAME} INTERFACE -fopenmp-simd)
-    target_link_libraries(${PROJECT_NAME} INTERFACE dl pthread tbb)
+    target_link_libraries(
+        ${PROJECT_NAME} INTERFACE ${CMAKE_DL_LIBS} Threads::Threads tbb)
 else ()
     target_compile_options(${PROJECT_NAME} INTERFACE /openmp:experimental)
 endif ()
