@@ -24,7 +24,7 @@ template<typename T>
 __global__
 void test_kernel(T* g_odata)
 {
-    const T tid(blockDim.x * blockIdx.x + threadIdx.x);
+    const auto tid{static_cast<T>(blockDim.x * blockIdx.x + threadIdx.x)};
 
     atomicAdd(&g_odata[0], T{10});
     if constexpr (!is_same_v<double, T>) atomicExch(&g_odata[2], tid);

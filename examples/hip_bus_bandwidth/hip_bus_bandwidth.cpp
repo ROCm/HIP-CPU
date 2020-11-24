@@ -405,7 +405,7 @@ void RunBenchmark_D2H(ResultDatabase& resultDB) {
     // Check.  First reset the host memory, then copy-back result.  Then compare against original
     // ref value.
     for (int i = 0; i < numMaxFloats; i++) {
-        float ref = i % 77;
+        float ref = static_cast<float>(i % 77);
         if (ref != hostMem2[i]) {
             printf("error: D2H. i=%d reference:%6.f != copyback:%6.2f\n", i, ref, hostMem2[i]);
         }
@@ -488,7 +488,7 @@ void RunBenchmark_Bidir(ResultDatabase& resultDB) {
 
 
     for (int i = 0; i < numMaxFloats; i++) {
-        hostMem[0][i] = i % 77;
+        hostMem[0][i] = static_cast<float>(i % 77);
     }
 
     float* deviceMem[2];
