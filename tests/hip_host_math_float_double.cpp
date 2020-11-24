@@ -17,7 +17,7 @@ TEST_CASE("(host) erfcinvf(float)", "[host][math][erfcinvf]")
     float Out[]{1.16309f, -0.179144f, 0.f, 0.088856f};
 
     REQUIRE(equal(cbegin(Val), cend(Val), cbegin(Out), [](auto&& x, auto&& y) {
-        return erfcinvf(x) == Approx{y};
+        return erfcinvf(x) == Approx{y}.epsilon(0.0009);
     }));
 }
 
@@ -37,7 +37,7 @@ TEST_CASE("(host) erfinvf(float)", "[host][math][erfinvf]")
     float Out[]{0.f, -0.476936f, 1.1631f, -0.179143f};
 
     REQUIRE(equal(cbegin(Val), cend(Val), cbegin(Out), [](auto&& x, auto&& y) {
-        return erfinvf(x) == Approx{y};
+        return erfinvf(x) == Approx{y}.epsilon(0.0009);
     }));
 }
 
@@ -57,7 +57,7 @@ TEST_CASE("(host) erfcinv(double)", "[host][math][erfcinv]")
     double Out[]{1.16309, -0.179144, 0, 0.0888559889};
 
     REQUIRE(equal(cbegin(Val), cend(Val), cbegin(Out), [](auto&& x, auto&& y) {
-        return erfcinv(x) == Approx{y};
+        return erfcinv(x) == Approx{y}.epsilon(0.0009);
     }));
 }
 
@@ -77,7 +77,7 @@ TEST_CASE("(host) erfinv(double)", "[host][math][erfinv]")
     double Out[]{0, -0.476936287, 1.1631, -0.1791434596};
 
     REQUIRE(equal(cbegin(Val), cend(Val), cbegin(Out), [](auto&& x, auto&& y) {
-        return erfinv(x) == Approx{y};
+        return erfinv(x) == Approx{y}.epsilon(0.0009);
     }));
 }
 
@@ -186,7 +186,7 @@ TEST_CASE("(host) normcdfinvf(float)", "[host][math][normcdfinvf]")
     float Val[]{0.5f, 0.8413f};
 
     REQUIRE(all_of(cbegin(Val), cend(Val), [](auto&& x) {
-        return normcdfinvf(normcdff(x)) == Approx{x};
+        return normcdfinvf(normcdff(x)) == Approx{x}.epsilon(0.0009);
     }));
 }
 
@@ -195,7 +195,7 @@ TEST_CASE("(host) normcdfinv(double)", "[host][math][normcdfinv]")
     double Val[]{0.5, 0.8413};
 
     REQUIRE(all_of(cbegin(Val), cend(Val), [](auto&& x) {
-        return normcdfinv(normcdf(x)) == Approx{x};
+        return normcdfinv(normcdf(x)) == Approx{x}.epsilon(0.0009);
     }));
 }
 

@@ -705,6 +705,10 @@ TEST_CASE("erfinv(double)", "[device][math][erfinv]")
         sizeof(double) * size(B),
         hipMemcpyDeviceToHost) == hipSuccess);
 
+    REQUIRE(equal(cbegin(A), cend(A), cbegin(B), [](auto&& x, auto&& y) {
+        return Approx{x}.epsilon(0.0009) == y;
+    }));
+
     REQUIRE(hipFree(Ad) == hipSuccess);
     REQUIRE(hipFree(Bd) == hipSuccess);
 }

@@ -34,10 +34,10 @@
         {
             #if defined(M_PI)
                 template<typename T>
-                inline constexpr T pi_v{M_PI};
+                inline constexpr T pi_v{static_cast<T>(M_PI)};
             #else
                 template<typename T>
-                inline constexpr T pi_v{3.14159265358979323846};
+                inline constexpr T pi_v{static_cast<T>(3.14159265358979323846)};
             #endif
         } // Namespace hip::detail.
     } // Namespace hip.
@@ -52,34 +52,16 @@ namespace hip
             std::enable_if_t<std::is_floating_point_v<T>>* = nullptr>
         inline
         T erfinv(T x) noexcept
-        {   // From: https://stackoverflow.com/a/49743348/13159551, placeholder
-            const auto t{std::log(std::fma(x, T{0} - x, T{1}))};
-            T p;
-            if (std::fabs(x) > T{6.125}) {
-                p = T{3.03697567e-10};
-                p = std::fma(p, t, T{2.93243101e-8});
-                p = std::fma(p, t, T{1.22150334e-6});
-                p = std::fma(p, t, T{2.84108955e-5});
-                p = std::fma(p, t, T{3.93552968e-4});
-                p = std::fma(p, t, T{3.02698812e-3});
-                p = std::fma(p, t, T{4.83185798e-3});
-                p = std::fma(p, t, T{-2.64646143e-1});
-                p = std::fma(p, t, T{8.40016484e-1});
-            }
-            else {
-                p = T{5.43877832e-9};
-                p = std::fma(p, t, T{1.43286059e-7});
-                p = std::fma(p, t, T{1.22775396e-6});
-                p = std::fma(p, t, T{1.12962631e-7});
-                p = std::fma(p, t, T{-5.61531961e-5});
-                p = std::fma(p, t, T{-1.47697705e-4});
-                p = std::fma(p, t, T{2.31468701e-3});
-                p = std::fma(p, t, T{1.15392562e-2});
-                p = std::fma(p, t, T{-2.32015476e-1});
-                p = std::fma(p, t, T{8.86226892e-1});
-            }
+        {   // See Winitzki, S. (2008) "A Handy Approximation For The Error
+            // Function and its Inverse"
+            constexpr auto a{static_cast<T>(0.147)};
 
-            return x * p;
+            const auto t0{T{2} / (pi_v<T> * a)};
+            const auto t1{std::log(T{1} - x * x) / T{2}};
+            const auto s{(x < T{0}) ? T{-1} : T{1}};
+
+            return s * std::sqrt(
+                std::sqrt((t0 + t1) * (t0 + t1) - T{2} * t1 / a) - t0 - t1);
         }
 
         template<
