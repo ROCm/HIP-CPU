@@ -11,6 +11,7 @@
 #include "event.hpp"
 #include "stream.hpp"
 #include "task.hpp"
+#include "../../../../include/hip/hip_defines.h"
 #include "../../../../include/hip/hip_enums.h"
 
 #include <algorithm>
@@ -23,12 +24,17 @@
 #include <utility>
 #include <vector>
 
+#if defined(_MSC_VER)
+    #pragma warning(push)
+    #pragma warning(disable:4251) // TODO: temporary.
+#endif
+
 namespace hip
 {
     namespace detail
     {
         // BEGIN CLASS RUNTIME
-        class Runtime final {
+        class __HIP_API__ Runtime final {
             // NESTED TYPES
             struct Cleaner_ {
                 // CREATORS
@@ -36,20 +42,19 @@ namespace hip
                 ~Cleaner_();
             };
 
-            // IMPLEMENTATION - STATICS
-            static
-            void process_tasks_();
-
             // DATA - STATICS
             inline static constexpr auto max_n_{
                 std::numeric_limits<Stream::ssize_t>::max()};
-            inline static thread_local hipError_t last_error_{};
+            // inline static thread_local hipError_t last_error_{};
             inline static Stream internal_stream_{};
             inline static std::forward_list<Stream> streams_{};
-            inline static std::thread processor_{process_tasks_};
             inline static const Cleaner_ cleaner{};
 
             // IMPLEMENTATION - STATICS
+            static
+            hipError_t& last_error_() noexcept;
+            static
+            std::thread& processor_();
             static
             void wait_all_streams_();
         public:
@@ -75,55 +80,76 @@ namespace hip
         inline
         Runtime::Cleaner_::Cleaner_() noexcept
         {
-            last_error_ = hipSuccess;
+            last_error_();
         }
 
         inline
         Runtime::Cleaner_::~Cleaner_()
         {
-            internal_stream_.enqueue(Task{[](auto&& p) { p = true; }});
-            processor_.join();
+            Task poison{[](auto&& p) { p = true; }};
+            auto fut{poison.get_future()};
+
+            internal_stream_.enqueue(std::move(poison));
+
+            if (processor_().joinable()) processor_().join();
+
+            fut.get();
         }
         // END CLASS RUNTIME::CLEANER_
 
         // IMPLEMENTATION - STATICS
         inline
-        void Runtime::process_tasks_()
+        hipError_t& Runtime::last_error_() noexcept
         {
-            std::vector<Task> t;
-            do {
-                t.clear();
+            static thread_local hipError_t r{hipSuccess};
 
-                internal_stream_.try_dequeue_bulk(std::back_inserter(t), max_n_);
-                for (auto&& x : t) {
-                    bool poison{};
-                    x(poison);
+            return r;
+        }
 
-                    if (poison) return;
-                }
+        inline
+        std::thread& Runtime::processor_()
+        {
+            static std::thread r{[]() {
+                std::vector<Task> t;
+                do {
+                    t.clear();
 
-                wait_all_streams_();
+                    internal_stream_.try_dequeue_bulk(
+                        std::back_inserter(t), max_n_);
+                    for (auto&& x : t) {
+                        bool poison{};
+                        x(poison);
 
-                // TODO: add backoff
-                // if (std::empty(t)) {
-                //     #if defined(YieldProcessor)
-                //         YieldProcessor();
-                //     #elif defined(__has_builtin)
-                //         #if __has_builtin(__builtin_ia32_pause)
-                //             __builtin_ia32_pause();
-                //         #else
-                //             std::this_thread::yield();
-                //         #endif
-                //     #else
-                //         std::this_thread::yield();
-                //     #endif
-                // }
-            } while (true);
+                        if (poison) return;
+                    }
+
+                    wait_all_streams_();
+
+                    // TODO: add backoff
+                    // if (std::empty(t)) {
+                    //     #if defined(YieldProcessor)
+                    //         YieldProcessor();
+                    //     #elif defined(__has_builtin)
+                    //         #if __has_builtin(__builtin_ia32_pause)
+                    //             __builtin_ia32_pause();
+                    //         #else
+                    //             std::this_thread::yield();
+                    //         #endif
+                    //     #else
+                    //         std::this_thread::yield();
+                    //     #endif
+                    // }
+                } while (true);
+            }};
+
+            return r;
         }
 
         inline
         void Runtime::wait_all_streams_()
         {
+            if (processor_().joinable()) processor_().detach();
+
             std::for_each(
                 std::execution::par,
                 std::begin(streams_),
@@ -156,7 +182,7 @@ namespace hip
         inline
         hipError_t Runtime::last_error() noexcept
         {
-            return last_error_;
+            return last_error_();
         }
 
         inline
@@ -170,6 +196,8 @@ namespace hip
                 delete p;
             }});
 
+            if (processor_().joinable()) processor_().detach();
+
             return fut;
         }
 
@@ -177,6 +205,8 @@ namespace hip
         Stream* Runtime::null_stream()
         {
             static auto& r{streams_.emplace_front()};
+
+            if (processor_().joinable()) processor_().detach();
 
             return &r;
         }
@@ -198,7 +228,7 @@ namespace hip
         inline
         hipError_t Runtime::set_last_error(hipError_t e) noexcept
         {
-            return std::exchange(last_error_, e);
+            return std::exchange(last_error_(), e);
         }
 
         inline
@@ -209,8 +239,14 @@ namespace hip
 
             internal_stream_.enqueue(std::move(r));
 
+            if (processor_().joinable()) processor_().detach();
+
             return fut.get();
         }
         // END CLASS RUNTIME
     } // Namespace hip::detail.
 } // Namespace hip.
+
+#if defined(_MSC_VER)
+    #pragma warning(pop)
+#endif

@@ -83,7 +83,7 @@ namespace hip
 
             if (!stream) stream = Runtime::null_stream();
 
-            stream->enqueue(hip::detail::Task{[=](auto&&) {
+            stream->enqueue(hip::detail::Task{[=](auto&&) { // TODO: use push_task.
                 std::memcpy(dst, src, size);
             }});
 
