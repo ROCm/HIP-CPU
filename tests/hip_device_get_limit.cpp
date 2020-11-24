@@ -8,7 +8,7 @@
 
 #include <cstdlib>
 
-TEST_CASE("hipDeviceGetLimit()", "[host][hipDevice]")
+TEST_CASE("hipDeviceGetLimit()", "[host][hipDevice][get_limit]")
 {
     constexpr auto current_HIP_heap_sz{4194304u};
     std::size_t heap_sz{};

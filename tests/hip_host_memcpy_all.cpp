@@ -444,8 +444,8 @@ void memcpytest2_sizes(size_t maxElem = 0)
 
     if (maxElem == 0) {
         // Use lesser maxElem if not enough host memory available
-        size_t maxElemGPU = free / sizeof(T) / 32;
-        size_t maxElemCPU = freeCPU / sizeof(T) / 32;
+        size_t maxElemGPU = 3 * 1024 * 1024 / sizeof(T);
+        size_t maxElemCPU = 3 * 1024 * 1024 / sizeof(T);
         maxElem = maxElemGPU < maxElemCPU ? maxElemGPU : maxElemCPU;
     }
 

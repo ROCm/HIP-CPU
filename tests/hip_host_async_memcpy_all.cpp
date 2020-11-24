@@ -460,14 +460,14 @@ void test_chunkedAsyncExample(
     freeArrays(A_d, B_d, C_d, A_h, B_h, C_h, true);
 }
 
-TEST_CASE("Async memcpy", "[host][memcpy][async]")
+TEST_CASE("Async memcpy", "[host][memcpy_async]")
 {
     REQUIRE(hipSetDevice(0) == hipSuccess);
 
     simpleNegTest();
 }
 
-TEST_CASE("Async memcpy, many in-flight copies", "[host][memcpy][async]")
+TEST_CASE("Async memcpy, many in-flight copies", "[host][memcpy_async]")
 {
     hipStream_t stream;
     REQUIRE(hipStreamCreate(&stream) == hipSuccess);
@@ -479,7 +479,7 @@ TEST_CASE("Async memcpy, many in-flight copies", "[host][memcpy][async]")
     REQUIRE(hipStreamDestroy(stream) == hipSuccess);
 }
 
-TEST_CASE("Async memcpy, chunked", "[host][memcpy][async]")
+TEST_CASE("Async memcpy, chunked", "[host][memcpy_async]")
 {
     test_chunkedAsyncExample(p_streams, true, true, true);    // Easy sync version
     test_chunkedAsyncExample(p_streams, false, true, true);   // Easy sync version
@@ -487,7 +487,7 @@ TEST_CASE("Async memcpy, chunked", "[host][memcpy][async]")
     test_chunkedAsyncExample(p_streams, false, false, false); // All async
 }
 
-TEST_CASE("Async memcpy, pingpong", "[host][memcpy][async]")
+TEST_CASE("Async memcpy, pingpong", "[host][memcpy_async]")
 {
     hipStream_t stream;
     REQUIRE(hipStreamCreate(&stream) == hipSuccess);

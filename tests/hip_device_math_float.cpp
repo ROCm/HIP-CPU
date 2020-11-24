@@ -127,7 +127,7 @@ void test_erfinvf(float* a, float* b)
 
 using namespace std;
 
-TEST_CASE("sincosf()", "[device][math][sincosf]")
+TEST_CASE("sincosf()", "[device][math][float][sincosf]")
 {
     vector<float> A(N, 1.0f);
     vector<float> B(N);
@@ -159,7 +159,7 @@ TEST_CASE("sincosf()", "[device][math][sincosf]")
     REQUIRE(hipFree(Cd) == hipSuccess);
 }
 
-TEST_CASE("sincospif()", "[device][math][sincospif]")
+TEST_CASE("sincospif()", "[device][math][float][sincospif]")
 {
     vector<float> A(N, 1.0f);
     vector<float> B(N);
@@ -191,7 +191,7 @@ TEST_CASE("sincospif()", "[device][math][sincospif]")
     REQUIRE(hipFree(Cd) == hipSuccess);
 }
 
-TEST_CASE("fdividef", "[device][math][fdividef]")
+TEST_CASE("fdividef", "[device][math][float][fdividef]")
 {
     vector<float> A(N, 1.0f);
     vector<float> B(N, 2.0f);
@@ -222,7 +222,7 @@ TEST_CASE("fdividef", "[device][math][fdividef]")
     REQUIRE(hipFree(Cd) == hipSuccess);
 }
 
-TEST_CASE("llrintf", "[device][math][llrintf]")
+TEST_CASE("llrintf", "[device][math][float][llrintf]")
 {
     vector<float> A(N, 1.345f);
     vector<long long> B(N);
@@ -254,7 +254,7 @@ TEST_CASE("llrintf", "[device][math][llrintf]")
     REQUIRE(hipFree(Bd) == hipSuccess);
 }
 
-TEST_CASE("lrintf()", "[device][math][lrintf]")
+TEST_CASE("lrintf()", "[device][math][float][lrintf]")
 {
     vector<float> A(N, 1.345f);
     vector<long int> B(N);
@@ -283,7 +283,7 @@ TEST_CASE("lrintf()", "[device][math][lrintf]")
     REQUIRE(hipFree(Bd) == hipSuccess);
 }
 
-TEST_CASE("rintf", "[device][math][rintf]")
+TEST_CASE("rintf", "[device][math][float][rintf]")
 {
     vector<float> A(N, 1.345f);
     vector<float> B(N);
@@ -312,7 +312,7 @@ TEST_CASE("rintf", "[device][math][rintf]")
     REQUIRE(hipFree(Bd) == hipSuccess);
 }
 
-TEST_CASE("llroundf", "[device][math][llroundf]")
+TEST_CASE("llroundf", "[device][math][float][llroundf]")
 {
     vector<float> A(N, 1.345f);
     vector<long long> B(N);
@@ -344,7 +344,7 @@ TEST_CASE("llroundf", "[device][math][llroundf]")
     REQUIRE(hipFree(Bd) == hipSuccess);
 }
 
-TEST_CASE("lroundf()", "[device][math][lroundf]")
+TEST_CASE("lroundf()", "[device][math][float][lroundf]")
 {
     vector<float> A(N, 1.345f);
     vector<long int> B(N);
@@ -373,7 +373,7 @@ TEST_CASE("lroundf()", "[device][math][lroundf]")
     REQUIRE(hipFree(Bd) == hipSuccess);
 }
 
-TEST_CASE("norm3df()", "[device][math][norm3df]")
+TEST_CASE("norm3df()", "[device][math][float][norm3df]")
 {
     vector<float> A(N, 1.0f);
     vector<float> B(N, 2.0f);
@@ -412,7 +412,7 @@ TEST_CASE("norm3df()", "[device][math][norm3df]")
     REQUIRE(hipFree(Dd) == hipSuccess);
 }
 
-TEST_CASE("norm4df()", "[device][math][norm4df]")
+TEST_CASE("norm4df()", "[device][math][float][norm4df]")
 {
     vector<float> A(N, 1.0f);
     vector<float> B(N, 2.0f);
@@ -461,7 +461,7 @@ TEST_CASE("norm4df()", "[device][math][norm4df]")
     REQUIRE(hipFree(Ed) == hipSuccess);
 }
 
-TEST_CASE("normf", "[device][math][normf]")
+TEST_CASE("normf", "[device][math][float][normf]")
 {
     vector<float> A(N, 1.0f);
     vector<float> B(N, 0.0f);
@@ -488,7 +488,7 @@ TEST_CASE("normf", "[device][math][normf]")
     REQUIRE(hipFree(Bd) == hipSuccess);
 }
 
-TEST_CASE("rhypotf", "[device][math][rhypotf]")
+TEST_CASE("rhypotf", "[device][math][float][rhypotf]")
 {
     vector<float> A(N, 1.0f);
     vector<float> B(N, 2.0f);
@@ -521,7 +521,7 @@ TEST_CASE("rhypotf", "[device][math][rhypotf]")
     REQUIRE(hipFree(Cd) == hipSuccess);
 }
 
-TEST_CASE("rnorm3df", "[device][math][rnorm3df]")
+TEST_CASE("rnorm3df", "[device][math][float][rnorm3df]")
 {
     vector<float> A(N, 1.0f);
     vector<float> B(N, 2.0f);
@@ -560,7 +560,7 @@ TEST_CASE("rnorm3df", "[device][math][rnorm3df]")
     REQUIRE(hipFree(Dd) == hipSuccess);
 }
 
-TEST_CASE("rnorm4df()", "[device][math][rnorm4df]")
+TEST_CASE("rnorm4df()", "[device][math][float][rnorm4df]")
 {
     vector<float> A(N, 1.0f);
     vector<float> B(N, 2.0f);
@@ -609,7 +609,7 @@ TEST_CASE("rnorm4df()", "[device][math][rnorm4df]")
     REQUIRE(hipFree(Ed) == hipSuccess);
 }
 
-TEST_CASE("rnormf", "[device][math][rnormf]")
+TEST_CASE("rnormf", "[device][math][float][rnormf]")
 {
     vector<float> A(N, 1.0f);
     vector<float> B(N, 0.0f);
@@ -636,7 +636,7 @@ TEST_CASE("rnormf", "[device][math][rnormf]")
     REQUIRE(hipFree(Bd) == hipSuccess);
 }
 
-TEST_CASE("erfinvf()", "[device][math][erfinvf]")
+TEST_CASE("erfinvf()", "[device][math][float][erfinvf]")
 {
     vector<float> A(N, -0.6f);
     vector<float> B(N);

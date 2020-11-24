@@ -25,7 +25,7 @@ void vectorAdd(float* Ad, float* Bd)
 
 using namespace std;
 
-TEST_CASE("Dynamic SharedMem II", "[device][dynamic_shared]")
+TEST_CASE("Dynamic SharedMem II", "[device][dynamic_shared_2]")
 {
     vector<float> A(LEN, 1.f);
     vector<float> B(LEN, 0.f);

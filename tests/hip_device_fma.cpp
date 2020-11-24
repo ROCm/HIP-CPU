@@ -51,7 +51,7 @@ void kernelTestFMA(bool* Ad)
 
 constexpr auto cnt_flt_dbl{20};
 
-TEST_CASE("fma(float)", "[device][math][fma]")
+TEST_CASE("fma(float)", "[device][math][fmaf]")
 {
     array<bool, cnt_flt_dbl> A{};
 
@@ -102,7 +102,7 @@ void kernelTestHalfFMA(bool* Ad)
 
 constexpr auto cnt_hlf{10};
 
-TEST_CASE("fma(__half)", "[device][math][fma]")
+TEST_CASE("fma(__half)", "[device][math][fmah]")
 {
     array<bool, cnt_hlf> A{};
 

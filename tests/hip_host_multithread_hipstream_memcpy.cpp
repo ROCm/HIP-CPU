@@ -127,7 +127,7 @@ void run(hipStream_t stream1, hipStream_t stream2)
 
 TEST_CASE(
     "Parallel, async memcpy, multiple streams, many operations.",
-    "[host][multithread][hipStream_t][memcpy]")
+    "[host][multithread][hipStream_t]")
 {
     constexpr auto iterations{100};
 

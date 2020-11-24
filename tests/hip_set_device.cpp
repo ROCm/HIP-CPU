@@ -6,7 +6,7 @@
 
 #include "../external/catch2/catch.hpp"
 
-TEST_CASE("hipSetDevice()", "[host][hipDevice]")
+TEST_CASE("hipSetDevice()", "[host][hipDevice][set_device]")
 {
     int numDevices = 0;
 

@@ -57,7 +57,7 @@ void testExternSharedKernel(
 constexpr auto threads_per_block{256u};
 
 TEMPLATE_TEST_CASE(
-    "Dynamic SharedMem I", "[device][dynamic_shared]", float, double)
+    "Dynamic SharedMem I", "[device][dynamic_shared_1]", float, double)
 {
     REQUIRE(hipSetDevice(0) == hipSuccess);
 

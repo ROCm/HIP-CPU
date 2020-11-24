@@ -112,7 +112,7 @@ void test_erfinv(double* a, double* b)
 
 using namespace std;
 
-TEST_CASE("sincos(double)", "[device][math][sincos]")
+TEST_CASE("sincos(double)", "[device][math][double][sincos]")
 {
     vector<double> A(cnt, 1.0);
     vector<double> B(cnt);
@@ -156,7 +156,7 @@ TEST_CASE("sincos(double)", "[device][math][sincos]")
     REQUIRE(hipFree(Cd) == hipSuccess);
 }
 
-TEST_CASE("sincospi(double)", "[device][math][sincospi]")
+TEST_CASE("sincospi(double)", "[device][math][double][sincospi]")
 {
     static constexpr auto pi{3.14159265358979323846};
 
@@ -204,7 +204,7 @@ TEST_CASE("sincospi(double)", "[device][math][sincospi]")
 }
 
 
-TEST_CASE("llrint(double)", "[device][math][llrint]")
+TEST_CASE("llrint(double)", "[device][math][double][llrint]")
 {
     vector<double> A(cnt, 1.345);
     vector<long long int> B(cnt);
@@ -237,7 +237,7 @@ TEST_CASE("llrint(double)", "[device][math][llrint]")
     REQUIRE(hipFree(Bd) == hipSuccess);
 }
 
-TEST_CASE("lrint(double)", "[device][math][lrint]")
+TEST_CASE("lrint(double)", "[device][math][double][lrint]")
 {
     vector<double> A(cnt, 1.345);
     vector<long int> B(cnt);
@@ -270,7 +270,7 @@ TEST_CASE("lrint(double)", "[device][math][lrint]")
     REQUIRE(hipFree(Bd) == hipSuccess);
 }
 
-TEST_CASE("rint(double)", "[device][math][rint]")
+TEST_CASE("rint(double)", "[device][math][double][rint]")
 {
     vector<double> A(cnt, 1.345);
     vector<double> B(cnt);
@@ -304,7 +304,7 @@ TEST_CASE("rint(double)", "[device][math][rint]")
 }
 
 
-TEST_CASE("llround(double)", "[device][math][llround]")
+TEST_CASE("llround(double)", "[device][math][double][llround]")
 {
     vector<double> A(cnt, 1.345);
     vector<long long int> B(cnt);
@@ -337,7 +337,7 @@ TEST_CASE("llround(double)", "[device][math][llround]")
     REQUIRE(hipFree(Bd) == hipSuccess);
 }
 
-TEST_CASE("lround(double)", "[device][math][lround]")
+TEST_CASE("lround(double)", "[device][math][double][lround]")
 {
     vector<double> A(cnt, 1.345);
     vector<long int> B(cnt);
@@ -371,7 +371,7 @@ TEST_CASE("lround(double)", "[device][math][lround]")
 }
 
 
-TEST_CASE("norm3d(double)", "[device][math][norm3d]")
+TEST_CASE("norm3d(double)", "[device][math][double][norm3d]")
 {
     vector<double> A(cnt, 1.0);
     vector<double> B(cnt, 2.0);
@@ -425,7 +425,7 @@ TEST_CASE("norm3d(double)", "[device][math][norm3d]")
     REQUIRE(hipFree(Dd) == hipSuccess);
 }
 
-TEST_CASE("norm4d(double)", "[device][math][norm4d]")
+TEST_CASE("norm4d(double)", "[device][math][double][norm4d]")
 {
     vector<double> A(cnt, 1.0);
     vector<double> B(cnt, 2.0);
@@ -487,7 +487,7 @@ TEST_CASE("norm4d(double)", "[device][math][norm4d]")
 }
 
 
-TEST_CASE("rhypot(double)", "[device][math][rhypot]")
+TEST_CASE("rhypot(double)", "[device][math][double][rhypot]")
 {
     vector<double> A(cnt, 1.0);
     vector<double> B(cnt, 2.0);
@@ -529,7 +529,7 @@ TEST_CASE("rhypot(double)", "[device][math][rhypot]")
     REQUIRE(hipFree(Cd) == hipSuccess);
 }
 
-TEST_CASE("rnorm3d(double)", "[device][math][rnorm3d]")
+TEST_CASE("rnorm3d(double)", "[device][math][double][rnorm3d]")
 {
     vector<double> A(cnt, 1.0);
     vector<double> B(cnt, 2.0);
@@ -583,7 +583,7 @@ TEST_CASE("rnorm3d(double)", "[device][math][rnorm3d]")
     REQUIRE(hipFree(Dd) == hipSuccess);
 }
 
-TEST_CASE("rnorm4d(double)", "[device][math][rnorm4d]")
+TEST_CASE("rnorm4d(double)", "[device][math][double][rnorm4d]")
 {
     vector<double> A(cnt, 1.0);
     vector<double> B(cnt, 2.0);
@@ -644,7 +644,7 @@ TEST_CASE("rnorm4d(double)", "[device][math][rnorm4d]")
     REQUIRE(hipFree(Ed) == hipSuccess);
 }
 
-TEST_CASE("rnorm(double)", "[device][math][rnorm]")
+TEST_CASE("rnorm(double)", "[device][math][double][rnorm]")
 {
     vector<double> A(cnt, 1.0);
     vector<double> B(cnt, 0.0);
@@ -680,7 +680,7 @@ TEST_CASE("rnorm(double)", "[device][math][rnorm]")
     REQUIRE(hipFree(Bd) == hipSuccess);
 }
 
-TEST_CASE("erfinv(double)", "[device][math][erfinv]")
+TEST_CASE("erfinv(double)", "[device][math][double][erfinv]")
 {
     vector<double> A(cnt, -0.6);
     vector<double> B(cnt, 0.0);

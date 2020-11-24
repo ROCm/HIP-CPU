@@ -6,7 +6,7 @@
 
 #include "../external/catch2/catch.hpp"
 
-TEST_CASE("hipSetDeviceFlags()", "[host][hipDevice]")
+TEST_CASE("hipSetDeviceFlags()", "[host][hipDevice][set_device_flags]")
 {
     REQUIRE(hipDeviceReset() == hipSuccess);
 
