@@ -44,9 +44,18 @@ point in the future, but there is no commitment to it at the moment.
 
 No, the HIP CPU Runtime is OS agnostic. As long as a C++17 compliant toolchain
 is available for some OS then the HIP CPU Runtime shall work in that
-environment. [Please create an issue](https://github.com/ROCm-Developer-Tools/HIP-CPU/issues/new/choose) if you have identified a case where this does not hold, as it is a bug.
+environment. [Please create an issue](https://github.com/ROCm-Developer-Tools/HIP-CPU/issues/new/choose)
+if you have identified a case where this does not hold, as it is a bug.
 
 ## Can I interoperate with the HIP GPU Runtime? ##
+
+Not in an architected way. Since we expect the HIP CPU Runtime to undergo rapid,
+iterative development, we decided to keep it as nimble as possible and not lock
+into particularly restrictive decisions early on. As such, whilst convergence
+with the HIP GPU Runtime is a valid medium-term goal, no cross-dependencies
+exist at the moment. [Please create an issue](https://github.com/ROCm-Developer-Tools/HIP-CPU/issues/new/choose)
+of you feel this is crucial for your use-case and is preventing experimentation
+with the HIP CPU Runtime.
 
 ## Can I use it in C? ##
 
