@@ -8,6 +8,7 @@
 - [Can I interoperate with the HIP GPU Runtime?](#how-to-interoperate-with-the-hip-gpu-runtime)
 - [Can I use it in C?](#can-I-use-it-in-c)
 - [Can I use **_insert HIP library here_**?](#can-i-use-insert-hip-library-here)
+- [Can I use **_insert CPU library here_**?](#can-i-use-insert-cpu-library-here)
 - [I have a question and it is not answered here!](#i-have-a-question-and-it-is-not-answered-here)
 
 ## Who owns this project? ##
@@ -73,6 +74,14 @@ all missing functionality is the same e.g. a missing element of the public
 interface is likely to be added with alacrity, whereas inline GCN ASM shall
 never work. Thus, whilst a library relying on the former is highly likely to be
 usable quite rapidly, a library relying on the latter shall never work.
+
+## Can I use **_insert CPU library here_**? ##
+
+Yes, including in kernel code - there is nothing preventing you from e.g. using
+`std::sort` in a `__global__` or `__device__` function. However, please be aware
+that such code is inherently non-portable to codebases using the HIP GPU Runtime
+and the HIP or CUDA dialects of Clang. Therefore, doing this is discouraged if
+portability across heterogeneous targets is intended.
 
 ## I have a question and it is not answered here! ##
 
