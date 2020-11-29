@@ -488,7 +488,7 @@ TEST_CASE("N-Body")
     BENCHMARK("CPU") {
         bodyForce(data(p), dt, nBodies);
 
-        for (auto i = 0u; i != nBodies; ++i) {
+        for (auto i = 0; i != nBodies; ++i) {
             p[i].x += p[i].vx * dt;
             p[i].y += p[i].vy * dt;
             p[i].z += p[i].vz * dt;
@@ -511,7 +511,7 @@ TEST_CASE("N-Body")
             nBodies);
         hipDeviceSynchronize();
 
-        for (auto i = 0u; i != nBodies; ++i) {
+        for (auto i = 0; i != nBodies; ++i) {
             p[i].x += p[i].vx * dt;
             p[i].y += p[i].vy * dt;
             p[i].z += p[i].vz * dt;
@@ -772,7 +772,7 @@ uint64_t solve_gpu(int N, int M)
         sizeof(std::uint32_t) * length,
         hipMemcpyHostToDevice) == hipSuccess);
     constexpr int threadsPerBlock = 16;
-    const int blockCount = (length + threadsPerBlock - 1) / threadsPerBlock;
+    const auto blockCount = (length + threadsPerBlock - 1) / threadsPerBlock;
     hipLaunchKernelGGL(
         kernel,
         dim3(blockCount),
@@ -834,7 +834,7 @@ uint64_t solve_gpu_ver2(int N, int M)
         sizeof(std::uint32_t) * length,
         hipMemcpyHostToDevice) == hipSuccess);
     constexpr int threadsPerBlock = 16;
-    const int blockCount = (length + threadsPerBlock - 1) / threadsPerBlock;
+    const auto blockCount = (length + threadsPerBlock - 1) / threadsPerBlock;
     hipLaunchKernelGGL(
         kernel_ver2,
         dim3(blockCount),
