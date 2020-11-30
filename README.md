@@ -2,6 +2,12 @@
 
 #### [Repository](https://github.com/ROCm-Developer-Tools/HIP-CPU) | [Issues](https://github.com/ROCm-Developer-Tools/HIP-CPU/issues) | [Documentation](/docs) | [Code Samples](/examples) ####
 
+The HIP CPU Runtime is a header-only library that allows CPUs to execute
+unmodified HIP code. It is generic and does not assume a particular CPU vendor
+or architecture. _Please note the library is being actively developed, and is_
+_known to be incomplet; it might also be incorrekt and there could be a few_
+_b**a**d **bu**gs lurking_.
+
 ## Overview and Tutorials ##
 
 * [HIP CPU Runtime Overview](/docs/overview.md)
