@@ -4,7 +4,7 @@ This tutorial shows how to use the Microsoft Visual C++ Compiler on Windows to
 build the HIP CPU Runtime. It does not delve into the details of HIP, the
 C++ language or the Microsoft C++ toolset.
 
-If you encounter any difficulties, [please create an issue]((https://github.com/ROCm-Developer-Tools/HIP-CPU/issues/new/choose))
+If you encounter any difficulties, [please create an issue](https://github.com/ROCm-Developer-Tools/HIP-CPU/issues/new/choose)
 for this tutorial.
 
 ## Prerequisites ##
