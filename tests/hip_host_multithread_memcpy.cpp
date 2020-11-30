@@ -14,7 +14,7 @@ using namespace std;
 
 constexpr auto blocksPerCU{6u};
 constexpr auto p_iters{10u};
-constexpr auto N{8000000};
+constexpr auto N{4000000};
 constexpr auto threadsPerBlock{256};
 
 inline
