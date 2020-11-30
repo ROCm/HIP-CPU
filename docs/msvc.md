@@ -56,5 +56,6 @@ To use any of the HIP public interfaces include the `hip/hip_runtime.h` header.
 - If you are working with CMake, link against the convenience `INTERFACE` target
   `hip_cpu_rt::hip_cpu_rt`, which is exported by the HIP CPU Runtime, which can
   be queried by `find_package(hip_cpu_rt)`;
-- If you are not working with CMake, add `/path_where_you_built_the_hip_cpu_runtime/include`
-  to your include path.
+- If you are not working with CMake, add either
+  `/path_where_you_cloned_the_hip_cpu_runtime/include` or, if you installed it,
+  `/path_where_you_installed_the_hip_cpu_runtime/include` to your include path.
