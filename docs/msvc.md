@@ -30,7 +30,8 @@ To successfully complete this tutorial, the following steps are necessary:
    - [Download and execute the installer](https://cmake.org/download/)
 3. Install Git
    - [Download and execute the installer](https://git-scm.com/download/win)
-4. Clone and build the HIP CPU Runtime
+
+## Clone and build the HIP CPU Runtime ##
 
    ```cmd
    git clone https://github.com/ROCm-Developer-Tools/HIP-CPU.git
@@ -41,9 +42,19 @@ To successfully complete this tutorial, the following steps are necessary:
    cmake --build
    ```
 
-5. Verify the build by running the unit tests
+## Verify the build by running the unit tests ##
 
    ```cmd
    rem Assumes that you are in the build folder created in the prior step.
    ctest --output-on-failure
    ```
+
+## Use the HIP CPU Runtime in your code ##
+
+To use any of the HIP public interfaces include the `hip/hip_runtime.h` header.
+
+- If you are working with CMake, link against the convenience `INTERFACE` target
+  `hip_cpu_rt::hip_cpu_rt`, which is exported by the HIP CPU Runtime, which can
+  be queried by `find_package(hip_cpu_rt)`;
+- If you are not working with CMake, add `/path_where_you_built_the_hip_cpu_runtime/include`
+  to your include path.
