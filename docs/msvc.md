@@ -33,19 +33,26 @@ To successfully complete this tutorial, the following steps are necessary:
 
 ## Clone and build the HIP CPU Runtime ##
 
-   ```cmd
-   git clone https://github.com/ROCm-Developer-Tools/HIP-CPU.git
-   cd HIP-CPU
-   mkdir build
-   cd build
-   cmake ../
-   cmake --build
-   ```
+```cmd
+git clone https://github.com/ROCm-Developer-Tools/HIP-CPU.git
+cd HIP-CPU
+mkdir build
+cd build
+cmake ../
+cmake --build ./
+```
+
+## **OPTIONAL** Install the HIP CPU Runtime ##
+
+```cmd
+rem Assumes that you are in the build folder created in the build step.
+cmake --build ./ --target install
+```
 
 ## Verify the build by running the unit tests ##
 
    ```cmd
-   rem Assumes that you are in the build folder created in the prior step.
+   rem Assumes that you are in the build folder created in the build step.
    ctest --output-on-failure
    ```
 
