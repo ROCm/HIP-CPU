@@ -51,10 +51,10 @@ cmake --build ./ --target install
 
 ## Verify the build by running the unit tests ##
 
-   ```cmd
-   rem Assumes that you are in the build folder created in the build step.
-   ctest --output-on-failure
-   ```
+```cmd
+rem Assumes that you are in the build folder created in the build step.
+ctest --output-on-failure
+```
 
 ## Use the HIP CPU Runtime in your code ##
 
