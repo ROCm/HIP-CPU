@@ -19,7 +19,7 @@ constexpr auto threadsPerBlock{256};
 
 inline
 unsigned int set_num_blocks(
-    unsigned int blocksPerCU, unsigned int threadsPerBlock, size_t N)
+    unsigned int blocksPerCU, unsigned int threadsPerBlock, unsigned int N)
 {
     int device{};
     hipGetDevice(&device);
@@ -37,7 +37,7 @@ unsigned int set_num_blocks(
 
 template<typename T>
 __global__
-void vectorADDReverse(const T* A_d, const T* B_d, T* C_d, size_t n)
+void vectorADDReverse(const T* A_d, const T* B_d, T* C_d, int n)
 {
     int offset = (blockIdx.x * blockDim.x + threadIdx.x);
     int stride = blockDim.x * gridDim.x;
