@@ -14,6 +14,7 @@
 #include <array>
 #include <execution>
 #include <functional>
+#include <version>
 
 namespace hip
 {
@@ -330,7 +331,9 @@ namespace hip
             bool operator<(const Vector_type& x, const Vector_type& y) noexcept
             {
                 return std::lexicographical_compare(
-                    std::execution::unseq,
+                    #if __cpp_lib_execution >= 201902L
+                        std::execution::unseq,
+                    #endif
                     std::cbegin(x.data_),
                     std::cend(x.data_),
                     std::cbegin(y.data_),
@@ -341,7 +344,9 @@ namespace hip
             bool operator==(const Vector_type& x, const Vector_type& y) noexcept
             {
                 return std::equal(
-                    std::execution::unseq,
+                    #if __cpp_lib_execution >= 201902L
+                        std::execution::unseq,
+                    #endif
                     std::cbegin(x.data_),
                     std::cend(x.data_),
                     std::cbegin(y.data_));
@@ -546,7 +551,9 @@ namespace hip
             const Vector_type& t) noexcept
         {
             std::transform(
-                std::execution::unseq,
+                #if __cpp_lib_execution >= 201902L
+                    std::execution::unseq,
+                #endif
                 std::cbegin(data_),
                 std::cend(data_),
                 std::cbegin(t.data_),
@@ -572,7 +579,9 @@ namespace hip
             const Vector_type& t) noexcept
         {
             std::transform(
-                std::execution::unseq,
+                #if __cpp_lib_execution >= 201902L
+                    std::execution::unseq,
+                #endif
                 std::cbegin(data_),
                 std::cend(data_),
                 std::cbegin(t.data_),
@@ -598,7 +607,9 @@ namespace hip
             const Vector_type& t) noexcept
         {
             std::transform(
-                std::execution::unseq,
+                #if __cpp_lib_execution >= 201902L
+                    std::execution::unseq,
+                #endif
                 std::cbegin(data_),
                 std::cend(data_),
                 std::cbegin(t.data_),
@@ -624,7 +635,9 @@ namespace hip
             const Vector_type& t) noexcept
         {
             std::transform(
-                std::execution::unseq,
+                #if __cpp_lib_execution >= 201902L
+                    std::execution::unseq,
+                #endif
                 std::cbegin(data_),
                 std::cend(data_),
                 std::cbegin(t.data_),
@@ -651,7 +664,9 @@ namespace hip
             const Vector_type& t) noexcept
         {
             std::transform(
-                std::execution::unseq,
+                #if __cpp_lib_execution >= 201902L
+                    std::execution::unseq,
+                #endif
                 std::cbegin(data_),
                 std::cend(data_),
                 std::cbegin(t.data_),
@@ -668,7 +683,9 @@ namespace hip
             const Vector_type& t) noexcept
         {
             std::transform(
-                std::execution::unseq,
+                #if __cpp_lib_execution >= 201902L
+                    std::execution::unseq,
+                #endif
                 std::cbegin(data_),
                 std::cend(data_),
                 std::cbegin(t.data_),
@@ -685,7 +702,9 @@ namespace hip
             const Vector_type& t) noexcept
         {
             std::transform(
-                std::execution::unseq,
+                #if __cpp_lib_execution >= 201902L
+                    std::execution::unseq,
+                #endif
                 std::cbegin(data_),
                 std::cend(data_),
                 std::cbegin(t.data_),
@@ -704,7 +723,9 @@ namespace hip
             const Vector_type& t) noexcept
         {
             std::transform(
-                std::execution::unseq,
+                #if __cpp_lib_execution >= 201902L
+                    std::execution::unseq,
+                #endif
                 std::cbegin(data_),
                 std::cend(data_),
                 std::cbegin(t.data_),
@@ -721,7 +742,9 @@ namespace hip
             const Vector_type& s) noexcept
         {
             std::transform(
-                std::execution::unseq,
+                #if __cpp_lib_execution >= 201902L
+                    std::execution::unseq,
+                #endif
                 std::cbegin(data_),
                 std::cend(data_),
                 std::cbegin(s.data_),
@@ -738,7 +761,9 @@ namespace hip
             const Vector_type& s) noexcept
         {
             std::transform(
-                std::execution::unseq,
+                #if __cpp_lib_execution >= 201902L
+                    std::execution::unseq,
+                #endif
                 std::cbegin(data_),
                 std::cend(data_),
                 std::cbegin(s.data_),
@@ -761,7 +786,9 @@ namespace hip
         {
             auto r{*this};
             std::transform(
-                std::execution::unseq,
+                #if __cpp_lib_execution >= 201902L
+                    std::execution::unseq,
+                #endif
                 std::cbegin(r.data_),
                 std::cend(r.data_),
                 std::begin(r.data_),
@@ -777,7 +804,9 @@ namespace hip
         {
             auto r{*this};
             std::transform(
-                std::execution::unseq,
+                #if __cpp_lib_execution >= 201902L
+                    std::execution::unseq,
+                #endif
                 std::cbegin(r.data_),
                 std::cend(r.data_),
                 std::begin(r.data_),
