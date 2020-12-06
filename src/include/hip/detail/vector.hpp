@@ -30,26 +30,12 @@ namespace hip
                 const Scalar_accessor* p;
 
                 // MANIPULATORS
-                operator T*() noexcept
-                {
-                    return &reinterpret_cast<T*>(
-                        const_cast<Scalar_accessor*>(p))[idx];
-                }
-                operator T*() volatile noexcept
-                {
-                    return &reinterpret_cast<T*>(
-                        const_cast<Scalar_accessor*>(p))[idx];
-                }
+                operator T*() noexcept;
+                operator T*() volatile noexcept;
 
                 // ACCESSORS
-                operator const T*() const noexcept
-                {
-                    return &reinterpret_cast<const T*>(p)[idx];
-                }
-                operator const T*() const volatile noexcept
-                {
-                    return &reinterpret_cast<const T*>(p)[idx];
-                }
+                operator const T*() const noexcept;
+                operator const T*() const volatile noexcept;
             };
 
             // DATA
@@ -74,187 +60,358 @@ namespace hip
             std::ostream& operator<<(
                 std::ostream& os, const Scalar_accessor& x) noexcept
             {
-                if constexpr (std::is_scalar_v<decltype(x.data)>){
-                    return os << x.data;
-                }
-                else return os << x.data[idx];
+                return os << x.data[idx];
             }
 
             // CREATORS
             Scalar_accessor() = default;
-            Scalar_accessor(const Scalar_accessor& x) noexcept : data{}
-            {
-                data[idx] = x.data[idx];
-            }
+            Scalar_accessor(const Scalar_accessor& x) noexcept;
             Scalar_accessor(Scalar_accessor&&) = default;
             ~Scalar_accessor() = default;
 
-            // ACCESSORS
-            operator T() const noexcept { return data[idx]; }
-            operator T() const volatile noexcept { return data[idx]; }
-            Address operator&() const noexcept { return Address{this}; }
-
             // MANIPULATORS
-            Scalar_accessor& operator=(const Scalar_accessor& x) noexcept
-            {
-                data[idx] = x.data[idx];
-
-                return *this;
-            }
-            Scalar_accessor& operator=(T x) noexcept
-            {
-                data[idx] = x;
-
-                return *this;
-            }
-            volatile Scalar_accessor& operator=(T x) volatile noexcept
-            {
-                data[idx] = x;
-
-                return *this;
-            }
-
-            operator T&() noexcept
-            {
-                return reinterpret_cast<
-                    T (&)[sizeof(Vector) / sizeof(T)]>(data)[idx];
-            }
-            operator volatile T&() volatile noexcept
-            {
-                return reinterpret_cast<
-                    volatile T (&)[sizeof(Vector) / sizeof(T)]>(data)[idx];
-            }
-
-            Scalar_accessor& operator++() noexcept
-            {
-                ++data[idx];
-
-                return *this;
-            }
-            T operator++(int) noexcept
-            {
-                auto r{data[idx]};
-                ++data[idx];
-
-                return *this;
-            }
-
-            Scalar_accessor& operator--() noexcept
-            {
-                --data[idx];
-
-                return *this;
-            }
-            T operator--(int) noexcept
-            {
-                auto r{data[idx]};
-                --data[idx];
-
-                return *this;
-            }
-
-            // TODO: constraint should actually check for the unary operator.
-            template<
+            Scalar_accessor& operator=(const Scalar_accessor& x) noexcept;
+            Scalar_accessor& operator=(T x) noexcept;
+            volatile Scalar_accessor& operator=(T x) volatile noexcept;
+            operator T&() noexcept;
+            operator volatile T&() volatile noexcept;
+            Scalar_accessor& operator++() noexcept;
+            T operator++(int) noexcept;
+            Scalar_accessor& operator--() noexcept;
+            T operator--(int) noexcept;
+            template< // TODO: constraint should actually check for the unary operator.
                 typename U,
                 std::enable_if_t<
                     std::is_invocable_v<std::plus<>, T, U>>* = nullptr>
-            Scalar_accessor& operator+=(U x) noexcept
-            {
-                data[idx] += x;
-
-                return *this;
-            }
+            Scalar_accessor& operator+=(U x) noexcept;
             template<
                 typename U,
                 std::enable_if_t<
                     std::is_invocable_v<std::minus<>, T, U>>* = nullptr>
-            Scalar_accessor& operator-=(U x) noexcept
-            {
-                data[idx] -= x;
-
-                return *this;
-            }
-
+            Scalar_accessor& operator-=(U x) noexcept;
             template<
                 typename U,
                 std::enable_if_t<
                     std::is_invocable_v<std::multiplies<>, T, U>>* = nullptr>
-            Scalar_accessor& operator*=(U x) noexcept
-            {
-                data[idx] *= x;
-
-                return *this;
-            }
+            Scalar_accessor& operator*=(U x) noexcept;
             template<
                 typename U,
                 std::enable_if_t<
                     std::is_invocable_v<std::divides<>, T, U>>* = nullptr>
-            Scalar_accessor& operator/=(U x) noexcept
-            {
-                data[idx] /= x;
-
-                return *this;
-            }
+            Scalar_accessor& operator/=(U x) noexcept;
             template<
                 typename U = T,
                 std::enable_if_t<
                     std::is_invocable_v<std::modulus<>, T, U>>* = nullptr>
-            Scalar_accessor& operator%=(U x) noexcept
-            {
-                data[idx] %= x;
-
-                return *this;
-            }
-
+            Scalar_accessor& operator%=(U x) noexcept;
             template<
                 typename U = T,
                 std::enable_if_t<std::is_integral_v<U>>* = nullptr>
-            Scalar_accessor& operator>>=(U x) noexcept
-            {
-                data[idx] >>= x;
-
-                return *this;
-            }
+            Scalar_accessor& operator>>=(U x) noexcept;
             template<
                 typename U = T,
                 std::enable_if_t<std::is_integral_v<U>>* = nullptr>
-            Scalar_accessor& operator<<=(U x) noexcept
-            {
-                data[idx] <<= x;
-
-                return *this;
-            }
+            Scalar_accessor& operator<<=(U x) noexcept;
             template<
                 typename U = T,
                 std::enable_if_t<
                     std::is_invocable_v<std::bit_and<>, T, U>>* = nullptr>
-            Scalar_accessor& operator&=(U x) noexcept
-            {
-                data[idx] &= x;
-
-                return *this;
-            }
+            Scalar_accessor& operator&=(U x) noexcept;
             template<
                 typename U = T,
                 std::enable_if_t<
                     std::is_invocable_v<std::bit_or<>, T, U>>* = nullptr>
-            Scalar_accessor& operator|=(U x) noexcept
-            {
-                data[idx] |= x;
-
-                return *this;
-            }
+            Scalar_accessor& operator|=(U x) noexcept;
             template<
                 typename U = T,
                 std::enable_if_t<
                     std::is_invocable_v<std::bit_xor<>, T, U>>* = nullptr>
-            Scalar_accessor& operator^=(U x) noexcept
-            {
-                data[idx] ^= x;
+            Scalar_accessor& operator^=(U x) noexcept;
 
-                return *this;
-            }
+            // ACCESSORS
+            operator T() const noexcept;
+            operator T() const volatile noexcept;
+            Address operator&() const noexcept;
         };
+
+        // NESTED TYPES
+        // BEGIN STRUCT SCALAR_ACCESSOR::ADDRESS
+        // MANIPULATORS
+        template<typename T, typename V, std::uint32_t i>
+        inline
+        Scalar_accessor<T, V, i>::Address::operator T*() noexcept
+        {
+            return &reinterpret_cast<T*>(const_cast<Scalar_accessor*>(p))[i];
+        }
+
+        template<typename T, typename V, std::uint32_t i>
+        inline
+        Scalar_accessor<T, V, i>::Address::operator T*() volatile noexcept
+        {
+            return &reinterpret_cast<T*>(const_cast<Scalar_accessor*>(p))[i];
+        }
+
+        // ACCESSORS
+        template<typename T, typename V, std::uint32_t i>
+        inline
+        Scalar_accessor<T, V, i>::Address::operator const T*() const noexcept
+        {
+            return &reinterpret_cast<const T*>(p)[i];
+        }
+
+        template<typename T, typename V, std::uint32_t i>
+        inline
+        Scalar_accessor<T, V, i>::Address::
+            operator const T*() const volatile noexcept
+        {
+            return &reinterpret_cast<const T*>(p)[i];
+        }
+        // END STRUCT SCALAR_ACCESSOR::ADDRESS
+
+        // CREATORS
+        template<typename T, typename V, std::uint32_t i>
+        inline
+        Scalar_accessor<T, V, i>::Scalar_accessor(
+            const Scalar_accessor& x) noexcept : data{}
+        {
+            data[i] = x.data[i];
+        }
+
+
+        // MANIPULATORS
+        template<typename T, typename V, std::uint32_t i>
+        inline
+        Scalar_accessor<T, V, i>& Scalar_accessor<T, V, i>::operator=(
+            const Scalar_accessor& x) noexcept
+        {
+            data[i] = x.data[i];
+
+            return *this;
+        }
+
+        template<typename T, typename V, std::uint32_t i>
+        inline
+        Scalar_accessor<T, V, i>& Scalar_accessor<T, V, i>::operator=(
+            T x) noexcept
+        {
+            data[i] = x;
+
+            return *this;
+        }
+
+        template<typename T, typename V, std::uint32_t i>
+        inline
+        volatile Scalar_accessor<T, V, i>& Scalar_accessor<T, V, i>::operator=(
+            T x) volatile noexcept
+        {
+            data[i] = x;
+
+            return *this;
+        }
+
+        template<typename T, typename V, std::uint32_t i>
+        inline
+        Scalar_accessor<T, V, i>::operator T&() noexcept
+        {
+            return reinterpret_cast<T (&)[sizeof(V) / sizeof(T)]>(data)[i];
+        }
+
+        template<typename T, typename V, std::uint32_t i>
+        inline
+        Scalar_accessor<T, V, i>::operator volatile T&() volatile noexcept
+        {
+            return reinterpret_cast<
+                volatile T (&)[sizeof(V) / sizeof(T)]>(data)[i];
+        }
+
+        template<typename T, typename V, std::uint32_t i>
+        inline
+        Scalar_accessor<T, V, i>& Scalar_accessor<T, V, i>::
+            operator++() noexcept
+        {
+            ++data[i];
+
+            return *this;
+        }
+
+        template<typename T, typename V, std::uint32_t i>
+        inline
+        T Scalar_accessor<T, V, i>::operator++(int) noexcept
+        {
+            auto r{data[i]};
+            ++data[i];
+
+            return *this;
+        }
+
+        template<typename T, typename V, std::uint32_t i>
+        inline
+        Scalar_accessor<T, V, i>& Scalar_accessor<T, V, i>::
+            operator--() noexcept
+        {
+            --data[i];
+
+            return *this;
+        }
+
+        template<typename T, typename V, std::uint32_t i>
+        inline
+        T Scalar_accessor<T, V, i>::operator--(int) noexcept
+        {
+            auto r{data[i]};
+            --data[i];
+
+            return *this;
+        }
+
+        template<typename T, typename V, std::uint32_t i>
+        template<
+            typename U,
+                std::enable_if_t<std::is_invocable_v<std::plus<>, T, U>>*>
+        inline
+        Scalar_accessor<T, V, i>& Scalar_accessor<T, V, i>::operator+=(
+            U x) noexcept
+        {
+            data[i] += x;
+
+            return *this;
+        }
+
+        template<typename T, typename V, std::uint32_t i>
+        template<
+            typename U,
+            std::enable_if_t<std::is_invocable_v<std::minus<>, T, U>>*>
+        inline
+        Scalar_accessor<T, V, i>& Scalar_accessor<T, V, i>::operator-=(
+            U x) noexcept
+        {
+            data[i] -= x;
+
+            return *this;
+        }
+
+        template<typename T, typename V, std::uint32_t i>
+        template<
+            typename U,
+            std::enable_if_t<std::is_invocable_v<std::multiplies<>, T, U>>*>
+        inline
+        Scalar_accessor<T, V, i>& Scalar_accessor<T, V, i>::operator*=(
+            U x) noexcept
+        {
+            data[i] *= x;
+
+            return *this;
+        }
+
+        template<typename T, typename V, std::uint32_t i>
+        template<
+            typename U,
+            std::enable_if_t<std::is_invocable_v<std::divides<>, T, U>>*>
+        inline
+        Scalar_accessor<T, V, i>& Scalar_accessor<T, V, i>::operator/=(
+            U x) noexcept
+        {
+            data[i] /= x;
+
+            return *this;
+        }
+
+        template<typename T, typename V, std::uint32_t i>
+        template<
+            typename U,
+            std::enable_if_t<std::is_invocable_v<std::modulus<>, T, U>>*>
+        inline
+        Scalar_accessor<T, V, i>& Scalar_accessor<T, V, i>::operator%=(
+            U x) noexcept
+        {
+            data[i] %= x;
+
+            return *this;
+        }
+
+        template<typename T, typename V, std::uint32_t i>
+        template<typename U, std::enable_if_t<std::is_integral_v<U>>*>
+        inline
+        Scalar_accessor<T, V, i>& Scalar_accessor<T, V, i>::operator>>=(
+            U x) noexcept
+        {
+            data[i] >>= x;
+
+            return *this;
+        }
+
+        template<typename T, typename V, std::uint32_t i>
+        template<typename U, std::enable_if_t<std::is_integral_v<U>>*>
+        inline
+        Scalar_accessor<T, V, i>& Scalar_accessor<T, V, i>::operator<<=(
+            U x) noexcept
+        {
+            data[i] <<= x;
+
+            return *this;
+        }
+
+        template<typename T, typename V, std::uint32_t i>
+        template<
+            typename U,
+            std::enable_if_t<std::is_invocable_v<std::bit_and<>, T, U>>*>
+        inline
+        Scalar_accessor<T, V, i>& Scalar_accessor<T, V, i>::operator&=(
+            U x) noexcept
+        {
+            data[i] &= x;
+
+            return *this;
+        }
+
+        template<typename T, typename V, std::uint32_t i>
+        template<
+            typename U,
+            std::enable_if_t<std::is_invocable_v<std::bit_or<>, T, U>>*>
+        inline
+        Scalar_accessor<T, V, i>& Scalar_accessor<T, V, i>::operator|=(
+            U x) noexcept
+        {
+            data[i] |= x;
+
+            return *this;
+        }
+
+        template<typename T, typename V, std::uint32_t i>
+        template<
+            typename U,
+            std::enable_if_t<std::is_invocable_v<std::bit_xor<>, T, U>>*>
+        inline
+        Scalar_accessor<T, V, i>& Scalar_accessor<T, V, i>::operator^=(
+            U x) noexcept
+        {
+            data[i] ^= x;
+
+            return *this;
+        }
+
+        // ACCESSORS
+        template<typename T, typename V, std::uint32_t i>
+        inline
+        Scalar_accessor<T, V, i>::operator T() const noexcept
+        {
+            return data[i];
+        }
+
+        template<typename T, typename V, std::uint32_t i>
+        inline
+        Scalar_accessor<T, V, i>::operator T() const volatile noexcept
+        {
+            return data[i];
+        }
+
+        template<typename T, typename V, std::uint32_t i>
+        inline
+        typename Scalar_accessor<T, V, i>::Address Scalar_accessor<T, V, i>::
+            operator&() const noexcept
+        {
+            return Address{this};
+        }
         // END STRUCT SCALAR_ACCESSOR
 
         template<typename, std::uint32_t>
