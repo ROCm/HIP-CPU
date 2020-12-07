@@ -73,7 +73,6 @@ if (hip_cpu_rt_INSTALL_LIBRARY)
     install(
         DIRECTORY
             ${PROJECT_SOURCE_DIR}/external/moodycamel DESTINATION external)
-    install(DIRECTORY ${PROJECT_SOURCE_DIR}/external/ssm DESTINATION external)
     install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/hip DESTINATION include)
     install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/include DESTINATION src)
 endif ()
