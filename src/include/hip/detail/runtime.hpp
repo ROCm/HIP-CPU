@@ -20,6 +20,7 @@
 #include <future>
 #include <iterator>
 #include <limits>
+#include <random>
 #include <thread>
 #include <utility>
 #include <vector>
@@ -53,6 +54,8 @@ namespace hip
             // IMPLEMENTATION - STATICS
             static
             hipError_t& last_error_() noexcept;
+            static
+            void pause_or_yield_() noexcept;
             static
             std::thread& processor_();
             static
@@ -107,6 +110,22 @@ namespace hip
         }
 
         inline
+        void Runtime::pause_or_yield_() noexcept
+        {
+            #if defined(YieldProcessor)
+                return YieldProcessor();
+            #elif defined(__has_builtin)
+                #if __has_builtin(__builtin_ia32_pause)
+                    return __builtin_ia32_pause();
+                #else
+                    return std::this_thread::yield();
+                #endif
+            #else
+                return std::this_thread::yield();
+            #endif
+        }
+
+        inline
         std::thread& Runtime::processor_()
         {
             static std::thread r{[]() {
@@ -123,22 +142,22 @@ namespace hip
                         if (poison) return;
                     }
 
-                    wait_all_streams_();
+                    const auto backoff{
+                        !std::empty(t) ||
+                        std::any_of(
+                            std::cbegin(streams_),
+                            std::cend(streams_),
+                            [](auto&& x) { return x.size_approx(); })};
 
-                    // TODO: add backoff
-                    // if (std::empty(t)) {
-                    //     #if defined(YieldProcessor)
-                    //         YieldProcessor();
-                    //     #elif defined(__has_builtin)
-                    //         #if __has_builtin(__builtin_ia32_pause)
-                    //             __builtin_ia32_pause();
-                    //         #else
-                    //             std::this_thread::yield();
-                    //         #endif
-                    //     #else
-                    //         std::this_thread::yield();
-                    //     #endif
-                    // }
+                    if (!backoff) wait_all_streams_();
+                    else {
+                        static std::minstd_rand g{std::random_device{}()};
+                        static std::uniform_int<std::uint32_t> d{3, 1031};
+
+                        for (auto i = 0u, n = d(g); i != n; ++i) {
+                            pause_or_yield_();
+                        }
+                    }
                 } while (true);
             }};
 
