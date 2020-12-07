@@ -15,16 +15,10 @@ _b**a**d **bu**gs lurking_.
 
 HIP CPU Runtime tutorials per compiler and platform
 
-* [Clang on Android](/docs/clang_android.md)
-* [Clang on FreeBSD](/docs/clang_fbsd.md)
-* [GCC on FreeBSD](/docs/gcc_fbsd.md)
-* [Clang on Linux](/docs/clang_linux.md)
 * [GCC on Linux](/docs/gcc_linux.md)
-* [Clang on MacOS](/docs/clang_macos.md)
 * [GCC on MacOS](/docs/gcc_macos.md)
-* [Clang on Windows Subsystem for Linux (WSL)](/docs/clang_wsl.md)
-* [GCC on Windows Subsystem for Linux (WSL)](/docs/gcc_wsl.md)
 * [Microsoft C++ Compiler (MSVC) on Windows](/docs/msvc.md)
+* Others (TODO)
 
 ## Quick Links ##
 
