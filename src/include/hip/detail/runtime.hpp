@@ -152,7 +152,8 @@ namespace hip
                     if (!backoff) wait_all_streams_();
                     else {
                         static std::minstd_rand g{std::random_device{}()};
-                        static std::uniform_int<std::uint32_t> d{3, 1031};
+                        static std::uniform_int_distribution<std::uint32_t> d{
+                            3, 1031};
 
                         for (auto i = 0u, n = d(g); i != n; ++i) {
                             pause_or_yield_();
