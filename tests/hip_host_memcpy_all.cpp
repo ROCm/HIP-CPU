@@ -254,7 +254,8 @@ HostMemory<T>::~HostMemory()
 };
 
 inline
-unsigned setNumBlocks(unsigned blocksPerCU, unsigned threadsPerBlock, size_t N)
+unsigned setNumBlocks(
+    unsigned blocksPerCU, unsigned threadsPerBlock, unsigned N)
 {
     int device;
     REQUIRE(hipGetDevice(&device) == hipSuccess);

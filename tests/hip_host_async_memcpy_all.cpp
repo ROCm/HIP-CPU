@@ -71,7 +71,7 @@ void addK(T* A, T K, size_t numElements)
 
 inline
 unsigned int setNumBlocks(
-    unsigned int blocksPerCU, unsigned int threadsPerBlock, size_t N)
+    unsigned int blocksPerCU, unsigned int threadsPerBlock, unsigned int N)
 {
     int device{};
     hipGetDevice(&device);
