@@ -775,7 +775,7 @@ uint64_t solve_gpu(int N, int M)
     const auto blockCount = (length + threadsPerBlock - 1) / threadsPerBlock;
     hipLaunchKernelGGL(
         kernel,
-        dim3(blockCount),
+        dim3(static_cast<uint32_t>(blockCount)),
         dim3(threadsPerBlock),
         0,
         nullptr,
@@ -837,7 +837,7 @@ uint64_t solve_gpu_ver2(int N, int M)
     const auto blockCount = (length + threadsPerBlock - 1) / threadsPerBlock;
     hipLaunchKernelGGL(
         kernel_ver2,
-        dim3(blockCount),
+        dim3(static_cast<std::uint32_t>(blockCount)),
         dim3(threadsPerBlock),
         0,
         nullptr,

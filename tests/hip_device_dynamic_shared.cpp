@@ -98,7 +98,7 @@ TEMPLATE_TEST_CASE(
         testExternSharedKernel,
         dim3(blocks),
         dim3(threads_per_block),
-        groupMemBytes,
+        static_cast<std::uint32_t>(groupMemBytes),
         0,
         A_d,
         B_d,

@@ -19,7 +19,7 @@ endif ()
 include(GNUInstallDirs)
 
 target_include_directories(
-    ${PROJECT_NAME} INTERFACE
+    ${PROJECT_NAME} SYSTEM INTERFACE
         $<BUILD_INTERFACE:${$PROJECT_NAME}_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
@@ -73,7 +73,6 @@ if (hip_cpu_rt_INSTALL_LIBRARY)
     install(
         DIRECTORY
             ${PROJECT_SOURCE_DIR}/external/moodycamel DESTINATION external)
-    install(DIRECTORY ${PROJECT_SOURCE_DIR}/external/ssm DESTINATION external)
     install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/hip DESTINATION include)
     install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/include DESTINATION src)
 endif ()
