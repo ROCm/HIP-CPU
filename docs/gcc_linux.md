@@ -1,8 +1,8 @@
-# Building the HIP CPU Runtime and Client Applications with Microsoft C++ #
+# Building the HIP CPU Runtime and Client Applications GCC C++ #
 
-This tutorial shows how to use the Microsoft Visual C++ Compiler on Windows to
+This tutorial shows how to use the GCC C++ Compiler on Linux to
 build the HIP CPU Runtime. It does not delve into the details of HIP, the
-C++ language or the Microsoft C++ toolset.
+C++ language, the GCC toolset or the Linux ecosystem.
 
 If you encounter any difficulties, [please create an issue](https://github.com/ROCm-Developer-Tools/HIP-CPU/issues/new/choose)
 for this tutorial.
