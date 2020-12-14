@@ -11,6 +11,10 @@
 - [Can I use **_insert CPU library here_**?](#can-i-use-insert-cpu-library-here)
 - [I have a question and it is not answered here!](#i-have-a-question-and-it-is-not-answered-here)
 
+## What is this ##
+
+Please see @jlgreathouse's [answer to Issue #1](https://github.com/ROCm-Developer-Tools/HIP-CPU/issues/1#issuecomment-744743737).
+
 ## Who owns this project? ##
 
 You, alongside every other past, present and future contributor:) Whilst initial
