@@ -1,5 +1,6 @@
 # Frequently Asked Questions #
 
+- [What is this?](#what-is-this)
 - [Who owns this project?](#who-owns-this-project)
 - [Does it require an AMD CPU?](#does-it-require-an-amd-cpu)
 - [Do I need the HIP-CPU-Compiler?](#do-i-need-the-hip-cpu-compiler)
@@ -11,7 +12,7 @@
 - [Can I use **_insert CPU library here_**?](#can-i-use-insert-cpu-library-here)
 - [I have a question and it is not answered here!](#i-have-a-question-and-it-is-not-answered-here)
 
-## What is this ##
+## What is this? ##
 
 Please see @jlgreathouse's [answer to Issue #1](https://github.com/ROCm-Developer-Tools/HIP-CPU/issues/1#issuecomment-744743737).
 
