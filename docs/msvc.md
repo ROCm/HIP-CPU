@@ -66,3 +66,6 @@ To use any of the HIP public interfaces include the `hip/hip_runtime.h` header.
 - If you are not working with CMake, add either
   `/path_where_you_cloned_the_hip_cpu_runtime/include` or, if you installed it,
   `/path_where_you_installed_the_hip_cpu_runtime/include` to your include path.
+- For potentially enhanced vectorisation, consider adding `/openmp:experimental`
+  to your compiler flags, as this will allow the back-end to (eventually) be
+  more aggressive in vectorising HIP code.
