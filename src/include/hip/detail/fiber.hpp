@@ -9,7 +9,8 @@
 #endif
 
 #if defined(_MSC_VER)
-    #pragma warning(push, 0)
+    #pragma warning(push)
+    #pragma warning(disable:4706)
 #else
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wparentheses"
