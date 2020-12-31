@@ -44,6 +44,7 @@ To successfully complete this tutorial, the following steps are necessary:
 	 ```bash
 	 brew install tbb
 	 ```
+	 
 2. Install latest CMake
    - Homebrew makes this super easy also:
      ```bash
