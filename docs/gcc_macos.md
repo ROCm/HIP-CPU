@@ -1,8 +1,8 @@
 # Building the HIP CPU Runtime and Client Applications GCC C++ #
 
-This tutorial shows how to use the GCC C++ Compiler on Linux to
+This tutorial shows how to use the GCC C++ Compiler on MacOS to
 build the HIP CPU Runtime. It does not delve into the details of HIP, the
-C++ language, the GCC toolset or the Linux ecosystem.
+C++ language, the GCC toolset or the MacOS ecosystem.
 
 If you encounter any difficulties, [please create an issue](https://github.com/ROCm-Developer-Tools/HIP-CPU/issues/new/choose)
 for this tutorial.
@@ -11,47 +11,62 @@ for this tutorial.
 
 To successfully complete this tutorial, the following steps are necessary:
 
-1. Install [Intel TBB](https://github.com/oneapi-src/oneTBB):
-   - At this time this is a pre-requisite for the Parallel Algorithms component
-     of the C++ Standard Library implementations available in Linux;
-   - In general it should be available from via your distro's package manager
-     - Consider Ubuntu as an example:
-
-       ```bash
-       sudo apt-get install libtbb-dev
-       ```
-
-   - Alternatively, consider following the [build and install instructions for the latest version](https://github.com/oneapi-src/oneTBB/blob/master/cmake/README.md).
+1. Install [Homebrew](https://brew.sh):
+   - LLVM at the moment does not have parallel algorithm support. However,
+     it is available in GNU G++. Homebrew provides a straightforward package
+	 manager for MacOS, which allows both the GNU G++ compiler, and Intel
+	 TBB on which HIP-CPU depends. One can also consider other package managers
+	 such as MacPorts, but we will focus on Homebrew here.
+	 
+   - go to [The Homebrew Site](https://brew.sh) and follow the installation 
+     instructions there:
+	 ```bash
+	 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+	 ```
+	 You may or may not get messages about needing to install the XCode command line
+	 utilities if these are not yet installed. Follow the appropriate installation
+	 instructions on the Homebrew site.
+	 
+2. Install [GNU G++][(https://gcc.gnu.org)
+	 - Using Homebrew:
+	   ```bash
+	   brew install gcc@10
+	   ```
+   - to avoid confusion with the system GCC (which is actually Clang), homebrew will name the
+     executables as gcc-10 and g++-10
+	 
+3. Install [Intel TBB](https://github.com/oneapi-src/oneTBB):
+   - At this time this is a pre-requisite for CPU-HIP (makefiles depend on it)
+     as it used to be a prerequisite for parallel algorithms for G++ on Linux.
+	 Under MacOS, with the Homebrew installation, I successfully compiled a simple
+	 parallel C++-17 parallel algorithm test from [here](https://solarianprogrammer.com/2019/05/09/cpp-17-stl-parallel-algorithms-gcc-intel-tbb-linux-macos/)
+	 without TBB. However it is very easy to install using Homebrew:
+	 ````bash
+	 brew install tbb
+	 ```
 2. Install latest CMake
-   - In general it should be available from via your distro's package manager
-     - Consider Ubuntu as an example:
-
+   - Homebrew makes this super easy also:
      ```bash
-     sudo apt-get install cmake
+     brew install cmake
      ```
 
    - Alternatively, [download and execute the installer](https://cmake.org/download/).
 3. Install Git
-   - [Follow the instructions](https://git-scm.com/download/linux) that apply
-     to your environment.
-
+   - This can be done from Homebrew:
+     ```bash
+     brew install git
+	 ```
+   - alternatively a Git client can be installed from [The Git Website](https://git-scm.com)`
+  
+Ensure that `/usr/local/bin` is on your PATH -- this is where Homebrew installs all its tools.
+ 
 ## Ensure GCC is Installed ##
 
 To verify whether GCC is installed and of a sufficiently recent version, open a
 Terminal window and enter the following command:
 
 ```bash
-gcc -v
-```
-
-If it is not installed, or if it is a version older than 9, you must install it
-and the corresponding version of the [GNU C++ Library](https://gcc.gnu.org/onlinedocs/libstdc++/)
-using your distro's package manager. Consider Ubuntu 20.04 or newer as an
-example:
-
-```bash
-sudo apt-get update
-sudo apt-get install build-essential
+gcc-10 -v
 ```
 
 ## Clone and build the HIP CPU Runtime ##
@@ -61,8 +76,15 @@ git clone https://github.com/ROCm-Developer-Tools/HIP-CPU.git
 cd HIP-CPU
 mkdir build
 cd build
-cmake ../
+cmake -DCMAKE_CXX_COMPILER=g++-10 ,,/
 cmake --build ./
+```
+
+If you want to later install the HIP CPU Runtime in non standard folder you can
+specify the install location to the `cmake` command 
+
+```bash
+cmake -DCMAKE_CXX_COMPILER=g++-10 -DCMAKE_INSTALL_PREFIX=<location to install the runtime> 
 ```
 
 ## **OPTIONAL** Install the HIP CPU Runtime ##
