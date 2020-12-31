@@ -41,7 +41,7 @@ To successfully complete this tutorial, the following steps are necessary:
 	 Under MacOS, with the Homebrew installation, I successfully compiled a simple
 	 parallel C++-17 parallel algorithm test from [here](https://solarianprogrammer.com/2019/05/09/cpp-17-stl-parallel-algorithms-gcc-intel-tbb-linux-macos/)
 	 without TBB. However it is very easy to install using Homebrew:
-	 ````bash
+	 ```bash
 	 brew install tbb
 	 ```
 2. Install latest CMake
