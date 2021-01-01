@@ -36,7 +36,7 @@ To successfully complete this tutorial, the following steps are necessary:
      executables as gcc-10 and g++-10
 	 
 3. Install [Intel TBB](https://github.com/oneapi-src/oneTBB):
-   - At this time this is a pre-requisite for CPU-HIP (makefiles depend on it)
+   - At this time this is a pre-requisite for HIP-CPU(makefiles depend on it)
      as it used to be a prerequisite for parallel algorithms for G++ on Linux.
 	 Under MacOS, with the Homebrew installation, I successfully compiled a simple
 	 parallel C++-17 parallel algorithm test from [here](https://solarianprogrammer.com/2019/05/09/cpp-17-stl-parallel-algorithms-gcc-intel-tbb-linux-macos/)
