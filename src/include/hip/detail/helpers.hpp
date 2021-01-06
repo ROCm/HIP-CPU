@@ -49,7 +49,10 @@
                     T r;
                     #if defined(__has_builtin)
                         #if __has_builtin(__builtin_memcpy) || defined(__GNUC__)
-                            __builtin_memcpy(&r, &v, sizeof(T));
+                            __builtin_memcpy(
+                                reinterpret_cast<void*>(&r),
+                                reinterpret_cast<const void*>(&v),
+                                sizeof(T));
                         #else
                             std::memcpy(&r, &v, sizeof(T));
                         #endif
