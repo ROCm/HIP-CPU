@@ -34,16 +34,28 @@
                     sizeof(T) == sizeof(U) &&
                     std::is_trivially_copyable_v<T> &&
                     std::is_trivially_copyable_v<U>>* = nullptr>
+            #if defined(__has_builtin)
+                #if __has_builtin(__builtin_memcpy) || __has_builtin(__builtin_bit_cast)
+                    constexpr
+                #endif
+            #endif
             inline
             T bit_cast(const U& x) noexcept
             {
                 [[maybe_unused]]
                 constexpr auto bc{[](auto&& v) constexpr noexcept {
-                     // TODO: incorrect, e.g. half_float half is not trivial.
                     static_assert(std::is_nothrow_default_constructible_v<T>);
 
                     T r;
-                    std::memcpy(&r, &v, sizeof(T));
+                    #if defined(__has_builtin)
+                        #if __has_builtin(__builtin_memcpy)
+                            __builtin_memcpy(&r, &v, sizeof(T));
+                        #else
+                            std::memcpy(&r, &v, sizeof(T));
+                        #endif
+                    #else
+                        std::memcpy(&r, &v, sizeof(T));
+                    #endif
 
                     return r;
                 }};
