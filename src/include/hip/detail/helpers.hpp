@@ -53,6 +53,8 @@
                         #else
                             std::memcpy(&r, &v, sizeof(T));
                         #endif
+                    #elif defined(__GNUC__)
+                        __builtin_memcpy(&r, &v, sizeof(T));
                     #else
                         std::memcpy(&r, &v, sizeof(T));
                     #endif
