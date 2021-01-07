@@ -82,7 +82,7 @@ cmake --build ./
 ```
 
 If you want to later install the HIP CPU Runtime in non standard folder you can
-specify the install location to the `cmake` command 
+specify the install location to the `cmake` command. Make sure to run the command on the branch that has the top-most CMakeLists.txt file
 
 ```bash
 cmake -DCMAKE_CXX_COMPILER=g++-10 -DCMAKE_INSTALL_PREFIX=<location to install the runtime> 
