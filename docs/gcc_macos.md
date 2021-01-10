@@ -77,7 +77,7 @@ git clone https://github.com/ROCm-Developer-Tools/HIP-CPU.git
 cd HIP-CPU
 mkdir build
 cd build
-cmake -DCMAKE_CXX_COMPILER=g++-10 ,,/
+cmake -DCMAKE_CXX_COMPILER=g++-10 ../
 cmake --build ./
 ```
 
