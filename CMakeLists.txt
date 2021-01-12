@@ -29,7 +29,15 @@ if (NOT ${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
 
     target_compile_options(${PROJECT_NAME} INTERFACE -fopenmp-simd)
     target_link_libraries(
-        ${PROJECT_NAME} INTERFACE ${CMAKE_DL_LIBS} Threads::Threads tbb)
+        ${PROJECT_NAME} INTERFACE ${CMAKE_DL_LIBS} Threads::Threads)
+
+    include(CheckCXXSymbolExists)
+    set(CMAKE_REQUIRED_FLAGS "-std=c++17")
+    check_cxx_symbol_exists(__PSTL_PAR_BACKEND_TBB "cstddef" STL_DEPENDS_ON_TBB)
+    if(STL_DEPENDS_ON_TBB)
+        target_link_libraries(
+            ${PROJECT_NAME} INTERFACE TBB::tbb)
+    endif()
 else ()
     target_compile_options(${PROJECT_NAME} INTERFACE /openmp:experimental)
 endif ()
