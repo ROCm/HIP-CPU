@@ -338,6 +338,13 @@ hipError_t hipGetSymbolAddress(void** out_ptr, const void* symbol) noexcept
     return hip::detail::symbol_address(out_ptr, symbol);
 }
 
+template<typename T>
+inline
+hipError_t hipGetSymbolSize(std::size_t* size, const T* symbol) noexcept
+{
+    return hip::detail::symbol_size(size, symbol);
+}
+
 inline
 hipError_t hipGetLastError() noexcept
 {
@@ -457,6 +464,30 @@ hipError_t hipMemcpyDtoH(void* dst, const void* src, std::size_t size)
 }
 
 inline
+hipError_t hipMemcpyFromSymbol(
+    void* dst,
+    const void* src,
+    std::size_t byte_cnt,
+    std::size_t offset = 0,
+    hipMemcpyKind kind = hipMemcpyDeviceToHost)
+{
+    return hip::detail::copy_to_symbol(dst, src, byte_cnt, offset, kind);
+}
+
+inline
+hipError_t hipMemcpyFromSymbolAsync(
+    void* dst,
+    const void* src,
+    std::size_t byte_cnt,
+    std::size_t offset = 0,
+    hipMemcpyKind kind = hipMemcpyDeviceToHost,
+    hipStream_t stream = nullptr)
+{
+    return hip::detail::copy_to_symbol_async(
+        dst, src, byte_cnt, offset, kind, stream);
+}
+
+inline
 hipError_t hipMemcpyHtoD(void* dst, const void* src, std::size_t size)
 {
     return hip::detail::copy(dst, src, size, hipMemcpyHostToDevice);
@@ -473,6 +504,20 @@ hipError_t hipMemcpyToSymbol(
     return hip::detail::copy_to_symbol(dst, src, byte_cnt, offset, kind);
 }
 
+template<typename T>
+[[deprecated("This is a HIP specific extension and thus non-portable.")]]
+inline
+hipError_t hipMemcpyToSymbol(
+    T& dst,
+    const void* src,
+    std::size_t byte_cnt,
+    std::size_t offset = 0,
+    hipMemcpyKind kind = hipMemcpyHostToDevice)
+{
+    return hipMemcpyToSymbol(
+        reinterpret_cast<void*>(&dst), src, byte_cnt, offset, kind);
+}
+
 inline
 hipError_t hipMemcpyToSymbolAsync(
     void* dst,
@@ -484,6 +529,21 @@ hipError_t hipMemcpyToSymbolAsync(
 {
     return hip::detail::copy_to_symbol_async(
         dst, src, byte_cnt, offset, kind, stream);
+}
+
+template<typename T>
+[[deprecated("This is a HIP specific extension and thus non-portable.")]]
+inline
+hipError_t hipMemcpyToSymbolAsync(
+    T& dst,
+    const void* src,
+    std::size_t byte_cnt,
+    std::size_t offset = 0,
+    hipMemcpyKind kind = hipMemcpyHostToDevice,
+    hipStream_t stream = nullptr)
+{
+    return hipMemcpyToSymbolAsync(
+        reinterpret_cast<void*>(&dst), src, byte_cnt, offset, kind, stream);
 }
 
 inline

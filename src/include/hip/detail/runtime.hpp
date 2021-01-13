@@ -142,9 +142,11 @@ namespace hip
                         if (poison) return;
                     }
 
+                    // wait_all_streams_();
+
                     const auto backoff{
-                        !std::empty(t) ||
-                        std::any_of(
+                        std::empty(t) &&
+                        std::none_of(
                             std::cbegin(streams_),
                             std::cend(streams_),
                             [](auto&& x) { return x.size_approx(); })};

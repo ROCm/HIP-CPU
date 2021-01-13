@@ -730,6 +730,17 @@ namespace hip
             return hipSuccess;
         }
 
+        template<typename T>
+        inline
+        hipError_t symbol_size(std::size_t* sz, const T* s) noexcept
+        {
+            if (!sz || !s) return hipErrorInvalidValue;
+
+            *sz = sizeof(T);
+
+            return hipSuccess;
+        }
+
         inline
         hipError_t synchronize_device()
         {

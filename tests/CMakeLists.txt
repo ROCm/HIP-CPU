@@ -40,6 +40,7 @@ add_executable(
         hip_device_ballot.cpp
         hip_device_clock.cpp
         hip_device_clz.cpp
+        hip_device_constant.cpp
         hip_device_dynamic_shared.cpp
         hip_device_dynamic_shared_2.cpp
         hip_device_ffs.cpp
@@ -53,6 +54,7 @@ add_executable(
         hip_device_popc.cpp
         hip_device_printf.cpp
         hip_device_std_complex.cpp
+        hip_device_symbol.cpp
         hip_device_synchronize.cpp
         hip_get_device.cpp
         hip_host_async_memcpy_all.cpp
@@ -79,6 +81,8 @@ add_test(NAME "legacy_atomic" COMMAND legacy_tests [device][atomic])
 add_test(NAME "legacy_ballot" COMMAND legacy_tests [device][ballot])
 add_test(NAME "legacy_clock" COMMAND legacy_tests [device][clock])
 add_test(NAME "legacy_clz" COMMAND legacy_tests [device][clz])
+add_test(NAME "legacy___constant__" COMMAND legacy_tests [device][constant])
+add_test(NAME "legacy___device__" COMMAND legacy_tests [device][symbol])
 add_test(
     NAME "legacy_Dynamic_SharedMem_I"
     COMMAND legacy_tests [device][dynamic_shared_1])
