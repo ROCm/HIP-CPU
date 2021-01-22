@@ -202,7 +202,9 @@ namespace hip
 
             barrier(Tile::this_tile());
 
-            return (src < 0) ? x : Tile::scratchpad<T>()[(tidx / w * w) + src];
+            const auto sidx{(tidx / w * w) + src};
+
+            return (src < 0 || sidx >= w) ? x : Tile::scratchpad<T>()[sidx];
         }
 
         template<
