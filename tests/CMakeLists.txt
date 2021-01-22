@@ -53,6 +53,7 @@ add_executable(
         hip_device_memset.cpp
         hip_device_popc.cpp
         hip_device_printf.cpp
+        hip_device_shfl.cpp
         hip_device_std_complex.cpp
         hip_device_symbol.cpp
         hip_device_synchronize.cpp
@@ -105,6 +106,7 @@ add_test(
     NAME "legacy_hipDeviceMemset" COMMAND legacy_tests [device][hipMemset])
 add_test(NAME "legacy_popc" COMMAND legacy_tests [device][popc])
 add_test(NAME "legacy_printf" COMMAND legacy_tests [device][printf])
+add_test(NAME "legacy_shfl" COMMAND legacy_tests [device][shfl])
 add_test(
     NAME "legacy_std_complex" COMMAND legacy_tests [device][std::complex])
 add_test(

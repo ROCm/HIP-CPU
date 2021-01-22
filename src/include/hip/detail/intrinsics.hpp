@@ -202,7 +202,7 @@ namespace hip
 
             barrier(Tile::this_tile());
 
-            return Tile::scratchpad<T>()[(tidx / w * w) + src];
+            return (src < 0) ? x : Tile::scratchpad<T>()[(tidx / w * w) + src];
         }
 
         template<
@@ -211,14 +211,16 @@ namespace hip
                 (std::is_integral_v<T> || std::is_floating_point_v<T>) &&
                 (sizeof(T) >= 4 && sizeof(T) <= 8)>* = nullptr>
         inline
-        T shuffle_down(T x, std::int32_t dx, std::int32_t w = warpSize) noexcept
-        {
+        T shuffle_down(T x, std::int32_t dx, std::int32_t w) noexcept
+        {   // TODO: incorrect with large negative offsets, revisit.
             const auto tidx{id(Fiber::this_fiber())};
             Tile::scratchpad<T>()[tidx] = x;
 
             Tile::this_tile().barrier();
 
-            return Tile::scratchpad<T>()[(tidx / w * w) + (tidx % w) + dx];
+            const auto sidx{(tidx / w * w) + (tidx % w) + dx};
+
+            return (sidx < 0 || sidx >= w) ? x : Tile::scratchpad<T>()[sidx];
         }
 
         template<
@@ -227,14 +229,14 @@ namespace hip
                 (std::is_integral_v<T> || std::is_floating_point_v<T>) &&
                 (sizeof(T) >= 4 && sizeof(T) <= 8)>* = nullptr>
         inline
-        T shuffle_xor(T x, std::int32_t src, std::int32_t w = warpSize) noexcept
+        T shuffle_xor(T x, std::int32_t src, std::int32_t w) noexcept
         {   // TODO: probably incorrect, revisit.
             const auto tidx{id(Fiber::this_fiber())};
             Tile::scratchpad<T>()[tidx] = x;
 
             Tile::this_tile().barrier();
 
-            return Tile::scratchpad<T>()[(tidx / w * w) ^ src];
+            return (src < 0) ? x : Tile::scratchpad<T>()[(tidx / w * w) ^ src];
         }
 
         inline
