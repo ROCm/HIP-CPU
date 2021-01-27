@@ -24,7 +24,7 @@ inline static void (fastcall *co_swap)(cothread_t, cothread_t) = 0;
   #ifdef _MSC_VER
     #pragma code_seg(".text")
   #endif
-  section(text)
+  LIBCO_SECTION(text)
 #endif
 /* ABI: fastcall */
 static const unsigned char co_swap_function[4096] = {

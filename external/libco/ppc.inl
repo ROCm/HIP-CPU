@@ -48,7 +48,7 @@ static thread_local cothread_t co_active_handle = 0;
   #ifdef _MSC_VER
     #pragma code_seg(".text")
   #endif
-  section(text)
+  LIBCO_SECTION(text)
 #endif
 static const uint32_t libco_ppc_code[1024] = {
   #if LIBCO_PPC64

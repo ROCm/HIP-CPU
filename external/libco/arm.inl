@@ -21,7 +21,7 @@ static void (*co_swap)(cothread_t, cothread_t) = 0;
   #ifdef _MSC_VER
     #pragma code_seg(".text")
   #endif
-  section(text)
+  LIBCO_SECTION(text)
 #endif
 static const unsigned long co_swap_function[1024] = {
   0xe8a16ff0,  /* stmia r1!, {r4-r11,sp,lr} */

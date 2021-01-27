@@ -16,7 +16,7 @@ inline void (*co_swap)(cothread_t, cothread_t) = 0;
   #ifdef _MSC_VER
     #pragma code_seg(".text")
   #endif
-  section(.text)
+  LIBCO_SECTION(.text)
 #endif
 #ifdef _WIN32
   /* ABI: Win64 */
