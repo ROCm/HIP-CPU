@@ -20,7 +20,7 @@ include(GNUInstallDirs)
 
 target_include_directories(
     ${PROJECT_NAME} SYSTEM INTERFACE
-        $<BUILD_INTERFACE:${$PROJECT_NAME}_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
 
