@@ -16,7 +16,7 @@ add_executable(public_interface_tests
     hip_vector_types.test.cpp
 )
 target_link_libraries(public_interface_tests
-    PRIVATE examples_common
+    PRIVATE src_common
 )
 
 add_test(

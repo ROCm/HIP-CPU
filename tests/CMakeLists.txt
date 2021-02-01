@@ -11,7 +11,7 @@ target_link_libraries(tests_common
     INTERFACE
         hip_cpu_rt::hip_cpu_rt
 )
-target_compile_options(examples_common
+target_compile_options(tests_common
     INTERFACE
         $<$<CXX_COMPILER_ID:MSVC>:
             /W4
@@ -48,7 +48,7 @@ add_executable(performance_tests
     benchmarks.cpp
 )
 target_link_libraries(performance_tests
-    INTERFACE
+    PRIVATE
         tests_common
         perf_tests_common
 )
@@ -90,8 +90,8 @@ add_executable(legacy_tests
     hip_set_device.cpp
     hip_vector_types.cpp
 )
-target_link_libraries(performance_tests
-    INTERFACE tests_common
+target_link_libraries(legacy_tests
+    PRIVATE tests_common
 )
 
 add_test(NAME "legacy_atomic" COMMAND legacy_tests [device][atomic])
