@@ -1,7 +1,31 @@
-set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-find_package(Threads REQUIRED)
+add_library(examples_common INTERFACE)
+
+target_link_libraries(examples_common
+    INTERFACE
+        hip_cpu_rt::hip_cpu_rt
+)
+target_compile_options(examples_common
+    INTERFACE
+        $<$<CXX_COMPILER_ID:MSVC>:
+            /W4
+            /arch:AVX2
+            /permissive-
+            /Qvec-report:2
+            /Zc:preprocessor
+        >
+        $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:
+            -Wall
+        >
+)
+target_compile_definitions(examples_common
+    INTERFACE
+        $<$<CXX_COMPILER_ID:MSVC>:
+            WIN32_LEAN_AND_MEAN
+            NOMINMAX
+        >
+)
 
 if (${CMAKE_HOST_APPLE}) # Add brew-ed TBB.
     include_directories(/usr/local/include)
