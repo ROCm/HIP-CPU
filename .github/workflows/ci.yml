@@ -32,6 +32,7 @@ jobs:
                 cd ${{github.workspace}}/build
                 ctest -C RelWithDebInfo --output-on-failure
     test-Ubuntu:
+        if: false
         name: Ubuntu
         runs-on: ubuntu-20.04
         steps:
@@ -54,6 +55,7 @@ jobs:
                 cd ${{github.workspace}}/build
                 ctest -C RelWithDebInfo --output-on-failure
     test-Windows:
+        if: false
         name: Windows
         runs-on: windows-latest
         steps:
