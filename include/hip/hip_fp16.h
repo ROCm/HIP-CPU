@@ -347,7 +347,7 @@ __half2 hgtu2(__half2 x, __half2 y) noexcept
 inline
 __half2 __hisnan2(__half2 x) noexcept
 {
-    return __half2{__hisnan(x.x), __hisnan(x.y)};
+    return __half2{static_cast<float>(__hisnan(x.x)), static_cast<float>(__hisnan(x.y))};
 }
 
 inline
