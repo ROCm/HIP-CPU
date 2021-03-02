@@ -231,6 +231,24 @@ namespace hip
                 (std::is_integral_v<T> || std::is_floating_point_v<T>) &&
                 (sizeof(T) >= 4 && sizeof(T) <= 8)>* = nullptr>
         inline
+        T shuffle_up(T x, std::int32_t dx, std::int32_t w) noexcept
+        {   // TODO: incorrect with large negative offsets, revisit.
+            const auto tidx{id(Fiber::this_fiber())};
+            Tile::scratchpad<T>()[tidx] = x;
+
+            Tile::this_tile().barrier();
+
+            const auto sidx{(tidx / w * w) + (tidx % w) - dx};
+
+            return (sidx < 0u || sidx >= (std::uint32_t)w) ? x : Tile::scratchpad<T>()[sidx];
+        }
+
+        template<
+            typename T,
+            std::enable_if_t<
+                (std::is_integral_v<T> || std::is_floating_point_v<T>) &&
+                (sizeof(T) >= 4 && sizeof(T) <= 8)>* = nullptr>
+        inline
         T shuffle_xor(T x, std::int32_t src, std::int32_t w) noexcept
         {   // TODO: probably incorrect, revisit.
             const auto tidx{id(Fiber::this_fiber())};
