@@ -197,7 +197,7 @@ __half2 __hadd2(__half2 x, __half2 y) noexcept
 inline
 __half2 __hadd2_sat(__half2 x, __half2 y) noexcept
 {
-    return std::clamp(__hadd2(x, y), __half2{0, 0}, __half2{1, 1});
+    return std::clamp(__hadd2(x, y), __half2{0.f, 0.f}, __half2{1.f, 1.f});
 }
 
 inline
