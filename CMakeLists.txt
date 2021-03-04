@@ -31,7 +31,7 @@ if (NOT ${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
     target_link_libraries(
         ${PROJECT_NAME} INTERFACE ${CMAKE_DL_LIBS} Threads::Threads)
 
-    if(CMAKE_SYSTEM_NAME MATCHES Darwin)
+    if(CMAKE_HOST_APPLE)
         # TODO: The macro name used to detect TBB dependence differs on MacOS
         set(STL_DEPENDS_ON_TBB ON)
     else()
@@ -39,11 +39,11 @@ if (NOT ${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
         include(CheckCXXSymbolExists)
         set(CMAKE_REQUIRED_FLAGS "-std=c++17")
         check_cxx_symbol_exists(__PSTL_PAR_BACKEND_TBB "cstddef" STL_DEPENDS_ON_TBB)
-        if(STL_DEPENDS_ON_TBB)
-            find_package(TBB REQUIRED)
-            target_link_libraries(
-                ${PROJECT_NAME} INTERFACE TBB::tbb)
-        endif()
+    endif()
+    if(STL_DEPENDS_ON_TBB)
+        find_package(TBB REQUIRED)
+        target_link_libraries(
+            ${PROJECT_NAME} INTERFACE TBB::tbb)
     endif()
 else ()
     target_compile_options(${PROJECT_NAME} INTERFACE /openmp:experimental)
