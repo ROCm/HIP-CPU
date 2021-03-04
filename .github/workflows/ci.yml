@@ -25,7 +25,7 @@ jobs:
                 mkdir build
                 cd build
                 cmake ../ -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_COMPILER=g++-10
-                cmake --build ${{github.workspace}}/build --config RelWithDebInfo -j 3 -v
+                cmake --build ${{github.workspace}}/build --config RelWithDebInfo -j 3
 
             - name: Run Tests
               run: |
