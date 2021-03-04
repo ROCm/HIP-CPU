@@ -35,7 +35,11 @@ add_library(perf_tests_common INTERFACE)
 
 target_compile_options(perf_tests_common
     INTERFACE
-        $<$<AND:$<CXX_COMPILER_ID:MSVC>,$<CONFIG:Debug,RelWithDebInfo>>:
+        # CMake 3.19 required for list in $<CONFIG:cfg1,cfg2> for shorthand
+        $<$<AND:$<CXX_COMPILER_ID:MSVC>,$<CONFIG:RelWithDebInfo>>:
+            /Ob3
+        >
+        $<$<AND:$<CXX_COMPILER_ID:MSVC>,$<CONFIG:Debug>>:
             /Ob3
         >
         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:
