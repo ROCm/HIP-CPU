@@ -138,9 +138,10 @@ template<
         (std::is_integral_v<T> || std::is_floating_point_v<T>) &&
         (sizeof(T) >= 4 && sizeof(T) <= 8)>* = nullptr>
 inline
-T __shfl_up(T, std::uint32_t, std::int32_t = warpSize) noexcept
+T __shfl_up(
+    T var, std::uint32_t delta, std::int32_t width = warpSize) noexcept
 {
-    static_assert(sizeof(T) == 0, "Not yet implemented.");
+    return hip::detail::shuffle_up(var, delta, width);
 }
 
 template<
