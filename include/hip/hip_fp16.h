@@ -36,7 +36,7 @@ __half __hadd(__half x, __half y) noexcept
 inline
 __half __hadd_sat(__half x, __half y) noexcept
 {
-    return std::clamp(__hadd(x, y), __half{0}, __half{1});
+    return std::clamp(__hadd(x, y), __half{0.f}, __half{1.f});
 }
 
 inline
@@ -69,7 +69,7 @@ __half __hfma(__half x, __half y, __half z) noexcept
 inline
 __half __hfma_sat(__half x, __half y, __half z) noexcept
 {
-    return std::clamp(__hfma(x, y, z), __half{0}, __half{1});
+    return std::clamp(__hfma(x, y, z), __half{0.f}, __half{1.f});
 }
 
 inline
@@ -145,7 +145,7 @@ __half __hmul(__half x, __half y) noexcept
 inline
 __half __hmul_sat(__half x, __half y) noexcept
 {
-    return std::clamp(__hmul(x, y), __half{0}, __half{1});
+    return std::clamp(__hmul(x, y), __half{0.f}, __half{1.f});
 }
 
 __device__
@@ -177,7 +177,7 @@ __half __hsub(__half x, __half y) noexcept
 inline
 __half __hsub_sat(__half x, __half y) noexcept
 {
-    return std::clamp(__hsub(x, y), __half{0}, __half{1});
+    return std::clamp(__hsub(x, y), __half{0.f}, __half{1.f});
 }
 // END __HALF INTRINSICS
 
@@ -197,7 +197,7 @@ __half2 __hadd2(__half2 x, __half2 y) noexcept
 inline
 __half2 __hadd2_sat(__half2 x, __half2 y) noexcept
 {
-    return std::clamp(__hadd2(x, y), __half2{0, 0}, __half2{1, 1});
+    return std::clamp(__hadd2(x, y), __half2{0.f, 0.f}, __half2{1.f, 1.f});
 }
 
 inline
@@ -317,7 +317,7 @@ __half2 __hfma2(__half2 x, __half2 y, __half2 z) noexcept
 inline
 __half2 __hfma2_sat(__half2 x, __half2 y, __half2 z) noexcept
 {
-    return std::clamp(__hfma2(x, y, z), __half2{0, 0}, __half2{1, 1});
+    return std::clamp(__hfma2(x, y, z), __half2{0.f, 0.f}, __half2{1.f, 1.f});
 }
 
 inline
@@ -347,7 +347,7 @@ __half2 hgtu2(__half2 x, __half2 y) noexcept
 inline
 __half2 __hisnan2(__half2 x) noexcept
 {
-    return __half2{__hisnan(x.x), __hisnan(x.y)};
+    return __half2{static_cast<float>(__hisnan(x.x)), static_cast<float>(__hisnan(x.y))};
 }
 
 inline
@@ -383,7 +383,7 @@ __half2 __hmul2(__half2 x, __half2 y) noexcept
 inline
 __half2 __hmul2_sat(__half2 x, __half2 y) noexcept
 {
-    return std::clamp(__hmul2(x, y), __half2{0, 0}, __half2{1, 1});
+    return std::clamp(__hmul2(x, y), __half2{0.f, 0.f}, __half2{1.f, 1.f});
 }
 
 inline
@@ -413,7 +413,7 @@ __half2 __hsub2(__half2 x, __half2 y) noexcept
 inline
 __half2 __hsub2_sat(__half2 x, __half2 y) noexcept
 {
-    return std::clamp(__hsub2(x, y), __half2{0, 0}, __half2{1, 1});
+    return std::clamp(__hsub2(x, y), __half2{0.f, 0.f}, __half2{1.f, 1.f});
 }
 // END __HALF2 INTRINSICS
 
