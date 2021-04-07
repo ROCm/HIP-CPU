@@ -148,7 +148,6 @@ __half __hmul_sat(__half x, __half y) noexcept
     return std::clamp(__hmul(x, y), __half{0.f}, __half{1.f});
 }
 
-__device__
 inline
 bool __hne(__half x, __half y) noexcept
 {
