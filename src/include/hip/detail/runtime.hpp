@@ -142,8 +142,6 @@ namespace hip
                         if (poison) return;
                     }
 
-                    // wait_all_streams_();
-
                     const auto backoff{
                         std::empty(t) &&
                         std::none_of(
@@ -177,7 +175,7 @@ namespace hip
                 std::begin(streams_),
                 std::end(streams_),
                 [](auto&& x) {
-                static thread_local std::vector<Task> t;
+                std::vector<Task> t; // TODO: revisit for performance impact.
 
                 x.try_dequeue_bulk(std::back_inserter(t), max_n_);
 
