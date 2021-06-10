@@ -12,29 +12,20 @@ target_compile_definitions(
 
 add_library(perf_tests_common INTERFACE)
 
-target_compile_options(perf_tests_common
-    INTERFACE
+target_compile_options(
+    perf_tests_common INTERFACE
         # CMake 3.19 required for list in $<CONFIG:cfg1,cfg2> for shorthand
-        $<$<AND:$<CXX_COMPILER_ID:MSVC>,$<CONFIG:RelWithDebInfo>>:
-            /Ob3
-        >
-        $<$<AND:$<CXX_COMPILER_ID:MSVC>,$<CONFIG:Debug>>:
-            /Ob3
-        >
-        $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:
-            -ffast-math
-        >
-)
+        $<$<AND:$<CXX_COMPILER_ID:MSVC>,$<CONFIG:RelWithDebInfo>>:/Ob3>
+        $<$<AND:$<CXX_COMPILER_ID:MSVC>,$<CONFIG:Debug>>:/Ob3>
+        $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-ffast-math>)
 
 add_executable(performance_tests
     catch_benchmarking_main.cpp
-    benchmarks.cpp
-)
-target_link_libraries(performance_tests
-    PRIVATE
+    benchmarks.cpp)
+target_link_libraries(
+    performance_tests PRIVATE
         tests_common
-        perf_tests_common
-)
+        perf_tests_common)
 
 add_executable(legacy_tests
     catch_main.cpp
@@ -73,9 +64,7 @@ add_executable(legacy_tests
     hip_set_device.cpp
     hip_vector_types.cpp
 )
-target_link_libraries(legacy_tests
-    PRIVATE tests_common
-)
+target_link_libraries(legacy_tests PRIVATE tests_common)
 
 add_test(NAME "legacy_atomic" COMMAND legacy_tests [device][atomic])
 add_test(NAME "legacy_ballot" COMMAND legacy_tests [device][ballot])
