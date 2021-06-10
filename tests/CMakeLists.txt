@@ -2,29 +2,13 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_library(tests_common INTERFACE)
 
-target_link_libraries(tests_common
-    INTERFACE
-        hip_cpu_rt::hip_cpu_rt
-)
-target_compile_options(tests_common
-    INTERFACE
-        $<$<CXX_COMPILER_ID:MSVC>:
-            /W4
-            /arch:AVX2
-            /fp:fast
-            /permissive-
-        >
-        $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:
-            -Wall
-        >
-)
-target_compile_definitions(tests_common
-    INTERFACE
+target_link_libraries(tests_common INTERFACE hip_cpu_rt::hip_cpu_rt)
+target_compile_definitions(
+    tests_common INTERFACE
         $<$<CXX_COMPILER_ID:MSVC>:
             WIN32_LEAN_AND_MEAN
             NOMINMAX
-        >
-)
+        >)
 
 add_library(perf_tests_common INTERFACE)
 
