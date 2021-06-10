@@ -62,8 +62,7 @@ add_executable(legacy_tests
     hip_host_multithread_memcpy.cpp
     hip_set_device_flags.cpp
     hip_set_device.cpp
-    hip_vector_types.cpp
-)
+    hip_vector_types.cpp)
 target_link_libraries(legacy_tests PRIVATE tests_common)
 
 add_test(NAME "legacy_atomic" COMMAND legacy_tests [device][atomic])

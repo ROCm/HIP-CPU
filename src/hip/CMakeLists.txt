@@ -13,8 +13,7 @@ add_executable(public_interface_tests
     hip_runtime_api.test.cpp
     hip_runtime.test.cpp
     hip_types.test.cpp
-    hip_vector_types.test.cpp
-)
+    hip_vector_types.test.cpp)
 target_link_libraries(public_interface_tests PRIVATE src_common)
 
 add_test(
