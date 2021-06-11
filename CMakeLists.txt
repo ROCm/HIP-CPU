@@ -38,9 +38,14 @@ if (NOT ${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
         include(CMakePrintHelpers)
         include(CheckCXXSymbolExists)
         set(CMAKE_REQUIRED_FLAGS "-std=c++17")
-        check_cxx_symbol_exists(__PSTL_PAR_BACKEND_TBB "cstddef" STL_DEPENDS_ON_TBB)
+        check_cxx_symbol_exists(
+            __PSTL_PAR_BACKEND_TBB "cstddef" STL_DEPENDS_ON_TBB0)
+        if (NOT STL_DEPENDS_ON_TBB0)
+            check_cxx_symbol_exists(
+                _PSTL_PAR_BACKEND_TBB "cstddef" STL_DEPENDS_ON_TBB1)
+        endif ()
     endif()
-    if(STL_DEPENDS_ON_TBB)
+    if (STL_DEPENDS_ON_TBB0 OR STL_DEPENDS_ON_TBB1)
         find_package(TBB REQUIRED)
         target_link_libraries(
             ${PROJECT_NAME} INTERFACE TBB::tbb)
