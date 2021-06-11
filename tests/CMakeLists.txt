@@ -7,8 +7,7 @@ target_compile_definitions(
     tests_common INTERFACE
         $<$<CXX_COMPILER_ID:MSVC>:
             WIN32_LEAN_AND_MEAN
-            NOMINMAX
-        >)
+            NOMINMAX>)
 
 add_library(perf_tests_common INTERFACE)
 
