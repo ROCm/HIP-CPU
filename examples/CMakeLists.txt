@@ -10,8 +10,7 @@ target_compile_definitions(
     examples_common INTERFACE
         $<$<CXX_COMPILER_ID:MSVC>:
             WIN32_LEAN_AND_MEAN
-            NOMINMAX
-        >)
+            NOMINMAX>)
 
 add_subdirectory(bit_extract)
 add_subdirectory(hip_bus_bandwidth)
