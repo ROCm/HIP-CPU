@@ -24,7 +24,7 @@ jobs:
                 cd ${{github.workspace}}
                 mkdir build
                 cd build
-                cmake ../ -DCMAKE_BUILD_TYPE=RelWithDebInfo
+                cmake ../ -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_FLAGS=-stdlib=libstdc++
                 cmake --build ${{github.workspace}}/build --config RelWithDebInfo -j 3
 
             - name: Run Tests
