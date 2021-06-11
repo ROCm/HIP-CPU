@@ -20,7 +20,7 @@ include(GNUInstallDirs)
 
 target_include_directories(
     ${PROJECT_NAME} SYSTEM INTERFACE
-        $<BUILD_INTERFACE:${$PROJECT_NAME}_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
 
@@ -31,9 +31,15 @@ if (NOT ${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
     target_link_libraries(
         ${PROJECT_NAME} INTERFACE ${CMAKE_DL_LIBS} Threads::Threads)
 
-    include(CheckCXXSymbolExists)
-    set(CMAKE_REQUIRED_FLAGS "-std=c++17")
-    check_cxx_symbol_exists(__PSTL_PAR_BACKEND_TBB "cstddef" STL_DEPENDS_ON_TBB)
+    if(CMAKE_HOST_APPLE)
+        # TODO: The macro name used to detect TBB dependence differs on MacOS
+        set(STL_DEPENDS_ON_TBB ON)
+    else()
+        include(CMakePrintHelpers)
+        include(CheckCXXSymbolExists)
+        set(CMAKE_REQUIRED_FLAGS "-std=c++17")
+        check_cxx_symbol_exists(__PSTL_PAR_BACKEND_TBB "cstddef" STL_DEPENDS_ON_TBB)
+    endif()
     if(STL_DEPENDS_ON_TBB)
         find_package(TBB REQUIRED)
         target_link_libraries(
@@ -100,6 +106,7 @@ if (hip_cpu_rt_BUILD_EXAMPLES)
 endif ()
 
 if (hip_cpu_rt_BUILD_TESTING)
+    include(CTest)
     enable_testing()
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tests)

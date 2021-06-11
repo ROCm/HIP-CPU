@@ -1,12 +1,16 @@
-set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-find_package(Threads REQUIRED)
+add_library(examples_common INTERFACE)
 
-if (${CMAKE_HOST_APPLE}) # Add brew-ed TBB.
-    include_directories(/usr/local/include)
-    link_directories(/usr/local/lib)
-endif()
+target_link_libraries(
+    examples_common INTERFACE
+        hip_cpu_rt::hip_cpu_rt)
+
+target_compile_definitions(
+    examples_common INTERFACE
+        $<$<CXX_COMPILER_ID:MSVC>:
+            WIN32_LEAN_AND_MEAN
+            NOMINMAX>)
 
 add_subdirectory(bit_extract)
 add_subdirectory(hip_bus_bandwidth)

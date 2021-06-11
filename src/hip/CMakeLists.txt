@@ -1,15 +1,4 @@
-set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
-
-find_package(Threads REQUIRED)
-
-include(CTest)
-enable_testing()
-
-if (${CMAKE_HOST_APPLE}) # Add brew-ed TBB.
-    include_directories(/usr/local/include)
-    link_directories(/usr/local/lib)
-endif()
 
 add_executable(
     public_interface_tests
@@ -26,15 +15,8 @@ add_executable(
         hip_runtime.test.cpp
         hip_types.test.cpp
         hip_vector_types.test.cpp)
-if (NOT ${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
-    target_compile_options(public_interface_tests PRIVATE -fopenmp-simd)
-    target_link_libraries(public_interface_tests PRIVATE dl tbb)
-else ()
-    target_compile_definitions(
-        public_interface_tests PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
-endif ()
-target_include_directories(
-    public_interface_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
-target_link_libraries(public_interface_tests PRIVATE Threads::Threads)
+target_link_libraries(public_interface_tests PRIVATE src_common)
 
-add_test(NAME public_interface_tests COMMAND public_interface_tests)
+add_test(
+    NAME public_interface_tests
+    COMMAND public_interface_tests)

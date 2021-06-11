@@ -1,37 +1,31 @@
-set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-find_package(Threads REQUIRED)
+add_library(tests_common INTERFACE)
 
-include(CTest)
-enable_testing()
+target_link_libraries(tests_common INTERFACE hip_cpu_rt::hip_cpu_rt)
+target_compile_definitions(
+    tests_common INTERFACE
+        $<$<CXX_COMPILER_ID:MSVC>:
+            WIN32_LEAN_AND_MEAN
+            NOMINMAX>)
 
-if (${CMAKE_HOST_APPLE}) # Add brew-ed TBB.
-    include_directories(/usr/local/include)
-    link_directories(/usr/local/lib)
-endif()
+add_library(perf_tests_common INTERFACE)
 
-add_executable(performance_tests catch_benchmarking_main.cpp benchmarks.cpp)
-if (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
-    target_compile_options(
-        performance_tests PRIVATE
-            /arch:AVX2
-            /fp:fast
-            /openmp:experimental
-            /permissive-
-            /W4)
-    if (NOT ${CMAKE_BUILD_TYPE} STREQUAL Debug
-        AND NOT ${CMAKE_BUILD_TYPE} STREQUAL RelWithDebInfo)
-        target_compile_options(performance_tests PRIVATE /Ob3)
-    endif ()
-else ()
-    target_compile_options(
-        performance_tests PRIVATE -ffast-math -fopenmp-simd -march=native -Wall)
-    target_link_libraries(performance_tests PRIVATE dl tbb)
-endif ()
-target_include_directories(
-    performance_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
-target_link_libraries(performance_tests PRIVATE Threads::Threads)
+target_compile_options(
+    perf_tests_common INTERFACE
+        # CMake 3.19 required for list in $<CONFIG:cfg1,cfg2> for shorthand
+        $<$<AND:$<CXX_COMPILER_ID:MSVC>,$<CONFIG:RelWithDebInfo>>:/Ob3>
+        $<$<AND:$<CXX_COMPILER_ID:MSVC>,$<CONFIG:Debug>>:/Ob3>
+        $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-ffast-math>)
+
+add_executable(
+    performance_tests
+        catch_benchmarking_main.cpp
+        benchmarks.cpp)
+target_link_libraries(
+    performance_tests PRIVATE
+        tests_common
+        perf_tests_common)
 
 add_executable(
     legacy_tests
@@ -70,13 +64,7 @@ add_executable(
         hip_set_device_flags.cpp
         hip_set_device.cpp
         hip_vector_types.cpp)
-if (NOT ${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
-    target_compile_options(legacy_tests PRIVATE -fopenmp-simd)
-    target_link_libraries(legacy_tests PRIVATE dl tbb)
-endif ()
-target_include_directories(
-    legacy_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
-target_link_libraries(legacy_tests PRIVATE Threads::Threads)
+target_link_libraries(legacy_tests PRIVATE tests_common)
 
 add_test(NAME "legacy_atomic" COMMAND legacy_tests [device][atomic])
 add_test(NAME "legacy_ballot" COMMAND legacy_tests [device][ballot])
