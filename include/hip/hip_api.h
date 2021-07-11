@@ -423,6 +423,16 @@ hipError_t hipMallocManaged(
 }
 
 inline
+hipError_t hipMallocPitch(
+    void** ptr,
+    std::size_t* pitch,
+    std::size_t width,
+    std::size_t height)
+{
+    return hip::detail::allocate_pitch(ptr, pitch, width, height);
+}
+
+inline
 hipError_t hipMemcpy(
     void* dst,
     const void* src,
@@ -430,6 +440,20 @@ hipError_t hipMemcpy(
     hipMemcpyKind kind = hipMemcpyDefault)
 {
     return hip::detail::copy(dst, src, size, kind);
+}
+
+inline
+hipError_t hipMemcpy2D(
+    void* dst,
+    std::size_t d_pitch,
+    const void* src,
+    std::size_t s_pitch,
+    std::size_t width,
+    std::size_t height,
+    hipMemcpyKind kind = hipMemcpyDefault)
+{
+    return hip::detail::copy_2d(
+        dst, d_pitch, src, s_pitch, width, height, kind);
 }
 
 inline
