@@ -51,6 +51,23 @@ namespace hip
             return allocate(p, byte_cnt);
         }
 
+        inline
+        hipError_t allocate_pitch(
+            void**  p,
+            std::size_t* pitch,
+            std::size_t width,
+            std::size_t height)
+        {
+            if (!p) return hipErrorInvalidValue;
+
+            *pitch = width;
+            *p = std::malloc(width * height);
+
+            if (!p) return hipErrorOutOfMemory;
+
+            return hipSuccess;
+        }
+
         extern hipError_t synchronize_device(); // Forward declaration.
 
         inline
@@ -86,6 +103,33 @@ namespace hip
             stream->enqueue(hip::detail::Task{[=](auto&&) { // TODO: use push_task.
                 std::memcpy(dst, src, size);
             }});
+
+            return hipSuccess;
+        }
+
+        inline
+        hipError_t copy_2d(
+            void* dst,
+            std::size_t d_pitch,
+            const void* src,
+            std::size_t s_pitch,
+            std::size_t width,
+            std::size_t height,
+            hipMemcpyKind /*kind*/)
+        {
+            if (height * width == 0) return hipSuccess;
+            if (!dst || !src) return hipErrorInvalidValue;
+
+            synchronize_device();
+
+            dst = static_cast<std::byte*>(dst);
+            src = static_cast<const std::byte*>(src);
+            for (auto i = 0u; i != height; ++i) {
+                std::memcpy(dst, src, width);
+
+                dst += d_pitch;
+                src += s_pitch;
+            }
 
             return hipSuccess;
         }
