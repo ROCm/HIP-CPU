@@ -127,8 +127,8 @@ namespace hip
             for (auto i = 0u; i != height; ++i) {
                 std::memcpy(dst, src, width);
 
-                dst += d_pitch;
-                src += s_pitch;
+                dst = static_cast<std::byte*>(dst) + d_pitch;
+                src = static_cast<const std::byte*>(src) + s_pitch;
             }
 
             return hipSuccess;
