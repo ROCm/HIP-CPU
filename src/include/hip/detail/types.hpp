@@ -30,7 +30,7 @@ namespace hip
                 if (x.x < y.x) return true;
                 if (y.x < x.x) return false;
                 if (x.y < y.y) return true;
-                if (y.y < x.x) return false;
+                if (y.y < x.y) return false;
                 if (y.z < x.z) return false;
                 return true;
             }
