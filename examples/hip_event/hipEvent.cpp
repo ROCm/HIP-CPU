@@ -42,7 +42,7 @@ int main() {
     float* gpuTransposeMatrix;
 
     hipDeviceProp_t devProp;
-    hipGetDeviceProperties(&devProp, INT_MAX);
+    hipGetDeviceProperties(&devProp, 0);
 
     std::cout << "Device name " << devProp.name << std::endl;
 

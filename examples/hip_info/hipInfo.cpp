@@ -187,7 +187,7 @@ int main(int argc, char* argv[]) {
 
     for (int i = 0; i < deviceCnt; i++) {
         hipSetDevice(i);
-        printDeviceProp(INT_MAX);
+        printDeviceProp(i);
     }
 
     std::cout << std::endl;
