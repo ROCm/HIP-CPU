@@ -42,7 +42,7 @@ int main()
         float *A_h, *C_h;
         size_t N = 1000000;
         size_t Nbytes = N * sizeof(float);
-        static int device = INT_MAX;
+        static int device = 0;
         CHECK(hipSetDevice(device));
         hipDeviceProp_t props;
         CHECK(hipGetDeviceProperties(&props, device /*deviceID*/));

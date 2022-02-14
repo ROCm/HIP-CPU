@@ -32,7 +32,7 @@ void multiplyCPU(float* C, float* A, float* B, int N) {
 
 void launchKernel(float* C, float* A, float* B, bool manual) {
      hipDeviceProp_t devProp;
-     HIP_CHECK(hipGetDeviceProperties(&devProp, INT_MAX));
+     HIP_CHECK(hipGetDeviceProperties(&devProp, 0));
 
      hipEvent_t start, stop;
      HIP_CHECK(hipEventCreate(&start));
