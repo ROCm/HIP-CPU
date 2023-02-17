@@ -27,6 +27,7 @@
 #include <cstdlib>
 #include <filesystem>
 #include <utility>
+#include <cstring>
 
 namespace hip
 {
