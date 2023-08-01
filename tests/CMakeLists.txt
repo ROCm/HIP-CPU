@@ -35,6 +35,7 @@ add_executable(
         hip_device_clock.cpp
         hip_device_clz.cpp
         hip_device_constant.cpp
+        hip_device_barrier_not_in_first_block.cpp
         hip_device_dynamic_shared.cpp
         hip_device_dynamic_shared_2.cpp
         hip_device_ffs.cpp
@@ -97,6 +98,7 @@ add_test(NAME "legacy_printf" COMMAND legacy_tests [device][printf])
 add_test(NAME "legacy_shfl" COMMAND legacy_tests [device][shfl])
 add_test(
     NAME "legacy_std_complex" COMMAND legacy_tests [device][std::complex])
+add_test(NAME "legacy_barrier_not_in_first_block" COMMAND legacy_tests [device][barrier_not_in_first_block])
 add_test(
     NAME "legacy_hipDeviceSynchronize"
     COMMAND legacy_tests [host][hipDevice])

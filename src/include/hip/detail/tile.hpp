@@ -346,14 +346,6 @@ namespace hip
             // IMPLEMENTATION - ACCESSORS
             template<typename F, typename... Args>
             __HIP_FLATTENED_FUNCTION__
-            void for_each_remaining_barrier_free_tile_(
-                const F& fn, const std::tuple<Args...>& args) const noexcept;
-            template<typename F, typename... Args>
-            __HIP_FLATTENED_FUNCTION__
-            void for_each_remaining_tile_(
-                const F& fn, const std::tuple<Args...>& args) const noexcept;
-            template<typename F, typename... Args>
-            __HIP_FLATTENED_FUNCTION__
             void for_each_tile_(
                 const F& fn, const std::tuple<Args...>& args) const noexcept;
             template<typename F, typename... Args>
@@ -585,72 +577,32 @@ namespace hip
         // IMPLEMENTATION - ACCESSORS
         template<typename F, typename... Args>
         inline
-        void Tiled_domain::for_each_remaining_barrier_free_tile_(
+        void Tiled_domain::for_each_tile_(
             const F& fn, const std::tuple<Args...>& args) const noexcept
         {
-            __HIP_VECTORISED_LOOP__
-            for (auto i = 1u; i < count(tile_dimensions()); ++i) {
-                Fiber::this_fiber_().set_id_(i);
-
-                std::apply(fn, args);
-            }
-
-            Fiber::this_fiber_().set_id_(0u);
-
             std::for_each(
                 std::execution::par_unseq,
-                cbegin() + 1,
+                cbegin(),
                 cend(),
                 make_tile_fn_([&](auto&& tile) noexcept {
                 Tile::this_tile_() = std::move(tile);
+                this_tile::has_barrier = false;
 
-                __HIP_VECTORISED_LOOP__
-                for (auto i = 0u; i < count(tile_dimensions()); ++i) {
-                    Fiber::this_fiber_().set_id_(i);
+                std::apply(fn, args);
 
-                    std::apply(fn, args);
+                if (this_tile::has_barrier) {
+                    Fiber::yield(Tile::fibers()[1]);
+                } else {
+                    __HIP_VECTORISED_LOOP__
+                    for (auto i = 1u; i < count(tile_dimensions()); ++i) {
+                        Fiber::this_fiber_().set_id_(i);
+
+                        std::apply(fn, args);
+                    }
                 }
 
                 Fiber::this_fiber_().set_id_(0u);
             }));
-        }
-
-        template<typename F, typename... Args>
-        inline
-        void Tiled_domain::for_each_remaining_tile_(
-            const F& fn, const std::tuple<Args...>& args) const noexcept
-        {
-            std::for_each(
-                std::execution::par_unseq,
-                cbegin() + 1,
-                cend(),
-                make_tile_fn_([&](auto&& tile) noexcept {
-                Tile::this_tile_() = std::move(tile);
-
-                std::apply(fn, args);
-
-                Fiber::yield(Tile::fibers()[1]);
-            }));
-        }
-
-        template<typename F, typename... Args>
-        inline
-        void Tiled_domain::for_each_tile_(
-            const F& fn, const std::tuple<Args...>& args) const noexcept
-        {
-            this_tile::has_barrier = false;
-
-            Tile::this_tile_() = *cbegin();
-
-            std::apply(fn, args);
-
-            if (this_tile::has_barrier) {
-                Fiber::yield(Tile::fibers()[1]);
-
-                return for_each_remaining_tile_(fn, args);
-            }
-
-            return for_each_remaining_barrier_free_tile_(fn, args);
         }
 
         template<typename F, typename... Args>
