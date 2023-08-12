@@ -1,8 +1,8 @@
-# Building the HIP CPU Runtime and Client Applications GCC C++ #
+# Building the HIP CPU Runtime and Client Applications using GCC or CLANG #
 
-This tutorial shows how to use the GCC C++ Compiler on Linux to
+This tutorial shows how to use the GCC/CLANG Compiler on Linux to
 build the HIP CPU Runtime. It does not delve into the details of HIP, the
-C++ language, the GCC toolset or the Linux ecosystem.
+C++ language, the GCC/CLANG toolset or the Linux ecosystem.
 
 If you encounter any difficulties, [please create an issue](https://github.com/ROCm-Developer-Tools/HIP-CPU/issues/new/choose)
 for this tutorial.
@@ -35,15 +35,15 @@ To successfully complete this tutorial, the following steps are necessary:
    - [Follow the instructions](https://git-scm.com/download/linux) that apply
      to your environment.
 
-## Ensure GCC is Installed ##
+## Ensure GCC or CLANG is Installed ##
 
-To verify whether GCC is installed and of a sufficiently recent version, open a
+To verify whether GCC or CLANG is installed and of a sufficiently recent version, open a
 Terminal window and enter the following command:
 
+### GCC
 ```bash
 gcc -v
 ```
-
 If it is not installed, or if it is a version older than 9, you must install it
 and the corresponding version of the [GNU C++ Library](https://gcc.gnu.org/onlinedocs/libstdc++/)
 using your distro's package manager. Consider Ubuntu 20.04 or newer as an
@@ -54,6 +54,22 @@ sudo apt-get update
 sudo apt-get install build-essential
 ```
 
+### CLANG
+```bash
+clang -v
+```
+
+If it is not installed, you must install it
+and the corresponding version of the [GNU C++ Library](https://clang.llvm.org/cxx_status.html)
+using your distro's package manager. Consider Ubuntu 20.04 or newer as an
+example:
+
+```bash
+sudo apt-get update
+sudo apt-get install clang
+```
+
+
 ## Clone and build the HIP CPU Runtime ##
 
 ```bash
@@ -61,15 +77,15 @@ git clone https://github.com/ROCm-Developer-Tools/HIP-CPU.git
 cd HIP-CPU
 mkdir build
 cd build
-cmake ../
-cmake --build ./
+cmake ..
+cmake --build .
 ```
 
 ## **OPTIONAL** Install the HIP CPU Runtime ##
+Assumes that you are in the build folder created in the build step.
 
 ```bash
-# Assumes that you are in the build folder created in the build step.
-cmake --build ./ --target install
+cmake --target install --build .
 ```
 
 ## Verify the build by running the unit tests ##

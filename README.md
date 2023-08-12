@@ -15,7 +15,7 @@ _b**a**d **bu**gs lurking_.
 
 HIP CPU Runtime tutorials per compiler and platform
 
-* [GCC on Linux](/docs/gcc_linux.md)
+* [GCC/CLANG on Linux](/docs/linux.md)
 * [GCC on MacOS](/docs/gcc_macos.md)
 * [Microsoft C++ Compiler (MSVC) on Windows](/docs/msvc.md)
 * Others (TODO)
