@@ -737,6 +737,20 @@ namespace hip
         }
 
         inline
+        hipError_t runtime_version(std::int32_t* pv) noexcept
+        {   // TODO: this is a placeholder spoofing 5.6.
+            if (!pv) return hipErrorInvalidValue;
+
+            constexpr auto hip_major{5};
+            constexpr auto hip_minor{6};
+            constexpr auto hip_patch{0};
+
+            *pv = hip_major * 10000000 + hip_minor * 100000 + hip_patch;
+
+            return hipSuccess;
+        }
+
+        inline
         hipError_t set_device(std::int32_t d_id) noexcept
         {
             return (d_id == 0) ? hipSuccess : hipErrorInvalidDevice; // Only 1 device.
