@@ -10,13 +10,13 @@
 extern "C" {
 #endif
 
-static thread_local cothread_t co_active_ = 0;
+inline thread_local cothread_t co_active_ = 0;
 
-static void __stdcall co_thunk(void* coentry) {
+inline void __stdcall co_thunk(void* coentry) {
   ((void (*)(void))coentry)();
 }
 
-inline cothread_t co_active() {
+inline cothread_t co_active(void) {
   if(!co_active_) {
     ConvertThreadToFiber(0);
     co_active_ = GetCurrentFiber();
@@ -24,8 +24,7 @@ inline cothread_t co_active() {
   return co_active_;
 }
 
-inline cothread_t co_derive(
-  void* memory, unsigned int heapsize, void (*coentry)(void)) {
+inline cothread_t co_derive(void* memory, unsigned int heapsize, void (*coentry)(void)) {
   /* Windows fibers do not allow users to supply their own memory */
   return (cothread_t)0;
 }
@@ -47,7 +46,7 @@ inline void co_switch(cothread_t cothread) {
   SwitchToFiber(cothread);
 }
 
-inline int co_serializable() {
+inline int co_serializable(void) {
   return 0;
 }
 

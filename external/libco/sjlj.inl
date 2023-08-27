@@ -6,6 +6,9 @@
 #define LIBCO_C
 #include "libco.h"
 #include "settings.h"
+#if __has_include("valgrind.h")
+  #include "valgrind.h"
+#endif
 
 #define _BSD_SOURCE
 #define _XOPEN_SOURCE 500
@@ -23,23 +26,22 @@ typedef struct {
   void* stack;
 } cothread_struct;
 
-static thread_local cothread_struct co_primary;
-static thread_local cothread_struct* creating;
-static thread_local cothread_struct* co_running = 0;
+inline thread_local cothread_struct co_primary;
+inline thread_local cothread_struct* creating;
+inline thread_local cothread_struct* co_running = 0;
 
-static void springboard(int ignored) {
+inline void springboard(int ignored) {
   if(sigsetjmp(creating->context, 0)) {
     co_running->coentry();
   }
 }
 
-inline cothread_t co_active() {
+inline cothread_t co_active(void) {
   if(!co_running) co_running = &co_primary;
   return (cothread_t)co_running;
 }
 
-inline cothread_t co_derive(
-  void* memory, unsigned int size, void (*coentry)(void)) {
+inline cothread_t co_derive(void* memory, unsigned int size, void (*coentry)(void)) {
   if(!co_running) co_running = &co_primary;
 
   cothread_struct* thread = (cothread_struct*)memory;
@@ -75,13 +77,17 @@ inline cothread_t co_derive(
     if(thread->coentry != coentry) {
       co_delete(thread);
       thread = 0;
+    } else {
+      #if defined(VALGRIND_STACK_REGISTER)
+        VALGRIND_STACK_REGISTER(stack.ss_sp, stack.ss_sp + size);
+      #endif
     }
   }
 
   return (cothread_t)thread;
 }
 
-inline cothread_t co_create(unsigned int size, void (*coentry)(void)) {
+cothread_t co_create(unsigned int size, void (*coentry)(void)) {
   if(!co_running) co_running = &co_primary;
 
   cothread_struct* thread = (cothread_struct*)malloc(sizeof(cothread_struct));
@@ -115,6 +121,10 @@ inline cothread_t co_create(unsigned int size, void (*coentry)(void)) {
     if(thread->coentry != coentry) {
       co_delete(thread);
       thread = 0;
+    } else {
+      #if defined(VALGRIND_STACK_REGISTER)
+        VALGRIND_STACK_REGISTER(stack.ss_sp, stack.ss_sp + size);
+      #endif
     }
   }
 
@@ -137,7 +147,7 @@ inline void co_switch(cothread_t cothread) {
   }
 }
 
-inline int co_serializable() {
+inline int co_serializable(void) {
   return 0;
 }
 

@@ -3,6 +3,9 @@
 #define LIBCO_C
 #include "libco.h"
 #include "settings.h"
+#if __has_include("valgrind.h")
+  #include "valgrind.h"
+#endif
 
 #include <stdint.h>
 
@@ -26,7 +29,7 @@ struct ppc64_context {
   #endif
 };
 
-static thread_local struct ppc64_context* co_active_handle = 0;
+inline thread_local struct ppc64_context* co_active_handle = 0;
 
 #define MAX(x, y) ((x) > (y) ? (x) : (y))
 #define ALIGN(p, x) ((void*)((uintptr_t)(p) & ~((x) - 1)))
@@ -35,7 +38,7 @@ static thread_local struct ppc64_context* co_active_handle = 0;
 #define MIN_STACK_FRAME 0x20lu
 #define STACK_ALIGN     0x10lu
 
-void swap_context(struct ppc64_context* read, struct ppc64_context* write);
+inline void swap_context(struct ppc64_context* read, struct ppc64_context* write);
 __asm__(
   ".text\n"
   ".align 4\n"
@@ -220,7 +223,7 @@ __asm__(
   ".size swap_context, .-swap_context\n"
 );
 
-inline cothread_t co_active() {
+inline cothread_t co_active(void) {
   if(!co_active_handle) {
     co_active_handle = (struct ppc64_context*)LIBCO_MALLOC(MIN_STACK + sizeof(struct ppc64_context));
   }
@@ -230,6 +233,10 @@ inline cothread_t co_active() {
 inline cothread_t co_derive(void* memory, unsigned int size, void (*coentry)(void)) {
   uint8_t* sp;
   struct ppc64_context* context = (struct ppc64_context*)memory;
+
+  #if defined(VALGRIND_STACK_REGISTER)
+    VALGRIND_STACK_REGISTER(memory, memory + size);
+  #endif
 
   /* save current context into new context to initialize it */
   swap_context(context, context);
@@ -269,7 +276,7 @@ inline void co_switch(cothread_t to) {
   swap_context((struct ppc64_context*)to, from);
 }
 
-inline int co_serializable() {
+inline int co_serializable(void) {
   return 1;
 }
 

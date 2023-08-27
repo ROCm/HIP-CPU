@@ -13,6 +13,9 @@
 #define LIBCO_C
 #include "libco.h"
 #include "settings.h"
+#if __has_include("valgrind.h")
+  #include "valgrind.h"
+#endif
 
 #define _BSD_SOURCE
 #define _XOPEN_SOURCE 500
@@ -23,16 +26,15 @@
 extern "C" {
 #endif
 
-static thread_local ucontext_t co_primary;
-static thread_local ucontext_t* co_running = 0;
+inline thread_local ucontext_t co_primary;
+inline thread_local ucontext_t* co_running = 0;
 
-inline cothread_t co_active() {
+inline cothread_t co_active(void) {
   if(!co_running) co_running = &co_primary;
   return (cothread_t)co_running;
 }
 
-inline cothread_t co_derive(
-  void* memory, unsigned int heapsize, void (*coentry)(void)) {
+inline cothread_t co_derive(void* memory, unsigned int heapsize, void (*coentry)(void)) {
   if(!co_running) co_running = &co_primary;
   ucontext_t* thread = (ucontext_t*)memory;
   memory = (unsigned char*)memory + sizeof(ucontext_t);
@@ -42,6 +44,9 @@ inline cothread_t co_derive(
       thread->uc_link = co_running;
       thread->uc_stack.ss_size = heapsize;
       makecontext(thread, coentry, 0);
+      #if defined(VALGRIND_STACK_REGISTER)
+        VALGRIND_STACK_REGISTER(thread->uc_stack.ss_sp, thread->uc_stack.ss_sp + heapsize);
+      #endif
     } else {
       thread = 0;
     }
@@ -57,6 +62,9 @@ inline cothread_t co_create(unsigned int heapsize, void (*coentry)(void)) {
       thread->uc_link = co_running;
       thread->uc_stack.ss_size = heapsize;
       makecontext(thread, coentry, 0);
+      #if defined(VALGRIND_STACK_REGISTER)
+        VALGRIND_STACK_REGISTER(thread->uc_stack.ss_sp, thread->uc_stack.ss_sp + heapsize);
+      #endif
     } else {
       co_delete((cothread_t)thread);
       thread = 0;
@@ -78,7 +86,7 @@ inline void co_switch(cothread_t cothread) {
   swapcontext(old_thread, co_running);
 }
 
-inline int co_serializable() {
+inline int co_serializable(void) {
   return 0;
 }
 

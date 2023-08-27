@@ -14,7 +14,7 @@
   #if !defined(LIBCO_MP) /* Running in single-threaded environment */
     #define thread_local
   #else /* Running in multi-threaded environment */
-    #if defined(__STDC_VERSION__) /* Compiling as C Language */
+    #if defined(__STDC__) /* Compiling as C Language */
       #if defined(_MSC_VER) /* Don't rely on MSVC's C11 support */
         #define thread_local __declspec(thread)
       #elif __STDC_VERSION__ < 201112L /* If we are on C90/99 */
@@ -55,7 +55,7 @@
    - alignas (TYPE) is equivalent to alignas (alignof (TYPE)).
 */
 #if !defined(alignas)
-  #if defined(__STDC_VERSION__) /* C Language */
+  #if !defined(__cplusplus) /* C Language */
     #if defined(_MSC_VER) /* Don't rely on MSVC's C11 support */
       #define alignas(bytes) __declspec(align(bytes))
     #elif __STDC_VERSION__ >= 201112L /* C11 and above */
@@ -65,7 +65,7 @@
     #else /* Otherwise, we ignore the directive (user should provide their own) */
       #define alignas(bytes)
     #endif
-  #elif defined(__cplusplus) /* C++ Language */
+  #else                     /* C++ Language */
     #if __cplusplus < 201103L
       #if defined(_MSC_VER)
         #define alignas(bytes) __declspec(align(bytes))
@@ -85,6 +85,30 @@
   #define LIBCO_ASSERT assert
 #endif
 
+#if defined (__OpenBSD__)
+  #if !defined(LIBCO_MALLOC) || !defined(LIBCO_FREE)
+    #include <unistd.h>
+    #include <sys/mman.h>
+
+    static void* malloc_obsd(size_t size) {
+      long pagesize = sysconf(_SC_PAGESIZE);
+      char* memory = (char*)mmap(NULL, size + pagesize, PROT_READ|PROT_WRITE, MAP_STACK|MAP_PRIVATE|MAP_ANON, -1, 0);
+      if (memory == MAP_FAILED) return NULL;
+      *(size_t*)memory = size + pagesize;
+      memory += pagesize;
+      return (void*)memory;
+    }
+
+    static void free_obsd(void *ptr) {
+      char* memory = (char*)ptr - sysconf(_SC_PAGESIZE);
+      munmap(memory, *(size_t*)memory);
+    }
+
+    #define LIBCO_MALLOC malloc_obsd
+    #define LIBCO_FREE   free_obsd
+  #endif
+#endif
+
 #if !defined(LIBCO_MALLOC) || !defined(LIBCO_FREE)
   #include <stdlib.h>
   #define LIBCO_MALLOC malloc
@@ -92,11 +116,11 @@
 #endif
 
 #if defined(_MSC_VER)
-  #define LIBCO_SECTION(name) __declspec(allocate(#name))
+  #define section(name) __declspec(allocate("." #name))
 #elif defined(__APPLE__)
-  #define LIBCO_SECTION(name) __attribute__((section("__TEXT,__" #name)))
+  #define section(name) __attribute__((section("__TEXT,__" #name)))
 #else
-  #define LIBCO_SECTION(name) __attribute__((section(#name)))
+  #define section(name) __attribute__((section("." #name "#")))
 #endif
 
 

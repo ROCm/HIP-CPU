@@ -69,9 +69,16 @@ inline void (*co_swap)(cothread_t, cothread_t) = 0;
     0xff, 0xe0,                    /* jmp rax                */
   };
 
+  /* Valgrind is available on MINGW but not on MSVC. */
+  #if defined(__GNUC__)
+    #if __has_include("valgrind.h")
+      #include "valgrind.h"
+    #endif
+  #endif
+
   #include <windows.h>
 
-  static void co_init() {
+  inline void co_init(void) {
     #ifdef LIBCO_MPROTECT
     DWORD old_privileges;
     VirtualProtect((void*)co_swap_function, sizeof co_swap_function, PAGE_EXECUTE_READ, &old_privileges);
@@ -98,12 +105,15 @@ inline void (*co_swap)(cothread_t, cothread_t) = 0;
     0xff, 0xe0,              /* jmp rax          */
   };
 
+  #if __has_include("valgrind.h")
+    #include "valgrind.h"
+  #endif
   #ifdef LIBCO_MPROTECT
     #include <unistd.h>
     #include <sys/mman.h>
   #endif
 
-  static void co_init() {
+  inline void co_init(void) {
     #ifdef LIBCO_MPROTECT
     unsigned long long addr = (unsigned long long)co_swap_function;
     unsigned long long base = addr - (addr % sysconf(_SC_PAGESIZE));
@@ -113,30 +123,35 @@ inline void (*co_swap)(cothread_t, cothread_t) = 0;
   }
 #endif
 
-static void crash() {
+inline void crash(void) {
   LIBCO_ASSERT(0);  /* called only if cothread_t entrypoint returns */
 }
 
-inline cothread_t co_active() {
+inline cothread_t co_active(void) {
   if(!co_active_handle) co_active_handle = &co_active_buffer;
   return co_active_handle;
 }
 
-inline cothread_t co_derive(
-  void* memory, unsigned int size, void (*entrypoint)(void)) {
+inline cothread_t co_derive(void* memory, unsigned int size, void (*entrypoint)(void)) {
   cothread_t handle;
   if(!co_swap) {
     co_init();
-    co_swap = (void (*)(cothread_t, cothread_t))&co_swap_function[0];
+    co_swap = (void (*)(cothread_t, cothread_t))co_swap_function;
   }
   if(!co_active_handle) co_active_handle = &co_active_buffer;
 
-  if(handle = (cothread_t)memory) {
-    unsigned int offset = (size & ~15) - 32;
-    long long *p = (long long*)((char*)handle + offset);  /* seek to top of stack */
-    *--p = (long long)crash;                              /* crash if entrypoint returns */
-    *--p = (long long)entrypoint;                         /* start of function */
-    *(long long*)handle = (long long)p;                   /* stack pointer */
+  #if defined(__VALGRIND_MAJOR__)
+    VALGRIND_STACK_REGISTER(memory, memory + size);
+  #endif
+
+  if((handle = (cothread_t)memory)) {
+    unsigned long long stack_top = (unsigned long long)handle + size;
+    stack_top -= 32;
+    stack_top &= ~((unsigned long long) 15);
+    long long *p = (long long*)(stack_top);  /* seek to top of stack */
+    *--p = (long long)crash;                 /* crash if entrypoint returns */
+    *--p = (long long)entrypoint;            /* start of function */
+    *(long long*)handle = (long long)p;      /* stack pointer */
   }
 
   return handle;
@@ -157,7 +172,7 @@ inline void co_switch(cothread_t handle) {
   co_swap(co_active_handle = handle, co_previous_handle);
 }
 
-inline int co_serializable() {
+inline int co_serializable(void) {
   return 1;
 }
 

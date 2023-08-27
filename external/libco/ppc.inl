@@ -3,6 +3,9 @@
 #define LIBCO_C
 #include "libco.h"
 #include "settings.h"
+#if __has_include("valgrind.h")
+  #include "valgrind.h"
+#endif
 
 #include <stdint.h>
 #include <string.h>
@@ -29,7 +32,7 @@ enum { state_size  = 1024 };
 enum { above_stack = 2048 };
 enum { stack_align = 256  };
 
-static thread_local cothread_t co_active_handle = 0;
+inline thread_local cothread_t co_active_handle = 0;
 
 /* determine environment */
 
@@ -50,7 +53,7 @@ static thread_local cothread_t co_active_handle = 0;
   #endif
   LIBCO_SECTION(text)
 #endif
-static const uint32_t libco_ppc_code[1024] = {
+inline const uint32_t libco_ppc_code[1024] = {
   #if LIBCO_PPC64
   0x7d000026,  /* mfcr    r8          */
   0xf8240028,  /* std     r1,40(r4)   */
@@ -262,7 +265,7 @@ static const uint32_t libco_ppc_code[1024] = {
   #define CO_SWAP_ASM(x, y) ((void (*)(cothread_t, cothread_t))(uintptr_t)libco_ppc_code)(x, y)
 #endif
 
-static uint32_t* co_derive_(void* memory, unsigned size, uintptr_t entry) {
+inline uint32_t* co_derive_(void* memory, unsigned size, uintptr_t entry) {
   (void)entry;
 
   uint32_t* t = (uint32_t*)memory;
@@ -277,8 +280,7 @@ static uint32_t* co_derive_(void* memory, unsigned size, uintptr_t entry) {
   return t;
 }
 
-inline cothread_t co_derive(
-  void* memory, unsigned int size, void (*entry_)(void)) {
+inline cothread_t co_derive(void* memory, unsigned int size, void (*entry_)(void)) {
   uintptr_t entry = (uintptr_t)entry_;
   uint32_t* t = 0;
 
@@ -290,6 +292,10 @@ inline cothread_t co_derive(
   if(t) {
     uintptr_t sp;
     int shift;
+
+    #if defined(VALGRIND_STACK_REGISTER)
+      VALGRIND_STACK_REGISTER(t, (char*)t + size);
+    #endif
 
     /* save current registers into new thread, so that any special ones will have proper values when thread is begun */
     CO_SWAP_ASM(t, t);
@@ -327,7 +333,7 @@ inline cothread_t co_derive(
   return t;
 }
 
-static uint32_t* co_create_(unsigned size, uintptr_t entry) {
+inline uint32_t* co_create_(unsigned size, uintptr_t entry) {
   (void)entry;
 
   uint32_t* t = (uint32_t*)LIBCO_MALLOC(size);
@@ -355,6 +361,10 @@ inline cothread_t co_create(unsigned int size, void (*entry_)(void)) {
   if(t) {
     uintptr_t sp;
     int shift;
+
+    #if defined(VALGRIND_STACK_REGISTER)
+      VALGRIND_STACK_REGISTER(t, (char*)t + size);
+    #endif
 
     /* save current registers into new thread, so that any special ones will have proper values when thread is begun */
     CO_SWAP_ASM(t, t);
@@ -396,7 +406,7 @@ inline void co_delete(cothread_t t) {
   LIBCO_FREE(t);
 }
 
-static void co_init_(void) {
+inline void co_init_(void) {
   #if LIBCO_MPROTECT
   long page_size = sysconf(_SC_PAGESIZE);
   if(page_size > 0) {
@@ -416,7 +426,7 @@ static void co_init_(void) {
   co_active_handle = co_create_(state_size, (uintptr_t)&co_switch);
 }
 
-inline cothread_t co_active() {
+inline cothread_t co_active(void) {
   if(!co_active_handle) co_init_();
 
   return co_active_handle;
@@ -429,6 +439,6 @@ inline void co_switch(cothread_t t) {
   CO_SWAP_ASM(t, old);
 }
 
-inline int co_serializable() {
+inline int co_serializable(void) {
   return 0;
 }
