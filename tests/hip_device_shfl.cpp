@@ -85,10 +85,9 @@ TEMPLATE_TEST_CASE(
     TestType* GPUMatrix;
     TestType* GPUTransposeMatrix;
 
+    REQUIRE(hipMalloc(&GPUMatrix, NUM * sizeof(TestType)) == hipSuccess);
     REQUIRE(hipMalloc(
-        (void**)&GPUMatrix, NUM * sizeof(TestType)) == hipSuccess);
-    REQUIRE(hipMalloc(
-        (void**)&GPUTransposeMatrix, NUM * sizeof(TestType)) == hipSuccess);
+        &GPUTransposeMatrix, NUM * sizeof(TestType)) == hipSuccess);
 
     REQUIRE(hipMemcpy(
         GPUMatrix,

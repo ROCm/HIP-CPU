@@ -34,7 +34,7 @@ TEST_CASE("clock()", "[device][clock]")
     vector<T> A(cnt, 0);
 
     T* Ad;
-    REQUIRE(hipMalloc((void**)&Ad, cnt * sizeof(T)) == hipSuccess);
+    REQUIRE(hipMalloc(&Ad, cnt * sizeof(T)) == hipSuccess);
 
     hipLaunchKernelGGL(kernel1, dim3(1, 1, 1), dim3(cnt, 1, 1), 0, 0, Ad);
     hipLaunchKernelGGL(kernel2, dim3(1, 1, 1), dim3(cnt, 1, 1), 0, 0, Ad);

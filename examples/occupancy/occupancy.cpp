@@ -98,10 +98,10 @@ int main() {
      }
 
      // allocate the memory on the device side
-     HIP_CHECK(hipMalloc((void**)&Ad, NUM * sizeof(float)));
-     HIP_CHECK(hipMalloc((void**)&Bd, NUM * sizeof(float)));
-     HIP_CHECK(hipMalloc((void**)&C0d, NUM * sizeof(float)));
-     HIP_CHECK(hipMalloc((void**)&C1d, NUM * sizeof(float)));
+     HIP_CHECK(hipMalloc(&Ad, NUM * sizeof(float)));
+     HIP_CHECK(hipMalloc(&Bd, NUM * sizeof(float)));
+     HIP_CHECK(hipMalloc(&C0d, NUM * sizeof(float)));
+     HIP_CHECK(hipMalloc(&C1d, NUM * sizeof(float)));
 
      // Memory transfer from host to device
      HIP_CHECK(hipMemcpy(Ad,A,NUM * sizeof(float), hipMemcpyHostToDevice));

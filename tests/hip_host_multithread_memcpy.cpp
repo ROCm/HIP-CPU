@@ -63,9 +63,9 @@ TEST_CASE("Serial, sync memcpy, same stream.", "[host][multithread][memcpy]")
     float* B_d{};
     float* C_d{};
 
-    REQUIRE(hipMalloc((void**)&A_d, sizeof(float) * size(A)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&B_d, sizeof(float) * size(B)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&C_d, sizeof(float) * size(C)) == hipSuccess);
+    REQUIRE(hipMalloc(&A_d, sizeof(float) * size(A)) == hipSuccess);
+    REQUIRE(hipMalloc(&B_d, sizeof(float) * size(B)) == hipSuccess);
+    REQUIRE(hipMalloc(&C_d, sizeof(float) * size(C)) == hipSuccess);
 
     REQUIRE(hipMemcpy(A_d, data(A), sizeof(float) * size(A)) == hipSuccess);
     REQUIRE(hipMemcpy(B_d, data(B), sizeof(float) * size(B)) == hipSuccess);
@@ -120,9 +120,9 @@ TEST_CASE("Serial, async memcpy, same stream.", "[host][multithread][memcpy]")
     float* B_d{};
     float* C_d{};
 
-    REQUIRE(hipMalloc((void**)&A_d, sizeof(float) * size(A)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&B_d, sizeof(float) * size(B)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&C_d, sizeof(float) * size(C)) == hipSuccess);
+    REQUIRE(hipMalloc(&A_d, sizeof(float) * size(A)) == hipSuccess);
+    REQUIRE(hipMalloc(&B_d, sizeof(float) * size(B)) == hipSuccess);
+    REQUIRE(hipMalloc(&C_d, sizeof(float) * size(C)) == hipSuccess);
 
     REQUIRE(hipMemcpyAsync(
         A_d,
@@ -207,9 +207,9 @@ TEST_CASE(
         float* B_d{};
         float* C_d{};
 
-        REQUIRE(hipMalloc((void**)&A_d, sizeof(float) * size(A)) == hipSuccess);
-        REQUIRE(hipMalloc((void**)&B_d, sizeof(float) * size(B)) == hipSuccess);
-        REQUIRE(hipMalloc((void**)&C_d, sizeof(float) * size(C)) == hipSuccess);
+        REQUIRE(hipMalloc(&A_d, sizeof(float) * size(A)) == hipSuccess);
+        REQUIRE(hipMalloc(&B_d, sizeof(float) * size(B)) == hipSuccess);
+        REQUIRE(hipMalloc(&C_d, sizeof(float) * size(C)) == hipSuccess);
 
         REQUIRE(hipMemcpyAsync(
             A_d, data(A), sizeof(float) * size(A)) == hipSuccess);
@@ -279,9 +279,9 @@ TEST_CASE(
         float* B_d{};
         float* C_d{};
 
-        REQUIRE(hipMalloc((void**)&A_d, sizeof(float) * size(A)) == hipSuccess);
-        REQUIRE(hipMalloc((void**)&B_d, sizeof(float) * size(B)) == hipSuccess);
-        REQUIRE(hipMalloc((void**)&C_d, sizeof(float) * size(C)) == hipSuccess);
+        REQUIRE(hipMalloc(&A_d, sizeof(float) * size(A)) == hipSuccess);
+        REQUIRE(hipMalloc(&B_d, sizeof(float) * size(B)) == hipSuccess);
+        REQUIRE(hipMalloc(&C_d, sizeof(float) * size(C)) == hipSuccess);
 
         REQUIRE(hipMemcpyAsync(
             A_d,
@@ -370,9 +370,9 @@ TEST_CASE("Parallel, async memcpy, null stream.", "[host][multithread][memcpy]")
         float* B_d{};
         float* C_d{};
 
-        REQUIRE(hipMalloc((void**)&A_d, sizeof(float) * size(A)) == hipSuccess);
-        REQUIRE(hipMalloc((void**)&B_d, sizeof(float) * size(B)) == hipSuccess);
-        REQUIRE(hipMalloc((void**)&C_d, sizeof(float) * size(C)) == hipSuccess);
+        REQUIRE(hipMalloc(&A_d, sizeof(float) * size(A)) == hipSuccess);
+        REQUIRE(hipMalloc(&B_d, sizeof(float) * size(B)) == hipSuccess);
+        REQUIRE(hipMalloc(&C_d, sizeof(float) * size(C)) == hipSuccess);
 
         REQUIRE(hipMemcpyAsync(
             A_d, data(A), sizeof(float) * size(A)) == hipSuccess);
@@ -441,9 +441,9 @@ TEST_CASE("Parallel, async memcpy, same stream.", "[host][multithread][memcpy]")
         float* B_d{};
         float* C_d{};
 
-        REQUIRE(hipMalloc((void**)&A_d, sizeof(float) * size(A)) == hipSuccess);
-        REQUIRE(hipMalloc((void**)&B_d, sizeof(float) * size(B)) == hipSuccess);
-        REQUIRE(hipMalloc((void**)&C_d, sizeof(float) * size(C)) == hipSuccess);
+        REQUIRE(hipMalloc(&A_d, sizeof(float) * size(A)) == hipSuccess);
+        REQUIRE(hipMalloc(&B_d, sizeof(float) * size(B)) == hipSuccess);
+        REQUIRE(hipMalloc(&C_d, sizeof(float) * size(C)) == hipSuccess);
 
         REQUIRE(hipMemcpyAsync(
             A_d,
@@ -541,9 +541,9 @@ TEST_CASE(
         float* B_d{};
         float* C_d{};
 
-        REQUIRE(hipMalloc((void**)&A_d, sizeof(float) * size(A)) == hipSuccess);
-        REQUIRE(hipMalloc((void**)&B_d, sizeof(float) * size(B)) == hipSuccess);
-        REQUIRE(hipMalloc((void**)&C_d, sizeof(float) * size(C)) == hipSuccess);
+        REQUIRE(hipMalloc(&A_d, sizeof(float) * size(A)) == hipSuccess);
+        REQUIRE(hipMalloc(&B_d, sizeof(float) * size(B)) == hipSuccess);
+        REQUIRE(hipMalloc(&C_d, sizeof(float) * size(C)) == hipSuccess);
 
         REQUIRE(hipMemcpyAsync(
             A_d,

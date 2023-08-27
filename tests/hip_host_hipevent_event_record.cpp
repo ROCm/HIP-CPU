@@ -40,9 +40,9 @@ TEST_CASE("hipEventRecord()", "[host][hipEvent_t][event_record]")
     float* B_d;
     float* C_d;
 
-    REQUIRE(hipMalloc((void**)&A_d, size(A) * sizeof(float)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&B_d, size(B) * sizeof(float)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&C_d, size(C) * sizeof(float)) == hipSuccess);
+    REQUIRE(hipMalloc(&A_d, size(A) * sizeof(float)) == hipSuccess);
+    REQUIRE(hipMalloc(&B_d, size(B) * sizeof(float)) == hipSuccess);
+    REQUIRE(hipMalloc(&C_d, size(C) * sizeof(float)) == hipSuccess);
 
     hipEvent_t start;
     hipEvent_t stop;

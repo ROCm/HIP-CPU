@@ -116,7 +116,7 @@ TEST_CASE("isinf(__half)", "[device][math][half]")
     };
 
     __half* d_in{};
-    REQUIRE(hipMalloc((void**)&d_in, sizeof(__half) * size(in)) == hipSuccess);
+    REQUIRE(hipMalloc(&d_in, sizeof(__half) * size(in)) == hipSuccess);
     REQUIRE(hipMemcpy(
         d_in,
         data(in),
@@ -124,7 +124,7 @@ TEST_CASE("isinf(__half)", "[device][math][half]")
         hipMemcpyHostToDevice) == hipSuccess);
 
     bool* d_out{};
-    REQUIRE(hipMalloc((void**)&d_out, sizeof(bool) * size(in)) == hipSuccess);
+    REQUIRE(hipMalloc(&d_out, sizeof(bool) * size(in)) == hipSuccess);
 
     hipLaunchKernelGGL(
         kernel_hisinf, dim3(1), dim3(size(in)), 0, 0, d_in, d_out);
@@ -163,7 +163,7 @@ TEST_CASE("isnan(__half)", "[device][math][half]")
     };
 
     __half* d_in{};
-    REQUIRE(hipMalloc((void**)&d_in, sizeof(__half) * size(in)) == hipSuccess);
+    REQUIRE(hipMalloc(&d_in, sizeof(__half) * size(in)) == hipSuccess);
     REQUIRE(hipMemcpy(
         d_in,
         data(in),
@@ -171,7 +171,7 @@ TEST_CASE("isnan(__half)", "[device][math][half]")
         hipMemcpyHostToDevice) == hipSuccess);
 
     bool* d_out{};
-    REQUIRE(hipMalloc((void**)&d_out, sizeof(bool) * size(in)) == hipSuccess);
+    REQUIRE(hipMalloc(&d_out, sizeof(bool) * size(in)) == hipSuccess);
 
     hipLaunchKernelGGL(
         kernel_hisnan, dim3(1), dim3(size(in)), 0, 0, d_in, d_out);
@@ -192,7 +192,7 @@ TEST_CASE("isnan(__half)", "[device][math][half]")
 TEST_CASE("abs(__half)", "[device][math][half]")
 {
     float* p;
-    REQUIRE(hipMalloc((void**)&p, sizeof(float)) == hipSuccess);
+    REQUIRE(hipMalloc(&p, sizeof(float)) == hipSuccess);
 
     float pp{-2.1f};
     REQUIRE(hipMemcpy(p, &pp, sizeof(float), hipMemcpyDefault) == hipSuccess);
@@ -208,7 +208,7 @@ TEST_CASE("abs(__half)", "[device][math][half]")
 TEST_CASE("abs(__half2)", "[device][math][half]")
 {
     float2 *p;
-    REQUIRE(hipMalloc((void**)&p, sizeof(float2)) == hipSuccess);
+    REQUIRE(hipMalloc(&p, sizeof(float2)) == hipSuccess);
 
     float2 pp{-2.1f, -1.1f};
     REQUIRE(hipMemcpy(p, &pp, sizeof(float2), hipMemcpyDefault) == hipSuccess);
@@ -225,7 +225,7 @@ TEST_CASE("abs(__half2)", "[device][math][half]")
 TEST_CASE("math_func(__half)", "[device][math][half]")
 {
     bool* result{nullptr};
-    REQUIRE(hipHostMalloc((void**)&result, sizeof(result)) == hipSuccess);
+    REQUIRE(hipHostMalloc(&result, sizeof(result)) == hipSuccess);
 
     result[0] = false;
 
@@ -240,7 +240,7 @@ TEST_CASE("math_func(__half)", "[device][math][half]")
 TEST_CASE("math_func(__half2)", "[device][math][half]")
 {
     bool* result{nullptr};
-    REQUIRE(hipHostMalloc((void**)&result, sizeof(result)) == hipSuccess);
+    REQUIRE(hipHostMalloc(&result, sizeof(result)) == hipSuccess);
 
     result[0] = false;
 

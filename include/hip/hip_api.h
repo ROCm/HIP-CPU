@@ -387,6 +387,14 @@ hipError_t hipHostMalloc(
     return hip::detail::allocate_host(ptr, size, flags);
 }
 
+template<typename T>
+inline
+hipError_t hipHostMalloc(
+    T** ptr, std::size_t size, hipHostMallocKind flags = hipHostMallocDefault)
+{
+    return hipHostMalloc(reinterpret_cast<void**>(ptr), size, flags);
+}
+
 inline
 hipError_t hipInit(std::uint32_t flags) noexcept
 {
@@ -413,6 +421,13 @@ hipError_t hipMalloc(void** ptr, std::size_t size)
     return hip::detail::allocate(ptr, size);
 }
 
+template<typename T>
+inline
+hipError_t hipMalloc(T** ptr, std::size_t size)
+{
+    return hipMalloc(reinterpret_cast<void**>(ptr), size);
+}
+
 inline
 hipError_t hipMallocManaged(
     void** ptr,
@@ -420,6 +435,14 @@ hipError_t hipMallocManaged(
     hipMallocManagedFlags /*flags*/ = hipMemAttachHost)
 {
     return hip::detail::allocate(ptr, size);
+}
+
+template<typename T>
+inline
+hipError_t hipMallocManaged(
+    T** ptr, std::size_t size, hipMallocManagedFlags flags = hipMemAttachHost)
+{
+    return hipMallocManaged(reinterpret_cast<void**>(ptr), size, flags);
 }
 
 inline
@@ -430,6 +453,14 @@ hipError_t hipMallocPitch(
     std::size_t height)
 {
     return hip::detail::allocate_pitch(ptr, pitch, width, height);
+}
+
+template<typename T>
+inline
+hipError_t hipMallocPitch(
+    T** ptr, std::size_t* pitch, std::size_t width, std::size_t height)
+{
+    return hipMallocPitch(reinterpret_cast<void**>(ptr), pitch, width, height);
 }
 
 inline

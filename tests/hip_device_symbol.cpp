@@ -41,15 +41,15 @@ TEST_CASE("hip___device__", "[device][symbol]")
     vector<int> C(NUM, 0);
 
     int* Am;
-    REQUIRE(hipHostMalloc((void**)&Am, sizeof(globalIn)) == hipSuccess);
+    REQUIRE(hipHostMalloc(&Am, sizeof(globalIn)) == hipSuccess);
     generate_n(Am, size(A), [i = 0]() mutable { return -i++; });
 
     int* Cm;
-    REQUIRE(hipHostMalloc((void**)&Cm, sizeof(globalIn)) == hipSuccess);
+    REQUIRE(hipHostMalloc(&Cm, sizeof(globalIn)) == hipSuccess);
     fill_n(Cm, size(C), 0);
 
     int* Ad;
-    REQUIRE(hipMalloc((void**)&Ad, sizeof(globalIn)) == hipSuccess);
+    REQUIRE(hipMalloc(&Ad, sizeof(globalIn)) == hipSuccess);
 
     hipStream_t stream;
     REQUIRE(hipStreamCreate(&stream) == hipSuccess);
@@ -141,7 +141,7 @@ TEST_CASE("hip___device__", "[device][symbol]")
         (void**)&symbolAddress, HIP_SYMBOL(globalConst)) == hipSuccess);
 
     bool *checkOkD;
-    REQUIRE(hipMalloc((void**)&checkOkD, sizeof(bool)) == hipSuccess);
+    REQUIRE(hipMalloc(&checkOkD, sizeof(bool)) == hipSuccess);
 
     hipLaunchKernelGGL(
         checkAddress,

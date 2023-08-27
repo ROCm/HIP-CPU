@@ -66,8 +66,8 @@ int main() {
     }
 
     // allocate the memory on the device side
-    hipMalloc((void**)&gpuMatrix, NUM * sizeof(float));
-    hipMalloc((void**)&gpuTransposeMatrix, NUM * sizeof(float));
+    hipMalloc(&gpuMatrix, NUM * sizeof(float));
+    hipMalloc(&gpuTransposeMatrix, NUM * sizeof(float));
 
     // Memory transfer from host to device
     hipMemcpy(gpuMatrix, Matrix, NUM * sizeof(float), hipMemcpyHostToDevice);

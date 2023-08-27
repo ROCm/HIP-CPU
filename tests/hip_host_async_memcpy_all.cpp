@@ -25,10 +25,10 @@ void simpleNegTest()
 
     float* A_pinned{};
     REQUIRE(hipHostMalloc(
-        (void**)&A_pinned, Nbytes, hipHostMallocDefault) == hipSuccess);
+        &A_pinned, Nbytes, hipHostMallocDefault) == hipSuccess);
 
     float* A_d{};
-    REQUIRE(hipMalloc((void**)&A_d, Nbytes) == hipSuccess);
+    REQUIRE(hipMalloc(&A_d, Nbytes) == hipSuccess);
 
     REQUIRE(hipMemcpyAsync(
         A_pinned, A_d, Nbytes, hipMemcpyDefault, nullptr) == hipSuccess);
@@ -50,8 +50,8 @@ struct HostTraits<Pinned> {
     static void* Alloc(size_t sizeBytes)
     {
         void* p;
-        REQUIRE(hipHostMalloc(
-            (void**)&p, sizeBytes, hipHostMallocDefault) == hipSuccess);
+        REQUIRE(
+            hipHostMalloc(&p, sizeBytes, hipHostMallocDefault) == hipSuccess);
 
         return p;
     }
@@ -114,7 +114,7 @@ void test_pingpong(
     A_h = (T*)(HostTraits<AllocType>::Alloc(Nbytes));
 
     T* A_d{};
-    REQUIRE(hipMalloc((void**)&A_d, Nbytes) == hipSuccess);
+    REQUIRE(hipMalloc(&A_d, Nbytes) == hipSuccess);
 
     // Initialize the host array:
     constexpr T initValue = 13;
@@ -199,13 +199,11 @@ void test_manyInflightCopies(
     T* A_h1;
     T* A_h2;
 
-    REQUIRE(hipHostMalloc(
-        (void**)&A_h1, Nbytes, hipHostMallocDefault) == hipSuccess);
-    REQUIRE(hipHostMalloc(
-        (void**)&A_h2, Nbytes, hipHostMallocDefault) == hipSuccess);
+    REQUIRE(hipHostMalloc(&A_h1, Nbytes, hipHostMallocDefault) == hipSuccess);
+    REQUIRE(hipHostMalloc(&A_h2, Nbytes, hipHostMallocDefault) == hipSuccess);
 
     T* A_d;
-    REQUIRE(hipMalloc((void**)&A_d, Nbytes) == hipSuccess);
+    REQUIRE(hipMalloc(&A_d, Nbytes) == hipSuccess);
 
     for (int i = 0; i < numElements; i++) {
         A_h1[i] = 3.14f + static_cast<T>(i);
@@ -279,9 +277,9 @@ void initArraysForHost(
     size_t Nbytes = N * sizeof(T);
 
     if (usePinnedHost) {
-        if (A_h) REQUIRE(hipHostMalloc((void**)A_h, Nbytes) == hipSuccess);
-        if (B_h) REQUIRE(hipHostMalloc((void**)B_h, Nbytes) == hipSuccess);
-        if (C_h) REQUIRE(hipHostMalloc((void**)C_h, Nbytes) == hipSuccess);
+        if (A_h) REQUIRE(hipHostMalloc(A_h, Nbytes) == hipSuccess);
+        if (B_h) REQUIRE(hipHostMalloc(B_h, Nbytes) == hipSuccess);
+        if (C_h) REQUIRE(hipHostMalloc(C_h, Nbytes) == hipSuccess);
     }
     else {
         if (A_h) {
@@ -317,9 +315,9 @@ void initArrays(
 {
     size_t Nbytes = N * sizeof(T);
 
-    if (A_d) REQUIRE(hipMalloc((void**)A_d, Nbytes) == hipSuccess);
-    if (B_d) REQUIRE(hipMalloc((void**)B_d, Nbytes) == hipSuccess);
-    if (C_d) REQUIRE(hipMalloc((void**)C_d, Nbytes) == hipSuccess);
+    if (A_d) REQUIRE(hipMalloc(A_d, Nbytes) == hipSuccess);
+    if (B_d) REQUIRE(hipMalloc(B_d, Nbytes) == hipSuccess);
+    if (C_d) REQUIRE(hipMalloc(C_d, Nbytes) == hipSuccess);
 
     initArraysForHost(A_h, B_h, C_h, N, usePinnedHost);
 }
