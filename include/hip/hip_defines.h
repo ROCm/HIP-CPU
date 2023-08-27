@@ -81,7 +81,7 @@
         scratchpad_size(domain(::hip::detail::Tile::this_tile())));\
     auto variable{\
         reinterpret_cast<type*>(std::data(__hip_##variable##_storage__))};
-#define __shared__ thread_local static
+#define __shared__ thread_local
 
 #define HIP_SYMBOL(X) &X
 
