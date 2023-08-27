@@ -12,6 +12,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cstdint>
 #include <execution>
 #include <functional>
 #include <version>
