@@ -701,6 +701,12 @@ hipError_t hipPeekAtLastError() noexcept
 }
 
 inline
+hipError_t hipRuntimeGetVersion(std::int32_t* p_version) noexcept
+{
+    return hip::detail::runtime_version(p_version);
+}
+
+inline
 hipError_t hipSetDevice(std::int32_t device_id) noexcept
 {
     return hip::detail::set_device(device_id);
