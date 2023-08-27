@@ -40,8 +40,8 @@ TEST_CASE("hipDeviceMemset()", "[device][hipMemset]")
 
     uint32_t* Ad;
     uint32_t* Bd;
-    REQUIRE(hipMalloc((void**)&Ad, byte_cnt) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Bd, byte_cnt) == hipSuccess);
+    REQUIRE(hipMalloc(&Ad, byte_cnt) == hipSuccess);
+    REQUIRE(hipMalloc(&Bd, byte_cnt) == hipSuccess);
 
     REQUIRE(
         hipMemcpy(Ad, data(A), byte_cnt, hipMemcpyHostToDevice) == hipSuccess);

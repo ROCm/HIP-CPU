@@ -34,12 +34,12 @@ TEST_CASE("Many streams stress test.", "[host][hipStream_t]")
 
     vector<int*> A(stream_cnt);
     for (auto&& x : A) {
-        REQUIRE(hipHostMalloc((void**)&x, sizeof(int) * cnt) == hipSuccess);
+        REQUIRE(hipHostMalloc(&x, sizeof(int) * cnt) == hipSuccess);
         x[0] = 1;
     }
     vector<int*> Ad(stream_cnt);
     for (auto&& x : Ad) {
-        REQUIRE(hipMalloc((void**)&x, sizeof(int) * cnt) == hipSuccess);
+        REQUIRE(hipMalloc(&x, sizeof(int) * cnt) == hipSuccess);
     }
 
     vector<hipStream_t> stream(stream_cnt);

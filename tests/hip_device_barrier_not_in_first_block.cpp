@@ -28,7 +28,7 @@ void testDeviceBarrierNotInFirstBlock(
     }
 
     if (tid < groupElements) sdata[tid] = static_cast<T>(tid);
-    
+
     __syncthreads();
 
     const auto gid{(blockIdx.x * blockDim.x + threadIdx.x)};
@@ -49,7 +49,7 @@ TEMPLATE_TEST_CASE(
 
     TestType* Out_d;
 
-    REQUIRE(hipMalloc((void**)&Out_d, size(Out) * sizeof(TestType)) == hipSuccess);
+    REQUIRE(hipMalloc(&Out_d, size(Out) * sizeof(TestType)) == hipSuccess);
 
     const dim3 blocks{(N + threads_per_block - 1u) / threads_per_block};
     const auto groupMemBytes{2 * groupElements * sizeof(TestType)};

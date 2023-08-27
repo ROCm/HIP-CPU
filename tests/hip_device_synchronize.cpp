@@ -28,12 +28,12 @@ TEST_CASE("hipDeviceSynchronize()", "[host][hipDevice]")
     hipStream_t stream[stream_cnt];
 
     for (auto i = 0; i != stream_cnt; ++i) {
-        REQUIRE(hipHostMalloc(
-            (void**)&A[i], byte_cnt, hipHostMallocDefault) == hipSuccess);
+        REQUIRE(
+            hipHostMalloc(&A[i], byte_cnt, hipHostMallocDefault) == hipSuccess);
 
         A[i][0] = 1;
 
-        REQUIRE(hipMalloc((void**)&Ad[i], byte_cnt) == hipSuccess);
+        REQUIRE(hipMalloc(&Ad[i], byte_cnt) == hipSuccess);
         REQUIRE(hipStreamCreate(&stream[i]) == hipSuccess);
     }
 

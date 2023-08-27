@@ -61,8 +61,8 @@ int main()
         }
 
         printf("info: allocate device mem (%6.2f MB)\n", 2 * Nbytes / 1024.0 / 1024.0);
-        CHECK(hipMalloc((void**)&A_d, Nbytes));
-        CHECK(hipMalloc((void**)&C_d, Nbytes));
+        CHECK(hipMalloc(&A_d, Nbytes));
+        CHECK(hipMalloc(&C_d, Nbytes));
 
         printf("info: copy Host2Device\n");
         CHECK(hipMemcpy(A_d, A_h, Nbytes, hipMemcpyHostToDevice));

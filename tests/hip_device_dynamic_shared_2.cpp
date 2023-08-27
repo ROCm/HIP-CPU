@@ -33,8 +33,8 @@ TEST_CASE("Dynamic SharedMem II", "[device][dynamic_shared_2]")
     float* Ad;
     float* Bd;
 
-    REQUIRE(hipMalloc((void**)&Ad, size(A) * sizeof(float)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Bd, size(B) * sizeof(float)) == hipSuccess);
+    REQUIRE(hipMalloc(&Ad, size(A) * sizeof(float)) == hipSuccess);
+    REQUIRE(hipMalloc(&Bd, size(B) * sizeof(float)) == hipSuccess);
 
     REQUIRE(hipMemcpy(
         Ad,

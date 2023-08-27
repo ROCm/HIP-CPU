@@ -31,8 +31,8 @@ void run1(hipStream_t stream)
     float* Cd;
     float* Dd;
 
-    REQUIRE(hipMalloc((void**)&Cd, sizeof(float) * N) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Dd, sizeof(float) * N) == hipSuccess);
+    REQUIRE(hipMalloc(&Cd, sizeof(float) * N) == hipSuccess);
+    REQUIRE(hipMalloc(&Dd, sizeof(float) * N) == hipSuccess);
 
     REQUIRE(hipMemcpyAsync(
         data(B),
@@ -78,10 +78,10 @@ void run(hipStream_t stream1, hipStream_t stream2)
     float* Dd;
     float* Ddd;
 
-    REQUIRE(hipMalloc((void**)&Cd, sizeof(float) * N) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Cdd, sizeof(float) * N) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Dd, sizeof(float) * N) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Ddd, sizeof(float) * N) == hipSuccess);
+    REQUIRE(hipMalloc(&Cd, sizeof(float) * N) == hipSuccess);
+    REQUIRE(hipMalloc(&Cdd, sizeof(float) * N) == hipSuccess);
+    REQUIRE(hipMalloc(&Dd, sizeof(float) * N) == hipSuccess);
+    REQUIRE(hipMalloc(&Ddd, sizeof(float) * N) == hipSuccess);
 
     REQUIRE(hipMemcpyAsync(
         data(B), data(A), sizeof(float) * N, hipMemcpyHostToHost, stream1) ==

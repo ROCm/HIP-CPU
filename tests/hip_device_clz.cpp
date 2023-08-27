@@ -77,10 +77,10 @@ TEST_CASE("clz()", "[device][clz]")
     uint32_t* deviceC;
     uint64_t* deviceD;
 
-    REQUIRE(hipMalloc((void**)&deviceA, NUM * sizeof(uint32_t)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&deviceB, NUM * sizeof(uint32_t)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&deviceC, NUM * sizeof(uint32_t)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&deviceD, NUM * sizeof(uint64_t)) == hipSuccess);
+    REQUIRE(hipMalloc(&deviceA, NUM * sizeof(uint32_t)) == hipSuccess);
+    REQUIRE(hipMalloc(&deviceB, NUM * sizeof(uint32_t)) == hipSuccess);
+    REQUIRE(hipMalloc(&deviceC, NUM * sizeof(uint32_t)) == hipSuccess);
+    REQUIRE(hipMalloc(&deviceD, NUM * sizeof(uint64_t)) == hipSuccess);
 
     REQUIRE(hipMemcpy(
         deviceB,

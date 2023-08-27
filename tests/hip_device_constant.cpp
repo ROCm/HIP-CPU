@@ -30,7 +30,7 @@ TEST_CASE("hip___constant__", "[device][constant]")
     vector<int> B(LEN, 0);
 
     int* Ad;
-    REQUIRE(hipMalloc((void**)&Ad, sizeof(Value)) == hipSuccess);
+    REQUIRE(hipMalloc(&Ad, sizeof(Value)) == hipSuccess);
 
     REQUIRE(hipMemcpyToSymbol(
         HIP_SYMBOL(Value),

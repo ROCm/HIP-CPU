@@ -81,7 +81,7 @@ TEST_CASE("Monte-Carlo PI")
 
     int* count_d;
     int* count = (int*)malloc(niter * sizeof(int));
-    hipMalloc((void**)&count_d, niter *  sizeof(int));
+    hipMalloc(&count_d, niter *  sizeof(int));
 
     BENCHMARK("HIP-CPU") {
         hipLaunchKernelGGL(
@@ -748,14 +748,14 @@ uint64_t solve_gpu(int N, int M)
     std::uint32_t* mid_ary_d;
     std::uint32_t* right_ary_d;
     REQUIRE(hipMalloc(
-        (void**)&left_ary_d, sizeof(std::uint32_t) * length) == hipSuccess);
+        &left_ary_d, sizeof(std::uint32_t) * length) == hipSuccess);
     REQUIRE(hipMalloc(
-        (void**)&mid_ary_d, sizeof(std::uint32_t) * length) == hipSuccess);
+        &mid_ary_d, sizeof(std::uint32_t) * length) == hipSuccess);
     REQUIRE(hipMalloc(
-        (void**)&right_ary_d, sizeof(std::uint32_t) * length) == hipSuccess);
+        &right_ary_d, sizeof(std::uint32_t) * length) == hipSuccess);
     std::uint64_t *result_d;
     REQUIRE(hipMalloc(
-        (void**)&result_d, sizeof(std::uint64_t) * length) == hipSuccess);
+        &result_d, sizeof(std::uint64_t) * length) == hipSuccess);
     REQUIRE(hipMemcpy(
         left_ary_d,
         nqe.left_ary.data(),
@@ -810,14 +810,14 @@ uint64_t solve_gpu_ver2(int N, int M)
     std::uint32_t* mid_ary_d;
     std::uint32_t* right_ary_d;
     REQUIRE(hipMalloc(
-        (void**)&left_ary_d, sizeof(std::uint32_t) * length) == hipSuccess);
+        &left_ary_d, sizeof(std::uint32_t) * length) == hipSuccess);
     REQUIRE(hipMalloc(
-        (void**)&mid_ary_d, sizeof(std::uint32_t) * length) == hipSuccess);
+        &mid_ary_d, sizeof(std::uint32_t) * length) == hipSuccess);
     REQUIRE(hipMalloc(
-        (void**)&right_ary_d, sizeof(std::uint32_t) * length) == hipSuccess);
+        &right_ary_d, sizeof(std::uint32_t) * length) == hipSuccess);
     std::uint64_t* result_d;
     REQUIRE(hipMalloc(
-        (void**)&result_d, sizeof(std::uint64_t) * length) == hipSuccess);
+        &result_d, sizeof(std::uint64_t) * length) == hipSuccess);
     REQUIRE(hipMemcpy(
         left_ary_d,
         nqe.left_ary.data(),
@@ -915,8 +915,8 @@ TEST_CASE("HAXPY")
     __half* x;
     __half* y;
 
-    REQUIRE(hipMalloc((void**)&x, n * sizeof(__half)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&y, n * sizeof(__half)) == hipSuccess);
+    REQUIRE(hipMalloc(&x, n * sizeof(__half)) == hipSuccess);
+    REQUIRE(hipMalloc(&y, n * sizeof(__half)) == hipSuccess);
 
     for (int i = 0; i < n; i++) {
         x[i] = 1.0f;

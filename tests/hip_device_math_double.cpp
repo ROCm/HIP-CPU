@@ -122,9 +122,9 @@ TEST_CASE("sincos(double)", "[device][math][double][sincos]")
     double* Bd;
     double* Cd;
 
-    REQUIRE(hipMalloc((void**)&Ad, sizeof(double) * size(A)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Bd, sizeof(double) * size(B)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Cd, sizeof(double) * size(C)) == hipSuccess);
+    REQUIRE(hipMalloc(&Ad, sizeof(double) * size(A)) == hipSuccess);
+    REQUIRE(hipMalloc(&Bd, sizeof(double) * size(B)) == hipSuccess);
+    REQUIRE(hipMalloc(&Cd, sizeof(double) * size(C)) == hipSuccess);
 
     REQUIRE(hipMemcpy(
         Ad,
@@ -168,9 +168,9 @@ TEST_CASE("sincospi(double)", "[device][math][double][sincospi]")
     double* Bd;
     double* Cd;
 
-    REQUIRE(hipMalloc((void**)&Ad, sizeof(double) * size(A)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Bd, sizeof(double) * size(B)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Cd, sizeof(double) * size(C)) == hipSuccess);
+    REQUIRE(hipMalloc(&Ad, sizeof(double) * size(A)) == hipSuccess);
+    REQUIRE(hipMalloc(&Bd, sizeof(double) * size(B)) == hipSuccess);
+    REQUIRE(hipMalloc(&Cd, sizeof(double) * size(C)) == hipSuccess);
 
     REQUIRE(hipMemcpy(
         Ad,
@@ -212,8 +212,8 @@ TEST_CASE("llrint(double)", "[device][math][double][llrint]")
     double* Ad;
     long long* Bd;
 
-    REQUIRE(hipMalloc((void**)&Ad, sizeof(double) * size(A)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Bd, sizeof(long long) * size(B)) == hipSuccess);
+    REQUIRE(hipMalloc(&Ad, sizeof(double) * size(A)) == hipSuccess);
+    REQUIRE(hipMalloc(&Bd, sizeof(long long) * size(B)) == hipSuccess);
 
     REQUIRE(hipMemcpy(
         Ad,
@@ -245,8 +245,8 @@ TEST_CASE("lrint(double)", "[device][math][double][lrint]")
     double* Ad;
     long int* Bd;
 
-    REQUIRE(hipMalloc((void**)&Ad, sizeof(double) * size(A)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Bd, sizeof(long int) * size(B)) == hipSuccess);
+    REQUIRE(hipMalloc(&Ad, sizeof(double) * size(A)) == hipSuccess);
+    REQUIRE(hipMalloc(&Bd, sizeof(long int) * size(B)) == hipSuccess);
 
     REQUIRE(hipMemcpy(
         Ad,
@@ -278,8 +278,8 @@ TEST_CASE("rint(double)", "[device][math][double][rint]")
     double* Ad;
     double* Bd;
 
-    REQUIRE(hipMalloc((void**)&Ad, sizeof(double) * size(A)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Bd, sizeof(double) * size(B)) == hipSuccess);
+    REQUIRE(hipMalloc(&Ad, sizeof(double) * size(A)) == hipSuccess);
+    REQUIRE(hipMalloc(&Bd, sizeof(double) * size(B)) == hipSuccess);
 
     REQUIRE(hipMemcpy(
         Ad,
@@ -312,8 +312,8 @@ TEST_CASE("llround(double)", "[device][math][double][llround]")
     double* Ad;
     long long int* Bd;
 
-    REQUIRE(hipMalloc((void**)&Ad, sizeof(double) * size(A)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Bd, sizeof(long long) * size(B)) == hipSuccess);
+    REQUIRE(hipMalloc(&Ad, sizeof(double) * size(A)) == hipSuccess);
+    REQUIRE(hipMalloc(&Bd, sizeof(long long) * size(B)) == hipSuccess);
 
     REQUIRE(hipMemcpy(
         Ad,
@@ -345,8 +345,8 @@ TEST_CASE("lround(double)", "[device][math][double][lround]")
     double* Ad;
     long int* Bd;
 
-    REQUIRE(hipMalloc((void**)&Ad, sizeof(double) * size(A)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Bd, sizeof(long int) * size(B)) == hipSuccess);
+    REQUIRE(hipMalloc(&Ad, sizeof(double) * size(A)) == hipSuccess);
+    REQUIRE(hipMalloc(&Bd, sizeof(long int) * size(B)) == hipSuccess);
 
     REQUIRE(hipMemcpy(
         Ad,
@@ -386,10 +386,10 @@ TEST_CASE("norm3d(double)", "[device][math][double][norm3d]")
     double val = 0.0;
     val = sqrt(1.0 + 4.0 + 9.0);
 
-    REQUIRE(hipMalloc((void**)&Ad, sizeof(double) * size(A)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Bd, sizeof(double) * size(B)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Cd, sizeof(double) * size(C)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Dd, sizeof(double) * size(D)) == hipSuccess);
+    REQUIRE(hipMalloc(&Ad, sizeof(double) * size(A)) == hipSuccess);
+    REQUIRE(hipMalloc(&Bd, sizeof(double) * size(B)) == hipSuccess);
+    REQUIRE(hipMalloc(&Cd, sizeof(double) * size(C)) == hipSuccess);
+    REQUIRE(hipMalloc(&Dd, sizeof(double) * size(D)) == hipSuccess);
 
     REQUIRE(hipMemcpy(
         Ad,
@@ -439,11 +439,11 @@ TEST_CASE("norm4d(double)", "[device][math][double][norm4d]")
     double* Dd;
     double* Ed;
 
-    REQUIRE(hipMalloc((void**)&Ad, sizeof(double) * size(A)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Bd, sizeof(double) * size(B)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Cd, sizeof(double) * size(C)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Dd, sizeof(double) * size(D)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Ed, sizeof(double) * size(E)) == hipSuccess);
+    REQUIRE(hipMalloc(&Ad, sizeof(double) * size(A)) == hipSuccess);
+    REQUIRE(hipMalloc(&Bd, sizeof(double) * size(B)) == hipSuccess);
+    REQUIRE(hipMalloc(&Cd, sizeof(double) * size(C)) == hipSuccess);
+    REQUIRE(hipMalloc(&Dd, sizeof(double) * size(D)) == hipSuccess);
+    REQUIRE(hipMalloc(&Ed, sizeof(double) * size(E)) == hipSuccess);
 
     REQUIRE(hipMemcpy(
         Ad,
@@ -497,9 +497,9 @@ TEST_CASE("rhypot(double)", "[device][math][double][rhypot]")
     double* Bd;
     double* Cd;
 
-    REQUIRE(hipMalloc((void**)&Ad, sizeof(double) * size(A)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Bd, sizeof(double) * size(B)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Cd, sizeof(double) * size(C)) == hipSuccess);
+    REQUIRE(hipMalloc(&Ad, sizeof(double) * size(A)) == hipSuccess);
+    REQUIRE(hipMalloc(&Bd, sizeof(double) * size(B)) == hipSuccess);
+    REQUIRE(hipMalloc(&Cd, sizeof(double) * size(C)) == hipSuccess);
 
     REQUIRE(hipMemcpy(
         Ad,
@@ -544,10 +544,10 @@ TEST_CASE("rnorm3d(double)", "[device][math][double][rnorm3d]")
     double* Cd;
     double* Dd;
 
-    REQUIRE(hipMalloc((void**)&Ad, sizeof(double) * size(A)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Bd, sizeof(double) * size(B)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Cd, sizeof(double) * size(C)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Dd, sizeof(double) * size(D)) == hipSuccess);
+    REQUIRE(hipMalloc(&Ad, sizeof(double) * size(A)) == hipSuccess);
+    REQUIRE(hipMalloc(&Bd, sizeof(double) * size(B)) == hipSuccess);
+    REQUIRE(hipMalloc(&Cd, sizeof(double) * size(C)) == hipSuccess);
+    REQUIRE(hipMalloc(&Dd, sizeof(double) * size(D)) == hipSuccess);
 
     REQUIRE(hipMemcpy(
         Ad,
@@ -597,11 +597,11 @@ TEST_CASE("rnorm4d(double)", "[device][math][double][rnorm4d]")
     double* Dd;
     double* Ed;
 
-    REQUIRE(hipMalloc((void**)&Ad, sizeof(double) * size(A)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Bd, sizeof(double) * size(B)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Cd, sizeof(double) * size(C)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Dd, sizeof(double) * size(D)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Ed, sizeof(double) * size(E)) == hipSuccess);
+    REQUIRE(hipMalloc(&Ad, sizeof(double) * size(A)) == hipSuccess);
+    REQUIRE(hipMalloc(&Bd, sizeof(double) * size(B)) == hipSuccess);
+    REQUIRE(hipMalloc(&Cd, sizeof(double) * size(C)) == hipSuccess);
+    REQUIRE(hipMalloc(&Dd, sizeof(double) * size(D)) == hipSuccess);
+    REQUIRE(hipMalloc(&Ed, sizeof(double) * size(E)) == hipSuccess);
 
     REQUIRE(hipMemcpy(
         Ad,
@@ -655,8 +655,8 @@ TEST_CASE("rnorm(double)", "[device][math][double][rnorm]")
     double* Ad;
     double* Bd;
 
-    REQUIRE(hipMalloc((void**)&Ad, sizeof(double) * size(A)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Bd, sizeof(double) * size(B)) == hipSuccess);
+    REQUIRE(hipMalloc(&Ad, sizeof(double) * size(A)) == hipSuccess);
+    REQUIRE(hipMalloc(&Bd, sizeof(double) * size(B)) == hipSuccess);
 
     REQUIRE(hipMemcpy(
         Ad,
@@ -688,8 +688,8 @@ TEST_CASE("erfinv(double)", "[device][math][double][erfinv]")
     double* Ad;
     double* Bd;
 
-    REQUIRE(hipMalloc((void**)&Ad, sizeof(double) * size(A)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Bd, sizeof(double) * size(B)) == hipSuccess);
+    REQUIRE(hipMalloc(&Ad, sizeof(double) * size(A)) == hipSuccess);
+    REQUIRE(hipMalloc(&Bd, sizeof(double) * size(B)) == hipSuccess);
 
     REQUIRE(hipMemcpy(
         Ad,

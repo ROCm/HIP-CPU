@@ -84,9 +84,9 @@ TEMPLATE_TEST_CASE(
     T* Bd;
     T* Cd;
 
-    REQUIRE(hipMalloc((void**)&Ad, sizeof(T) * cnt) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Bd, sizeof(T) * cnt) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Cd, sizeof(T) * cnt) == hipSuccess);
+    REQUIRE(hipMalloc(&Ad, sizeof(T) * cnt) == hipSuccess);
+    REQUIRE(hipMalloc(&Bd, sizeof(T) * cnt) == hipSuccess);
+    REQUIRE(hipMalloc(&Cd, sizeof(T) * cnt) == hipSuccess);
 
     for (auto i = 0; i != cnt; ++i) {
         A[i] = (i + 1) * T{1.0};
@@ -104,8 +104,8 @@ TEMPLATE_TEST_CASE(
     T** pA;
     T** pB;
 
-    REQUIRE(hipMalloc((void**)&pA, sizeof(T*)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&pB, sizeof(T*)) == hipSuccess);
+    REQUIRE(hipMalloc(&pA, sizeof(T*)) == hipSuccess);
+    REQUIRE(hipMalloc(&pB, sizeof(T*)) == hipSuccess);
 
     dim3 block_dim(block_dim_x, block_dim_y, block_dim_z);
     dim3 grid_dim(grid_dim_x, grid_dim_y, grid_dim_z);

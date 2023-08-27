@@ -53,7 +53,7 @@ void MultipleStream(float** data, float* randArray, float** gpuTransposeMatrix,
     for (int i = 0; i < num_streams; i++) hipStreamCreate(&streams[i]);
 
     for (int i = 0; i < num_streams; i++) {
-        hipMalloc((void**)&data[i], NUM * sizeof(float));
+        hipMalloc(&data[i], NUM * sizeof(float));
         hipMemcpyAsync(
             data[i],
             randArray,
@@ -90,8 +90,8 @@ int main() {
     TransposeMatrix[0] = (float*)malloc(NUM * sizeof(float));
     TransposeMatrix[1] = (float*)malloc(NUM * sizeof(float));
 
-    hipMalloc((void**)&gpuTransposeMatrix[0], NUM * sizeof(float));
-    hipMalloc((void**)&gpuTransposeMatrix[1], NUM * sizeof(float));
+    hipMalloc(&gpuTransposeMatrix[0], NUM * sizeof(float));
+    hipMalloc(&gpuTransposeMatrix[1], NUM * sizeof(float));
 
     for (int i = 0; i < NUM; i++) {
         randArray[i] = (float)i * 1.0f;

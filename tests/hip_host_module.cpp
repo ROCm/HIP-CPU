@@ -34,8 +34,8 @@ TEST_CASE("load module and launch __global__ function", "[host][module]")
     hipDeviceptr_t Ad{};
     hipDeviceptr_t Bd{};
 
-    REQUIRE(hipMalloc((void**)&Ad, len * sz) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Bd, len * sz) == hipSuccess);
+    REQUIRE(hipMalloc(&Ad, len * sz) == hipSuccess);
+    REQUIRE(hipMalloc(&Bd, len * sz) == hipSuccess);
 
     REQUIRE(hipMemcpyHtoD(Ad, data(A), len * sz) == hipSuccess);
     REQUIRE(hipMemcpyHtoD(Bd, data(B), len * sz) == hipSuccess);

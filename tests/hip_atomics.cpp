@@ -65,7 +65,7 @@ TEMPLATE_TEST_CASE(
     h_data[8] = h_data[10] = 0xff;
 
     TestType* d_data;
-    REQUIRE(hipMalloc((void**)&d_data, sizeof(TestType) * cnt) == hipSuccess);
+    REQUIRE(hipMalloc(&d_data, sizeof(TestType) * cnt) == hipSuccess);
 
     REQUIRE(hipMemcpy(
         d_data, data(h_data), sizeof(TestType) * cnt, hipMemcpyHostToDevice)

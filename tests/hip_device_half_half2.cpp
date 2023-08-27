@@ -75,7 +75,7 @@ TEST_CASE("__half and __half2 support", "[device][half]")
 {
     bool* result{};
 
-    REQUIRE(hipHostMalloc((void**)&result, 1) == hipSuccess);
+    REQUIRE(hipHostMalloc(&result, 1) == hipSuccess);
 
     result[0] = true;
 

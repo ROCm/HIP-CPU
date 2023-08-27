@@ -48,7 +48,7 @@ TEST_CASE("ballot()", "[device][ballot]")
 
     unsigned int* device_ballot;
     REQUIRE(hipMalloc(
-        (void**)&device_ballot, Num_Warps_per_Grid * sizeof(unsigned int)) ==
+        &device_ballot, Num_Warps_per_Grid * sizeof(unsigned int)) ==
         hipSuccess);
 
     REQUIRE(hipMemcpy(

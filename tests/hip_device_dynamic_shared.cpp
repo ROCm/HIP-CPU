@@ -75,9 +75,9 @@ TEMPLATE_TEST_CASE(
     TestType* B_d;
     TestType* C_d;
 
-    REQUIRE(hipMalloc((void**)&A_d, size(A) * sizeof(TestType)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&B_d, size(B) * sizeof(TestType)) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&C_d, size(C) * sizeof(TestType)) == hipSuccess);
+    REQUIRE(hipMalloc(&A_d, size(A) * sizeof(TestType)) == hipSuccess);
+    REQUIRE(hipMalloc(&B_d, size(B) * sizeof(TestType)) == hipSuccess);
+    REQUIRE(hipMalloc(&C_d, size(C) * sizeof(TestType)) == hipSuccess);
 
     REQUIRE(hipMemcpy(
         A_d,

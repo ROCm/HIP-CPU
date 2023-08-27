@@ -72,9 +72,9 @@ TEMPLATE_TEST_CASE(
     T* Ad;
     T* Bd;
     T* Cd;
-    REQUIRE(hipMalloc((void**)&Ad, sizeof(T) * cnt) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Bd, sizeof(T) * cnt) == hipSuccess);
-    REQUIRE(hipMalloc((void**)&Cd, sizeof(T) * cnt) == hipSuccess);
+    REQUIRE(hipMalloc(&Ad, sizeof(T) * cnt) == hipSuccess);
+    REQUIRE(hipMalloc(&Bd, sizeof(T) * cnt) == hipSuccess);
+    REQUIRE(hipMalloc(&Cd, sizeof(T) * cnt) == hipSuccess);
 
     for (auto i = 0u; i != cnt; ++i) {
         A[i] = T{(i + 1) * U{1.0}, (i + 2) * U{1.0}};

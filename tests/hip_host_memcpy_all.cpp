@@ -67,9 +67,9 @@ void initArraysForHost(
     size_t Nbytes = N * sizeof(T);
 
     if (usePinnedHost) {
-        if (A_h) REQUIRE(hipHostMalloc((void**)A_h, Nbytes) == hipSuccess);
-        if (B_h) REQUIRE(hipHostMalloc((void**)B_h, Nbytes) == hipSuccess);
-        if (C_h) REQUIRE(hipHostMalloc((void**)C_h, Nbytes) == hipSuccess);
+        if (A_h) REQUIRE(hipHostMalloc(A_h, Nbytes) == hipSuccess);
+        if (B_h) REQUIRE(hipHostMalloc(B_h, Nbytes) == hipSuccess);
+        if (C_h) REQUIRE(hipHostMalloc(C_h, Nbytes) == hipSuccess);
     }
     else {
         if (A_h) {
@@ -105,9 +105,9 @@ void initArrays(
 {
     size_t Nbytes = N * sizeof(T);
 
-    if (A_d) REQUIRE(hipMalloc((void**)A_d, Nbytes) == hipSuccess);
-    if (B_d) REQUIRE(hipMalloc((void**)B_d, Nbytes) == hipSuccess);
-    if (C_d) REQUIRE(hipMalloc((void**)C_d, Nbytes) == hipSuccess);
+    if (A_d) REQUIRE(hipMalloc(A_d, Nbytes) == hipSuccess);
+    if (B_d) REQUIRE(hipMalloc(B_d, Nbytes) == hipSuccess);
+    if (C_d) REQUIRE(hipMalloc(C_d, Nbytes) == hipSuccess);
 
     initArraysForHost(A_h, B_h, C_h, N, usePinnedHost);
 }
@@ -122,7 +122,7 @@ DeviceMemory<T>::DeviceMemory(size_t numElements)
 
     size_t sizeElements = numElements * sizeof(T);
 
-    REQUIRE(hipMalloc((void**)&_C_dd, sizeElements) == hipSuccess);
+    REQUIRE(hipMalloc(&_C_dd, sizeElements) == hipSuccess);
 }
 
 template<typename T>
@@ -212,9 +212,9 @@ HostMemory<T>::HostMemory(size_t numElements, bool usePinnedHost)
 
     if (usePinnedHost) {
         REQUIRE(hipHostMalloc(
-            (void**)&A_hh, sizeElements, hipHostMallocDefault) == hipSuccess);
+            &A_hh, sizeElements, hipHostMallocDefault) == hipSuccess);
         REQUIRE(hipHostMalloc(
-            (void**)&B_hh, sizeElements, hipHostMallocDefault) == hipSuccess);
+            &B_hh, sizeElements, hipHostMallocDefault) == hipSuccess);
     } else {
         A_hh = (T*)malloc(sizeElements);
         B_hh = (T*)malloc(sizeElements);

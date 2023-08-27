@@ -126,7 +126,7 @@ void RunBenchmark_H2D(ResultDatabase& resultDB) {
     // Create some host memory pattern
     float* hostMem = NULL;
     if (p_malloc_mode == MallocPinned) {
-        hipHostMalloc((void**)&hostMem, sizeof(float) * numMaxFloats);
+        hipHostMalloc(&hostMem, sizeof(float) * numMaxFloats);
         while (hipGetLastError() != hipSuccess) {
             // drop the size and try again
             if (p_verbose) std::cout << " - dropping size allocating pinned mem\n";
@@ -136,7 +136,7 @@ void RunBenchmark_H2D(ResultDatabase& resultDB) {
                 return;
             }
             numMaxFloats = 1024 * (sizes[nSizes - 1]) / 4;
-            hipHostMalloc((void**)&hostMem, sizeof(float) * numMaxFloats);
+            hipHostMalloc(&hostMem, sizeof(float) * numMaxFloats);
         }
     } else if (p_malloc_mode == MallocUnpinned) {
         hostMem = new float[numMaxFloats];
@@ -156,7 +156,7 @@ void RunBenchmark_H2D(ResultDatabase& resultDB) {
     }
 
     float* device;
-    hipMalloc((void**)&device, sizeof(float) * numMaxFloats);
+    hipMalloc(&device, sizeof(float) * numMaxFloats);
     while (hipGetLastError() != hipSuccess) {
         // drop the size and try again
         if (p_verbose) std::cout << " - dropping size allocating device mem\n";
@@ -166,7 +166,7 @@ void RunBenchmark_H2D(ResultDatabase& resultDB) {
             return;
         }
         numMaxFloats = 1024 * (sizes[nSizes - 1]) / 4;
-        hipMalloc((void**)&device, sizeof(float) * numMaxFloats);
+        hipMalloc(&device, sizeof(float) * numMaxFloats);
     }
 
 
@@ -285,9 +285,9 @@ void RunBenchmark_D2H(ResultDatabase& resultDB) {
     float* hostMem1{};
     float* hostMem2{};
     if (p_malloc_mode == MallocPinned) {
-        hipHostMalloc((void**)&hostMem1, sizeof(float) * numMaxFloats);
+        hipHostMalloc(&hostMem1, sizeof(float) * numMaxFloats);
         hipError_t err1 = hipGetLastError();
-        hipHostMalloc((void**)&hostMem2, sizeof(float) * numMaxFloats);
+        hipHostMalloc(&hostMem2, sizeof(float) * numMaxFloats);
         hipError_t err2 = hipGetLastError();
         while (err1 != hipSuccess || err2 != hipSuccess) {
             // free the first buffer if only the second failed
@@ -301,9 +301,9 @@ void RunBenchmark_D2H(ResultDatabase& resultDB) {
                 return;
             }
             numMaxFloats = 1024 * (sizes[nSizes - 1]) / 4;
-            hipHostMalloc((void**)&hostMem1, sizeof(float) * numMaxFloats);
+            hipHostMalloc(&hostMem1, sizeof(float) * numMaxFloats);
             err1 = hipGetLastError();
-            hipHostMalloc((void**)&hostMem2, sizeof(float) * numMaxFloats);
+            hipHostMalloc(&hostMem2, sizeof(float) * numMaxFloats);
             err2 = hipGetLastError();
         }
     } else if (p_malloc_mode == MallocUnpinned) {
@@ -329,7 +329,7 @@ void RunBenchmark_D2H(ResultDatabase& resultDB) {
     }
 
     float* device;
-    hipMalloc((void**)&device, sizeof(float) * numMaxFloats);
+    hipMalloc(&device, sizeof(float) * numMaxFloats);
     while (hipGetLastError() != hipSuccess) {
         // drop the size and try again
         if (p_verbose) std::cout << " - dropping size allocating device mem\n";
@@ -339,7 +339,7 @@ void RunBenchmark_D2H(ResultDatabase& resultDB) {
             return;
         }
         numMaxFloats = 1024 * (sizes[nSizes - 1]) / 4;
-        hipMalloc((void**)&device, sizeof(float) * numMaxFloats);
+        hipMalloc(&device, sizeof(float) * numMaxFloats);
     }
 
     hipMemcpy(device, hostMem1, numMaxFloats * sizeof(float), hipMemcpyHostToDevice);
@@ -454,8 +454,8 @@ void RunBenchmark_Bidir(ResultDatabase& resultDB) {
     float* hostMem[2] = {NULL, NULL};
     if (p_malloc_mode == MallocPinned) {
         while (1) {
-            hipError_t e1 = hipHostMalloc((void**)&hostMem[0], sizeof(float) * numMaxFloats);
-            hipError_t e2 = hipHostMalloc((void**)&hostMem[1], sizeof(float) * numMaxFloats);
+            hipError_t e1 = hipHostMalloc(&hostMem[0], sizeof(float) * numMaxFloats);
+            hipError_t e2 = hipHostMalloc(&hostMem[1], sizeof(float) * numMaxFloats);
 
             if ((e1 == hipSuccess) && (e2 == hipSuccess)) {
                 break;
@@ -493,8 +493,8 @@ void RunBenchmark_Bidir(ResultDatabase& resultDB) {
 
     float* deviceMem[2];
     while (1) {
-        hipError_t e1 = hipMalloc((void**)&deviceMem[0], sizeof(float) * numMaxFloats);
-        hipError_t e2 = hipMalloc((void**)&deviceMem[1], sizeof(float) * numMaxFloats);
+        hipError_t e1 = hipMalloc(&deviceMem[0], sizeof(float) * numMaxFloats);
+        hipError_t e2 = hipMalloc(&deviceMem[1], sizeof(float) * numMaxFloats);
 
         if ((e1 == hipSuccess) && (e2 == hipSuccess)) {
             break;
@@ -699,10 +699,10 @@ void RunBenchmark_P2P_Unidir(ResultDatabase& resultDB) {
             float *currentGpuMem, *peerGpuMem;
 
             hipSetDevice(currentGpu);
-            hipMalloc((void**)&currentGpuMem, sizeof(float) * numMaxFloats);
+            hipMalloc(&currentGpuMem, sizeof(float) * numMaxFloats);
 
             hipSetDevice(peerGpu);
-            hipMalloc((void**)&peerGpuMem, sizeof(float) * numMaxFloats);
+            hipMalloc(&peerGpuMem, sizeof(float) * numMaxFloats);
 
             enablePeer2Peer(currentGpu, peerGpu);
 
@@ -814,13 +814,13 @@ void RunBenchmark_P2P_Bidir(ResultDatabase& resultDB) {
             float *currentGpuMem[2], *peerGpuMem[2];
 
             hipSetDevice(currentGpu);
-            hipMalloc((void**)&currentGpuMem[0], sizeof(float) * numMaxFloats);
-            hipMalloc((void**)&currentGpuMem[1], sizeof(float) * numMaxFloats);
+            hipMalloc(&currentGpuMem[0], sizeof(float) * numMaxFloats);
+            hipMalloc(&currentGpuMem[1], sizeof(float) * numMaxFloats);
             enablePeer2Peer(peerGpu,currentGpu);
 
             hipSetDevice(peerGpu);
-            hipMalloc((void**)&peerGpuMem[0], sizeof(float) * numMaxFloats);
-            hipMalloc((void**)&peerGpuMem[1], sizeof(float) * numMaxFloats);
+            hipMalloc(&peerGpuMem[0], sizeof(float) * numMaxFloats);
+            hipMalloc(&peerGpuMem[1], sizeof(float) * numMaxFloats);
 
             enablePeer2Peer(currentGpu, peerGpu);
 

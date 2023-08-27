@@ -36,9 +36,9 @@ int main()
 
         // Allocate device memory:
         float *A_d, *B_d, *C_d;
-        hipMalloc((void**)&A_d, sizeBytes);
-        hipMalloc((void**)&B_d, sizeBytes);
-        hipMalloc((void**)&C_d, sizeBytes);
+        hipMalloc(&A_d, sizeBytes);
+        hipMalloc(&B_d, sizeBytes);
+        hipMalloc(&C_d, sizeBytes);
 
         // Initialize host memory
         for (int i = 0; i < sizeElements; i++) {
