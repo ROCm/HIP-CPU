@@ -80,3 +80,27 @@
         } // Namespace hip::detail.
     } // Namespace hip.
 #endif
+
+#include <thread>
+
+namespace hip
+{
+    namespace detail
+    {
+        inline
+        void pause_or_yield() noexcept
+        {
+            #if defined(YieldProcessor)
+                return YieldProcessor();
+            #elif defined(__has_builtin)
+                #if __has_builtin(__builtin_ia32_pause)
+                    return __builtin_ia32_pause();
+                #else
+                    return std::this_thread::yield();
+                #endif
+            #else
+                return std::this_thread::yield();
+            #endif
+        }
+    } // Namespace hip::detail.
+} // Namespace hip.

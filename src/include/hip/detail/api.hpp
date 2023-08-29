@@ -82,7 +82,9 @@ namespace hip
 
             if (!s) s = Runtime::null_stream();
 
-            s->enqueue(Task{[=](auto&&) { std::memcpy(dst, src, size); }});
+            s->apply([=](auto&& ts) {
+                ts.emplace_back([=](auto&&) { std::memcpy(dst, src, size); });
+            });
 
             return hipSuccess;
         }
@@ -125,17 +127,19 @@ namespace hip
 
             if (!s) s = Runtime::null_stream();
 
-            s->enqueue(Task{ // TODO: optimise.
-                [=,
-                dst = static_cast<std::byte*>(dst),
-                src = static_cast<const std::byte*>(src)](auto&&) mutable {
-                for (auto i = 0u; i != height; ++i) {
-                    std::memcpy(dst, src, width);
+            s->apply([=](auto&& ts) { // TODO: optimise.
+                ts.emplace_back(
+                    [=,
+                    dst = static_cast<std::byte*>(dst),
+                    src = static_cast<const std::byte*>(src)](auto&&) mutable {
+                    for (auto i = 0u; i != height; ++i) {
+                        std::memcpy(dst, src, width);
 
-                    dst += d_pitch;
-                    src += s_pitch;
-                }
-            }});
+                        dst += d_pitch;
+                        src += s_pitch;
+                    }
+                });
+            });
 
             return hipSuccess;
         }
@@ -323,7 +327,7 @@ namespace hip
         {
             if (!s) return hipErrorInvalidHandle;
 
-            Runtime::destroy_stream_async(s).get();
+            Runtime::destroy_stream_async(s).wait();
 
             return hipSuccess;
         }
@@ -479,7 +483,9 @@ namespace hip
 
             if (!s) s = Runtime::null_stream();
 
-            s->enqueue(Task{[=](auto&&) { std::fill_n(p, n, x); }});
+            s->apply([=](auto&& ts) {
+                ts.emplace_back([=](auto&&) { std::fill_n(p, n, x); });
+            });
 
             return hipSuccess;
         }
@@ -795,7 +801,9 @@ namespace hip
 
             if (!s) s = Runtime::null_stream();
 
-            s->enqueue(Task{[=](auto&&) { wait(e); }});
+            s->apply([=](auto&& ts) {
+                ts.emplace_back([=](auto&&) { wait(e); });
+            });
 
             return hipSuccess;
         }
