@@ -7,7 +7,7 @@
 #include "../external/catch2/catch.hpp"
 
 #include <cstdint>
-#include <malloc.h>
+#include <cstdlib>
 #include <vector>
 
 #define MAX_OFFSET 3
