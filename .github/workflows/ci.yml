@@ -11,10 +11,10 @@ on:
 jobs:
     test-macOS-GCC:
         name: macOS-GCC
-        runs-on: macos-11.0
+        runs-on: macos-latest
         steps:
             - name: Fetch TBB
-              run: brew install tbb@2020 # Version lock due to temporary PSTL incompatibility with 2021+
+              run: brew install tbb
 
             - name: Checkout HIP CPU Runtime
               uses: actions/checkout@v2
@@ -24,7 +24,7 @@ jobs:
                 cd ${{github.workspace}}
                 mkdir build
                 cd build
-                cmake ../ -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_COMPILER=g++-11
+                cmake ../ -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_COMPILER=g++
                 cmake --build ${{github.workspace}}/build --config RelWithDebInfo -j 3
 
             - name: Run Tests
