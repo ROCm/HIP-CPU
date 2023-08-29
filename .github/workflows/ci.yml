@@ -17,7 +17,7 @@ jobs:
               run: brew install tbb
 
             - name: Checkout HIP CPU Runtime
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3.6.0
 
             - name: Build HIP CPU Runtime tests
               run: |
@@ -39,7 +39,7 @@ jobs:
               run: sudo apt-get install libtbb-dev
 
             - name: Checkout HIP CPU Runtime
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3.6.0
 
             - name: Build HIP CPU Runtime tests
               run: |
@@ -58,7 +58,7 @@ jobs:
         runs-on: windows-latest
         steps:
             - name: Checkout HIP CPU Runtime
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3.6.0
 
             - name: Build HIP CPU Runtime tests
               run: |
