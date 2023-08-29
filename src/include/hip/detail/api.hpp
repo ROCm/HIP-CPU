@@ -69,40 +69,72 @@ namespace hip
             return hipSuccess;
         }
 
-        extern hipError_t synchronize_device(); // Forward declaration.
-
-        inline
-        hipError_t copy(
-            void* dst,
-            const void* src,
-            std::size_t byte_cnt,
-            hipMemcpyKind /*kind*/)
-        {
-            if (byte_cnt == 0) return hipSuccess;
-            if (!dst || !src) return hipErrorInvalidValue;
-
-            synchronize_device();
-
-            std::memcpy(dst, src, byte_cnt);
-
-            return hipSuccess;
-        }
-
         inline
         hipError_t copy_async(
             void* dst,
             const void* src,
             std::size_t size,
             hipMemcpyKind /*kind*/,
-            hipStream_t stream)
+            Stream* s)
         {
             if (size == 0) return hipSuccess;
             if (!dst || !src) return hipErrorInvalidValue;
 
-            if (!stream) stream = Runtime::null_stream();
+            if (!s) s = Runtime::null_stream();
 
-            stream->enqueue(hip::detail::Task{[=](auto&&) { // TODO: use push_task.
-                std::memcpy(dst, src, size);
+            s->enqueue(Task{[=](auto&&) { std::memcpy(dst, src, size); }});
+
+            return hipSuccess;
+        }
+
+        hipError_t synchronize_device(); // Forward declaration.
+        hipError_t synchronize_stream(Stream*); // Forward declaration.
+
+        inline
+        hipError_t copy(
+            void* dst,
+            const void* src,
+            std::size_t byte_cnt,
+            hipMemcpyKind kind)
+        {
+            if (byte_cnt == 0) return hipSuccess;
+            if (!dst || !src) return hipErrorInvalidValue;
+
+            synchronize_device();
+
+            const auto s{copy_async(dst, src, byte_cnt, kind, nullptr)};
+
+            if (s != hipSuccess) return s;
+
+            return synchronize_stream(nullptr);
+        }
+
+        inline
+        hipError_t copy_2d_async(
+            void* dst,
+            std::size_t d_pitch,
+            const void* src,
+            std::size_t s_pitch,
+            std::size_t width,
+            std::size_t height,
+            hipMemcpyKind /*kind*/,
+            Stream* s)
+        {
+            if (height * width == 0) return hipSuccess;
+            if (!dst || !src) return hipErrorInvalidValue;
+
+            if (!s) s = Runtime::null_stream();
+
+            s->enqueue(Task{ // TODO: optimise.
+                [=,
+                dst = static_cast<std::byte*>(dst),
+                src = static_cast<const std::byte*>(src)](auto&&) mutable {
+                for (auto i = 0u; i != height; ++i) {
+                    std::memcpy(dst, src, width);
+
+                    dst += d_pitch;
+                    src += s_pitch;
+                }
             }});
 
             return hipSuccess;
@@ -116,54 +148,19 @@ namespace hip
             std::size_t s_pitch,
             std::size_t width,
             std::size_t height,
-            hipMemcpyKind /*kind*/)
+            hipMemcpyKind kind)
         {
             if (height * width == 0) return hipSuccess;
             if (!dst || !src) return hipErrorInvalidValue;
 
             synchronize_device();
 
-            dst = static_cast<std::byte*>(dst);
-            src = static_cast<const std::byte*>(src);
-            for (auto i = 0u; i != height; ++i) {
-                std::memcpy(dst, src, width);
+            const auto s{copy_2d_async(
+                dst, d_pitch, src, s_pitch, width, height, kind, nullptr)};
 
-                dst = static_cast<std::byte*>(dst) + d_pitch;
-                src = static_cast<const std::byte*>(src) + s_pitch;
-            }
+            if (s != hipSuccess) return s;
 
-            return hipSuccess;
-        }
-
-        inline
-        hipError_t copy_2d_async(
-            void* dst,
-            std::size_t d_pitch,
-            const void* src,
-            std::size_t s_pitch,
-            std::size_t width,
-            std::size_t height,
-            hipMemcpyKind /*kind*/,
-            hipStream_t stream)
-        {
-            if (height * width == 0) return hipSuccess;
-            if (!dst || !src) return hipErrorInvalidValue;
-
-            if (!stream) stream = Runtime::null_stream();
-
-            stream->enqueue(Task{ // TODO: optimise.
-                [=,
-                dst = static_cast<std::byte*>(dst),
-                src = static_cast<const std::byte*>(src)](auto&&) mutable {
-                for (auto i = 0u; i != height; ++i) {
-                    std::memcpy(dst, src, width);
-
-                    dst += d_pitch;
-                    src += s_pitch;
-                }
-            }});
-
-            return hipSuccess;
+            return synchronize_stream(nullptr);
         }
 
         inline
@@ -188,7 +185,7 @@ namespace hip
             std::size_t byte_cnt,
             std::size_t dx,
             hipMemcpyKind kind,
-            hipStream_t stream)
+            Stream* stream)
         {
             if (byte_cnt == 0) return hipSuccess;
             if (!dst) return hipErrorInvalidSymbol;
@@ -473,10 +470,34 @@ namespace hip
             return (p_id != 0) ? hipSuccess : hipErrorInvalidDevice;
         }
 
+        template<typename T>
         inline
-        hipError_t fill_bytes(void* p, int value, std::size_t byte_cnt)
-        {   // TODO: this should go via the null stream.
-            std::memset(p, value, byte_cnt);
+        hipError_t fill_n_async(T* p, std::size_t n, T x, Stream* s)
+        {
+            if (n == 0) return hipSuccess;
+            if (!p) return hipErrorInvalidValue;
+
+            if (!s) s = Runtime::null_stream();
+
+            s->enqueue(Task{[=](auto&&) { std::fill_n(p, n, x); }});
+
+            return hipSuccess;
+        }
+
+        template<typename T>
+        inline
+        hipError_t fill_n(T* p, std::size_t n, T x)
+        {
+            if (n == 0) return hipSuccess;
+            if (!p) return hipErrorInvalidValue;
+
+            synchronize_device();
+
+            const auto s{fill_n_async(p, n, x, Runtime::null_stream())};
+
+            if (s != hipSuccess) return s;
+
+            return synchronize_stream(Runtime::null_stream());
 
             return hipSuccess;
         }

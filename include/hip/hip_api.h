@@ -609,9 +609,68 @@ hipError_t hipMemGetInfo(std::size_t* available, std::size_t* total) noexcept
 }
 
 inline
-hipError_t hipMemset(void* dst, int value, std::size_t size_bytes)
+hipError_t hipMemset(void* dst, std::int32_t value, std::size_t size_bytes)
 {
-    return hip::detail::fill_bytes(dst, value, size_bytes);
+    return hip::detail::fill_n(
+        static_cast<std::uint8_t*>(dst),
+        size_bytes,
+        static_cast<std::uint8_t>(value));
+}
+
+inline
+hipError_t hipMemsetAsync(
+    void* dst,
+    std::int32_t value,
+    std::size_t size_bytes,
+    hipStream_t stream = {})
+{   // TODO: value might need to be bitwise truncated instead of casted.
+    return hip::detail::fill_n_async(
+        static_cast<std::uint8_t*>(dst),
+        size_bytes,
+        static_cast<std::uint8_t>(value),
+        stream);
+}
+
+inline
+hipError_t hipMemsetD8(void* dst, std::uint8_t value, std::size_t size_bytes)
+{
+    return hipMemset(dst, value, size_bytes);
+}
+
+inline
+hipError_t hipMemsetD8Async(
+    void* dst, std::uint8_t value, std::size_t count, hipStream_t stream = {})
+{
+    return hip::detail::fill_n_async(
+        static_cast<std::uint8_t*>(dst), count, value, stream);
+}
+
+inline
+hipError_t hipMemsetD16(void* dst, std::uint16_t value, std::size_t count)
+{
+    return hip::detail::fill_n(static_cast<std::uint16_t*>(dst), count, value);
+}
+
+inline
+hipError_t hipMemsetD16Async(
+    void* dst, std::uint16_t value, std::size_t count, hipStream_t stream = {})
+{
+    return hip::detail::fill_n_async(
+        static_cast<std::uint16_t*>(dst), count, value, stream);
+}
+
+inline
+hipError_t hipMemsetD32(void* dst, std::uint32_t value, std::size_t count)
+{
+    return hip::detail::fill_n(static_cast<std::uint32_t*>(dst), count, value);
+}
+
+inline
+hipError_t hipMemsetD32Async(
+    void* dst, std::uint32_t value, std::size_t count, hipStream_t stream = {})
+{
+    return hip::detail::fill_n_async(
+        static_cast<std::uint32_t*>(dst), count, value, stream);
 }
 
 inline

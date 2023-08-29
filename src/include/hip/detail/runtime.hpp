@@ -170,6 +170,15 @@ namespace hip
         {
             if (processor_().joinable()) processor_().detach();
 
+            auto f{std::async(std::launch::async, []() {
+                std::vector<Task> t;
+
+                null_stream()->try_dequeue_bulk(std::back_inserter(t), max_n_);
+
+                bool nop{};
+                for (auto&& x : t) x(nop);
+            })};
+
             std::for_each(
                 std::execution::par,
                 std::begin(streams_),
@@ -180,9 +189,9 @@ namespace hip
                 x.try_dequeue_bulk(std::back_inserter(t), max_n_);
 
                 for (auto&& y : t) { bool nop{}; y(nop); }
-
-                t.clear();
             });
+
+            return f.get();
         }
 
         // STATICS

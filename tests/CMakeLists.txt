@@ -58,6 +58,7 @@ add_executable(
         hip_host_hipevent_event_record.cpp
         hip_host_math_float_double.cpp
         hip_host_memcpy_all.cpp
+        hip_host_memset_all.cpp
         # hip_host_module.cpp
         hip_host_multithread_hipstream_memcpy.cpp
         hip_host_multithread_hipstream.cpp
@@ -107,10 +108,11 @@ add_test(
     COMMAND legacy_tests [host][hipDevice][get_device])
 add_test(NAME "legacy_async_memcpy" COMMAND legacy_tests [host][memcpy_async])
 add_test(NAME "legacy_hipEvent_t" COMMAND legacy_tests [host][hipEvent_t])
-# add_test(NAME "legacy_module_API" COMMAND legacy_tests [host][module])
+add_test(NAME "legacy_module_API" COMMAND legacy_tests [host][module])
 add_test(NAME "legacy_hipStream_t" COMMAND legacy_tests [host][hipStream_t])
 add_test(NAME "legacy_host_math" COMMAND legacy_tests [host][math])
 add_test(NAME "legacy_memcpy" COMMAND legacy_tests [host][memcpy])
+add_test(NAME "legacy_memset" COMMAND legacy_tests [host][memset])
 add_test(
     NAME "legacy_hipSetDeviceFlags"
     COMMAND legacy_tests [host][hipDevice][set_device_flags])
