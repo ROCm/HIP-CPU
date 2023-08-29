@@ -136,7 +136,7 @@ inline cothread_t co_derive(void* memory, unsigned int size, void (*entrypoint)(
   cothread_t handle;
   if(!co_swap) {
     co_init();
-    co_swap = (void (*)(cothread_t, cothread_t))co_swap_function;
+    co_swap = (void (*)(cothread_t, cothread_t))&co_swap_function[0];
   }
   if(!co_active_handle) co_active_handle = &co_active_buffer;
 
