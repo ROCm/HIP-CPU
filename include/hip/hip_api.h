@@ -270,7 +270,7 @@ hipError_t hipEventElapsedTime(float* ms, hipEvent_t start, hipEvent_t stop)
 }
 
 inline
-hipError_t hipEventRecord(hipEvent_t event, hipStream_t stream = nullptr)
+hipError_t hipEventRecord(hipEvent_t event, hipStream_t stream = {})
 {
     return hip::detail::insert_event(event, stream);
 }
@@ -285,6 +285,12 @@ inline
 hipError_t hipFree(void* ptr)
 {
     return hip::detail::deallocate(ptr);
+}
+
+inline
+hipError_t hipFreeAsync(void* ptr, hipStream_t stream = {})
+{
+    return hip::detail::deallocate_async(ptr, stream);
 }
 
 template<typename F>
@@ -429,6 +435,18 @@ hipError_t hipMalloc(T** ptr, std::size_t size)
 }
 
 inline
+hipError_t hipMallocAsync(void** ptr, std::size_t size, hipStream_t stream = {})
+{
+    return hip::detail::allocate_async(ptr, size, stream);
+}
+
+template<typename T>
+hipError_t hipMallocAsync(T** ptr, std::size_t size, hipStream_t stream = {})
+{
+    return hipMallocAsync(reinterpret_cast<void**>(ptr), size, stream);
+}
+
+inline
 hipError_t hipMallocManaged(
     void** ptr,
     std::size_t size,
@@ -496,7 +514,7 @@ hipError_t hipMemcpy2DAsync(
     std::size_t width,
     std::size_t height,
     hipMemcpyKind kind = hipMemcpyDefault,
-    hipStream_t stream = nullptr)
+    hipStream_t stream = {})
 {
     return hip::detail::copy_2d_async(
         dst, d_pitch, src, s_pitch, width, height, kind, stream);
@@ -508,7 +526,7 @@ hipError_t hipMemcpyAsync(
     const void* src,
     std::size_t size,
     hipMemcpyKind kind = hipMemcpyDefault,
-    hipStream_t stream = nullptr)
+    hipStream_t stream = {})
 {
     return hip::detail::copy_async(dst, src, size, kind, stream);
 }
@@ -537,7 +555,7 @@ hipError_t hipMemcpyFromSymbolAsync(
     std::size_t byte_cnt,
     std::size_t offset = 0,
     hipMemcpyKind kind = hipMemcpyDeviceToHost,
-    hipStream_t stream = nullptr)
+    hipStream_t stream = {})
 {
     return hip::detail::copy_to_symbol_async(
         dst, src, byte_cnt, offset, kind, stream);
@@ -581,7 +599,7 @@ hipError_t hipMemcpyToSymbolAsync(
     std::size_t byte_cnt,
     std::size_t offset = 0,
     hipMemcpyKind kind = hipMemcpyHostToDevice,
-    hipStream_t stream = nullptr)
+    hipStream_t stream = {})
 {
     return hip::detail::copy_to_symbol_async(
         dst, src, byte_cnt, offset, kind, stream);
@@ -596,7 +614,7 @@ hipError_t hipMemcpyToSymbolAsync(
     std::size_t byte_cnt,
     std::size_t offset = 0,
     hipMemcpyKind kind = hipMemcpyHostToDevice,
-    hipStream_t stream = nullptr)
+    hipStream_t stream = {})
 {
     return hipMemcpyToSymbolAsync(
         reinterpret_cast<void*>(&dst), src, byte_cnt, offset, kind, stream);
@@ -609,9 +627,68 @@ hipError_t hipMemGetInfo(std::size_t* available, std::size_t* total) noexcept
 }
 
 inline
-hipError_t hipMemset(void* dst, int value, std::size_t size_bytes)
+hipError_t hipMemset(void* dst, std::int32_t value, std::size_t size_bytes)
 {
-    return hip::detail::fill_bytes(dst, value, size_bytes);
+    return hip::detail::fill_n(
+        static_cast<std::uint8_t*>(dst),
+        size_bytes,
+        static_cast<std::uint8_t>(value));
+}
+
+inline
+hipError_t hipMemsetAsync(
+    void* dst,
+    std::int32_t value,
+    std::size_t size_bytes,
+    hipStream_t stream = {})
+{   // TODO: value might need to be bitwise truncated instead of casted.
+    return hip::detail::fill_n_async(
+        static_cast<std::uint8_t*>(dst),
+        size_bytes,
+        static_cast<std::uint8_t>(value),
+        stream);
+}
+
+inline
+hipError_t hipMemsetD8(void* dst, std::uint8_t value, std::size_t size_bytes)
+{
+    return hipMemset(dst, value, size_bytes);
+}
+
+inline
+hipError_t hipMemsetD8Async(
+    void* dst, std::uint8_t value, std::size_t count, hipStream_t stream = {})
+{
+    return hip::detail::fill_n_async(
+        static_cast<std::uint8_t*>(dst), count, value, stream);
+}
+
+inline
+hipError_t hipMemsetD16(void* dst, std::uint16_t value, std::size_t count)
+{
+    return hip::detail::fill_n(static_cast<std::uint16_t*>(dst), count, value);
+}
+
+inline
+hipError_t hipMemsetD16Async(
+    void* dst, std::uint16_t value, std::size_t count, hipStream_t stream = {})
+{
+    return hip::detail::fill_n_async(
+        static_cast<std::uint16_t*>(dst), count, value, stream);
+}
+
+inline
+hipError_t hipMemsetD32(void* dst, std::uint32_t value, std::size_t count)
+{
+    return hip::detail::fill_n(static_cast<std::uint32_t*>(dst), count, value);
+}
+
+inline
+hipError_t hipMemsetD32Async(
+    void* dst, std::uint32_t value, std::size_t count, hipStream_t stream = {})
+{
+    return hip::detail::fill_n_async(
+        static_cast<std::uint32_t*>(dst), count, value, stream);
 }
 
 inline
@@ -734,6 +811,12 @@ inline
 hipError_t hipStreamDestroy(hipStream_t stream)
 {
     return hip::detail::destroy_stream(stream);
+}
+
+inline
+hipError_t hipStreamQuery(hipStream_t stream)
+{
+    return hip::detail::query_stream(stream);
 }
 
 inline

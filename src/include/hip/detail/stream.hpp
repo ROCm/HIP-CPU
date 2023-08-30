@@ -8,14 +8,15 @@
     #error Private HIP-CPU RT implementation headers must not be included directly.
 #endif
 
+#include "flat_combiner.hpp"
 #include "task.hpp"
 
-#include "../../../../external/moodycamel/blockingconcurrentqueue.h"
+#include <vector>
 
 namespace hip
 {
     namespace detail
     {
-        using Stream = moodycamel::BlockingConcurrentQueue<Task>;
+        using Stream = Flat_combiner<std::vector<Task>>;
     } // Namespace hip::detail.
 } // Namespace hip.

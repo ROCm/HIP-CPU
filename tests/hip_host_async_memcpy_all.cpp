@@ -90,7 +90,7 @@ constexpr auto blocksPerCU{6};  // to hide latency
 constexpr auto threadsPerBlock{256};
 
 //---
-// Tests propert dependency resolution between H2D and D2H commands in same stream:
+// Tests proper dependency resolution between H2D and D2H commands in same stream:
 // IN: numInflight : number of copies inflight at any time:
 // IN: numPongs = number of iterations to run (iteration)
 template<typename T, class AllocType>

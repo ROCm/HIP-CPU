@@ -9,21 +9,26 @@
 #endif
 
 #include "event.hpp"
+#include "helpers.hpp"
 #include "stream.hpp"
 #include "task.hpp"
 #include "../../../../include/hip/hip_defines.h"
 #include "../../../../include/hip/hip_enums.h"
 
 #include <algorithm>
+#include <atomic>
 #include <execution>
 #include <forward_list>
 #include <future>
 #include <iterator>
 #include <limits>
+#include <memory>
 #include <random>
 #include <thread>
 #include <utility>
 #include <vector>
+
+#include <iostream>
 
 #if defined(_MSC_VER)
     #pragma warning(push)
@@ -36,26 +41,14 @@ namespace hip
     {
         // BEGIN CLASS RUNTIME
         class __HIP_API__ Runtime final {
-            // NESTED TYPES
-            struct Cleaner_ {
-                // CREATORS
-                Cleaner_() noexcept;
-                ~Cleaner_();
-            };
-
             // DATA - STATICS
-            inline static constexpr auto max_n_{
-                std::numeric_limits<Stream::ssize_t>::max()};
-            // inline static thread_local hipError_t last_error_{};
             inline static Stream internal_stream_{};
             inline static std::forward_list<Stream> streams_{};
-            inline static const Cleaner_ cleaner{};
+            inline static std::atomic<bool> done_{false};
 
             // IMPLEMENTATION - STATICS
             static
             hipError_t& last_error_() noexcept;
-            static
-            void pause_or_yield_() noexcept;
             static
             std::thread& processor_();
             static
@@ -78,28 +71,6 @@ namespace hip
             void synchronize();
         };
 
-        // NESTED TYPES
-        // BEGIN CLASS RUNTIME::CLEANER_
-        inline
-        Runtime::Cleaner_::Cleaner_() noexcept
-        {
-            last_error_();
-        }
-
-        inline
-        Runtime::Cleaner_::~Cleaner_()
-        {
-            Task poison{[](auto&& p) { p = true; }};
-            auto fut{poison.get_future()};
-
-            internal_stream_.enqueue(std::move(poison));
-
-            if (processor_().joinable()) processor_().join();
-
-            fut.get();
-        }
-        // END CLASS RUNTIME::CLEANER_
-
         // IMPLEMENTATION - STATICS
         inline
         hipError_t& Runtime::last_error_() noexcept
@@ -110,44 +81,35 @@ namespace hip
         }
 
         inline
-        void Runtime::pause_or_yield_() noexcept
-        {
-            #if defined(YieldProcessor)
-                return YieldProcessor();
-            #elif defined(__has_builtin)
-                #if __has_builtin(__builtin_ia32_pause)
-                    return __builtin_ia32_pause();
-                #else
-                    return std::this_thread::yield();
-                #endif
-            #else
-                return std::this_thread::yield();
-            #endif
-        }
-
-        inline
         std::thread& Runtime::processor_()
         {
             static std::thread r{[]() {
-                std::vector<Task> t;
                 do {
-                    t.clear();
+                    using T = typename Stream::value_type;
 
-                    internal_stream_.try_dequeue_bulk(
-                        std::back_inserter(t), max_n_);
-                    for (auto&& x : t) {
-                        bool poison{};
-                        x(poison);
+                    T t{};
+                    internal_stream_.apply([&t](auto&& ts) {
+                        t = std::move(ts);
+                    });
 
-                        if (poison) return;
+                    for (auto&& x : t) { bool nop; x(nop); }
+
+                    bool backoff{true};
+                    null_stream()->apply([&backoff](auto&& ts) {
+                        backoff = std::empty(ts);
+                    });
+
+                    if (backoff) {
+                        backoff = std::none_of(
+                            std::begin(streams_),
+                            std::end(streams_),
+                            [](auto&& x) {
+                            bool r{};
+                            x.apply([&r](auto&& ts) { r = !std::empty(ts); });
+
+                            return r;
+                        });
                     }
-
-                    const auto backoff{
-                        std::empty(t) &&
-                        std::none_of(
-                            std::cbegin(streams_),
-                            std::cend(streams_),
-                            [](auto&& x) { return x.size_approx(); })};
 
                     if (!backoff) wait_all_streams_();
                     else {
@@ -156,11 +118,12 @@ namespace hip
                             3, 1031};
 
                         for (auto i = 0u, n = d(g); i != n; ++i) {
-                            pause_or_yield_();
+                            pause_or_yield();
                         }
                     }
-                } while (true);
+                } while (!done_);
             }};
+            static struct D { ~D() { done_ = true; r.join(); } } done{};
 
             return r;
         }
@@ -168,21 +131,32 @@ namespace hip
         inline
         void Runtime::wait_all_streams_()
         {
-            if (processor_().joinable()) processor_().detach();
+            using T = typename Stream::value_type;
+
+            auto f{std::async(std::launch::async, []() {
+                T t{};
+
+                null_stream()->apply([&t](auto&& ts) { t = std::move(ts); });
+
+                for (auto&& x : t) {
+                    bool nop{};
+                    x(nop);
+                };
+            })};
 
             std::for_each(
                 std::execution::par,
                 std::begin(streams_),
                 std::end(streams_),
                 [](auto&& x) {
-                std::vector<Task> t; // TODO: revisit for performance impact.
+                T t{};
 
-                x.try_dequeue_bulk(std::back_inserter(t), max_n_);
+                x.apply([&t](auto&& ts) { t = std::move(ts); });
 
                 for (auto&& y : t) { bool nop{}; y(nop); }
-
-                t.clear();
             });
+
+            return f.wait();
         }
 
         // STATICS
@@ -194,7 +168,9 @@ namespace hip
             }};
             auto fut{r.get_future()};
 
-            internal_stream_.enqueue(std::move(r));
+            internal_stream_.apply([&r](auto&& ts) {
+                ts.push_back(std::move(r));
+            });
 
             return fut;
         }
@@ -207,16 +183,17 @@ namespace hip
 
         inline
         std::future<Stream*> Runtime::make_stream_async()
-        {   // TODO: use smart pointer.
-            auto p{new std::promise<Stream*>};
+        {
+            auto p{std::make_shared<std::promise<Stream*>>()};
             auto fut{p->get_future()};
 
-            internal_stream_.enqueue(Task{[=](auto&&) mutable {
-                p->set_value(&streams_.emplace_front());
-                delete p;
-            }});
+            internal_stream_.apply([&p](auto&& ts) {
+                ts.emplace_back([p = std::move(p)](auto&&) mutable {
+                    p->set_value(&streams_.emplace_front());
+                });
+            });
 
-            if (processor_().joinable()) processor_().detach();
+            processor_();
 
             return fut;
         }
@@ -226,7 +203,7 @@ namespace hip
         {
             static auto& r{streams_.emplace_front()};
 
-            if (processor_().joinable()) processor_().detach();
+            processor_();
 
             return &r;
         }
@@ -242,7 +219,7 @@ namespace hip
             Task r{[=](auto&&) { update_timestamp(*p); }};
             add_done_signal(*p, r.get_future());
 
-            s->enqueue(std::move(r));
+            s->apply([&r](auto&& ts) { ts.push_back(std::move(r)); });
         }
 
         inline
@@ -255,13 +232,15 @@ namespace hip
         void Runtime::synchronize()
         {   // TODO: redo, this induces ordering requirements on the processor.
             Task r{[](auto&&) { wait_all_streams_(); }};
-            auto fut{r.get_future()};
+            auto f{r.get_future()};
 
-            internal_stream_.enqueue(std::move(r));
+            internal_stream_.apply([&r](auto&& ts) {
+                ts.push_back(std::move(r));
+            });
 
-            if (processor_().joinable()) processor_().detach();
+            processor_();
 
-            return fut.get();
+            return f.wait();
         }
         // END CLASS RUNTIME
     } // Namespace hip::detail.

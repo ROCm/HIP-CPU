@@ -46,6 +46,25 @@ namespace hip
         }
 
         inline
+        hipError_t allocate_async(void** p, std::size_t byte_cnt, Stream* s)
+        {   // TODO: handle invalid streams.
+            if (!p) return hipErrorInvalidValue;
+            if (byte_cnt == 0) {
+                *p = nullptr;
+
+                return hipSuccess;
+            }
+
+            if (!s) s = Runtime::null_stream();
+
+            s->apply([=](auto&& ts) {
+                ts.emplace_back([=](auto) { *p = std::malloc(byte_cnt); });
+            });
+
+            return hipSuccess;
+        }
+
+        inline
         hipError_t allocate_host(
             void** p, std::size_t byte_cnt, hipHostMallocKind /*flags*/)
         {
@@ -69,14 +88,14 @@ namespace hip
             return hipSuccess;
         }
 
-        extern hipError_t synchronize_device(); // Forward declaration.
+        hipError_t synchronize_device(); // Forward declaration.
 
         inline
         hipError_t copy(
             void* dst,
             const void* src,
             std::size_t byte_cnt,
-            hipMemcpyKind /*kind*/)
+            hipMemcpyKind kind)
         {
             if (byte_cnt == 0) return hipSuccess;
             if (!dst || !src) return hipErrorInvalidValue;
@@ -94,16 +113,16 @@ namespace hip
             const void* src,
             std::size_t size,
             hipMemcpyKind /*kind*/,
-            hipStream_t stream)
+            Stream* s)
         {
             if (size == 0) return hipSuccess;
             if (!dst || !src) return hipErrorInvalidValue;
 
-            if (!stream) stream = Runtime::null_stream();
+            if (!s) s = Runtime::null_stream();
 
-            stream->enqueue(hip::detail::Task{[=](auto&&) { // TODO: use push_task.
-                std::memcpy(dst, src, size);
-            }});
+            s->apply([=](auto&& ts) {
+                ts.emplace_back([=](auto&&) { std::memcpy(dst, src, size); });
+            });
 
             return hipSuccess;
         }
@@ -116,20 +135,18 @@ namespace hip
             std::size_t s_pitch,
             std::size_t width,
             std::size_t height,
-            hipMemcpyKind /*kind*/)
+            hipMemcpyKind kind)
         {
             if (height * width == 0) return hipSuccess;
             if (!dst || !src) return hipErrorInvalidValue;
 
             synchronize_device();
 
-            dst = static_cast<std::byte*>(dst);
-            src = static_cast<const std::byte*>(src);
             for (auto i = 0u; i != height; ++i) {
                 std::memcpy(dst, src, width);
 
-                dst = static_cast<std::byte*>(dst) + d_pitch;
-                src = static_cast<const std::byte*>(src) + s_pitch;
+                reinterpret_cast<std::byte*&>(dst) += d_pitch;
+                reinterpret_cast<const std::byte*&>(src) += s_pitch;
             }
 
             return hipSuccess;
@@ -144,24 +161,26 @@ namespace hip
             std::size_t width,
             std::size_t height,
             hipMemcpyKind /*kind*/,
-            hipStream_t stream)
+            Stream* s)
         {
             if (height * width == 0) return hipSuccess;
             if (!dst || !src) return hipErrorInvalidValue;
 
-            if (!stream) stream = Runtime::null_stream();
+            if (!s) s = Runtime::null_stream();
 
-            stream->enqueue(Task{ // TODO: optimise.
-                [=,
-                dst = static_cast<std::byte*>(dst),
-                src = static_cast<const std::byte*>(src)](auto&&) mutable {
-                for (auto i = 0u; i != height; ++i) {
-                    std::memcpy(dst, src, width);
+            s->apply([=](auto&& ts) { // TODO: optimise.
+                ts.emplace_back(
+                    [=,
+                    dst = static_cast<std::byte*>(dst),
+                    src = static_cast<const std::byte*>(src)](auto&&) mutable {
+                    for (auto i = 0u; i != height; ++i) {
+                        std::memcpy(dst, src, width);
 
-                    dst += d_pitch;
-                    src += s_pitch;
-                }
-            }});
+                        dst += d_pitch;
+                        src += s_pitch;
+                    }
+                });
+            });
 
             return hipSuccess;
         }
@@ -188,7 +207,7 @@ namespace hip
             std::size_t byte_cnt,
             std::size_t dx,
             hipMemcpyKind kind,
-            hipStream_t stream)
+            Stream* stream)
         {
             if (byte_cnt == 0) return hipSuccess;
             if (!dst) return hipErrorInvalidSymbol;
@@ -277,6 +296,18 @@ namespace hip
         }
 
         inline
+        hipError_t deallocate_async(void* p, Stream* s)
+        {
+            if (!s) s = Runtime::null_stream();
+
+            s->apply([=](auto&& ts) {
+                ts.emplace_back([=](auto) { if (p) std::free(p); });
+            });
+
+            return hipSuccess;
+        }
+
+        inline
         hipError_t deallocate_host(void* p)
         {
             return hip::detail::deallocate(p);
@@ -326,9 +357,20 @@ namespace hip
         {
             if (!s) return hipErrorInvalidHandle;
 
-            Runtime::destroy_stream_async(s).get();
+            Runtime::destroy_stream_async(s).wait();
 
             return hipSuccess;
+        }
+
+        inline
+        hipError_t query_stream(Stream* s)
+        {
+            if (!s) s = Runtime::null_stream();
+
+            bool ready{};
+            s->apply([&](auto&& ts) { ready = std::empty(ts); });
+
+            return ready ? hipSuccess : hipErrorNotReady;
         }
 
         inline
@@ -473,10 +515,32 @@ namespace hip
             return (p_id != 0) ? hipSuccess : hipErrorInvalidDevice;
         }
 
+        template<typename T>
         inline
-        hipError_t fill_bytes(void* p, int value, std::size_t byte_cnt)
-        {   // TODO: this should go via the null stream.
-            std::memset(p, value, byte_cnt);
+        hipError_t fill_n_async(T* p, std::size_t n, T x, Stream* s)
+        {
+            if (n == 0) return hipSuccess;
+            if (!p) return hipErrorInvalidValue;
+
+            if (!s) s = Runtime::null_stream();
+
+            s->apply([=](auto&& ts) {
+                ts.emplace_back([=](auto&&) { std::fill_n(p, n, x); });
+            });
+
+            return hipSuccess;
+        }
+
+        template<typename T>
+        inline
+        hipError_t fill_n(T* p, std::size_t n, T x)
+        {
+            if (n == 0) return hipSuccess;
+            if (!p) return hipErrorInvalidValue;
+
+            synchronize_device();
+
+            std::fill_n(p, n, x);
 
             return hipSuccess;
         }
@@ -774,7 +838,9 @@ namespace hip
 
             if (!s) s = Runtime::null_stream();
 
-            s->enqueue(Task{[=](auto&&) { wait(e); }});
+            s->apply([=](auto&& ts) {
+                ts.emplace_back([=](auto&&) { wait(e); });
+            });
 
             return hipSuccess;
         }
