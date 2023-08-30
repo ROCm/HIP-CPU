@@ -40,20 +40,23 @@ namespace hip
                 ts.emplace_back(
                     [=, fn = std::move(fn), args = std::move(args)](auto&&) {
                         struct {
-                        const decltype(fn)* fn_;
-                        const std::tuple<Args...>* args_;
+                            const decltype(fn)* fn_;
+                            const std::tuple<Args...>* args_;
 
-                        __HIP_TILE_FUNCTION__
-                        void operator()() const noexcept
-                        {
-                            return std::apply(*fn_, *args_);
-                        }
-                    } tmp{&fn, &args};
+                            __HIP_TILE_FUNCTION__
+                            void operator()() const noexcept
+                            {
+                                return std::apply(*fn_, *args_);
+                            }
+                        } tmp{&fn, &args};
 
-                    const Tiled_domain domain{
-                        dim_blocks, num_blocks, group_mem_bytes, std::move(tmp)};
+                        Tiled_domain domain{
+                            dim_blocks,
+                            num_blocks,
+                            group_mem_bytes,
+                            std::move(tmp)};
 
-                    return for_each_tile(domain, fn, args);
+                        return for_each_tile(domain, fn, args);
                 });
             });
         }

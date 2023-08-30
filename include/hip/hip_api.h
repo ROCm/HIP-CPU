@@ -814,6 +814,12 @@ hipError_t hipStreamDestroy(hipStream_t stream)
 }
 
 inline
+hipError_t hipStreamQuery(hipStream_t stream)
+{
+    return hip::detail::query_stream(stream);
+}
+
+inline
 hipError_t hipStreamSynchronize(hipStream_t stream)
 {
     return hip::detail::synchronize_stream(stream);

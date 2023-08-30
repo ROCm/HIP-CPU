@@ -16,7 +16,7 @@ target_compile_options(
         # CMake 3.19 required for list in $<CONFIG:cfg1,cfg2> for shorthand
         $<$<AND:$<CXX_COMPILER_ID:MSVC>,$<CONFIG:RelWithDebInfo>>:/Ob3>
         $<$<AND:$<CXX_COMPILER_ID:MSVC>,$<CONFIG:Debug>>:/Ob3>
-        $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-ffast-math>)
+        $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-ffast-math -march=native>)
 
 add_executable(
     performance_tests
@@ -56,6 +56,8 @@ add_executable(
         hip_host_async_memcpy_all.cpp
         hip_host_hipevent_elapsed_time.cpp
         hip_host_hipevent_event_record.cpp
+        hip_host_hipstream_stress.cpp
+        hip_host_malloc_free_all.cpp
         hip_host_math_float_double.cpp
         hip_host_memcpy_all.cpp
         hip_host_memset_all.cpp
@@ -99,13 +101,16 @@ add_test(NAME "legacy_printf" COMMAND legacy_tests [device][printf])
 add_test(NAME "legacy_shfl" COMMAND legacy_tests [device][shfl])
 add_test(
     NAME "legacy_std_complex" COMMAND legacy_tests [device][std::complex])
-add_test(NAME "legacy_barrier_not_in_first_block" COMMAND legacy_tests [device][barrier_not_in_first_block])
+add_test(
+    NAME "legacy_barrier_not_in_first_block"
+    COMMAND legacy_tests [device][barrier_not_in_first_block])
 add_test(
     NAME "legacy_hipDeviceSynchronize"
     COMMAND legacy_tests [host][hipDevice])
 add_test(
     NAME "legacy_hipGetDevice"
     COMMAND legacy_tests [host][hipDevice][get_device])
+add_test(NAME "legacy_malloc_free" COMMAND legacy_tests [host][malloc][free])
 add_test(NAME "legacy_async_memcpy" COMMAND legacy_tests [host][memcpy_async])
 add_test(NAME "legacy_hipEvent_t" COMMAND legacy_tests [host][hipEvent_t])
 add_test(NAME "legacy_module_API" COMMAND legacy_tests [host][module])

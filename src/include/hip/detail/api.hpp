@@ -363,6 +363,17 @@ namespace hip
         }
 
         inline
+        hipError_t query_stream(Stream* s)
+        {
+            if (!s) s = Runtime::null_stream();
+
+            bool ready{};
+            s->apply([&](auto&& ts) { ready = std::empty(ts); });
+
+            return ready ? hipSuccess : hipErrorNotReady;
+        }
+
+        inline
         hipError_t device_address(
             void** pd, void* ph, unsigned int/* flags */) noexcept
         {

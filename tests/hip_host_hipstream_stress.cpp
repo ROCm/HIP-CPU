@@ -13,13 +13,16 @@
 #define NUM_STREAMS 20
 #define ITER 1 << 10
 
-__global__
-void Iter(int* Ad, int num)
+namespace
 {
-    int tx = threadIdx.x + blockIdx.x * blockDim.x;
-    if (tx == 0) {
-        for (int i = 0; i < num; i++) {
-            Ad[tx] += 1;
+    __global__
+    void Iter(int* Ad, int num)
+    {
+        int tx = threadIdx.x + blockIdx.x * blockDim.x;
+        if (tx == 0) {
+            for (int i = 0; i < num; i++) {
+                Ad[tx] += 1;
+            }
         }
     }
 }
