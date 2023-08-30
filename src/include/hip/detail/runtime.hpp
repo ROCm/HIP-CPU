@@ -22,6 +22,7 @@
 #include <future>
 #include <iterator>
 #include <limits>
+#include <memory>
 #include <random>
 #include <thread>
 #include <utility>
@@ -182,13 +183,13 @@ namespace hip
 
         inline
         std::future<Stream*> Runtime::make_stream_async()
-        {   // TODO: use smart pointer.
-            std::promise<Stream*> p;
-            auto fut{p.get_future()};
+        {
+            auto p{std::make_shared<std::promise<Stream*>>()};
+            auto fut{p->get_future()};
 
             internal_stream_.apply([&p](auto&& ts) {
                 ts.emplace_back([p = std::move(p)](auto&&) mutable {
-                    p.set_value(&streams_.emplace_front());
+                    p->set_value(&streams_.emplace_front());
                 });
             });
 
