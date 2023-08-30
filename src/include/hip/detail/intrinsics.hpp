@@ -200,7 +200,7 @@ namespace hip
 
             Tile::scratchpad<T>()[tidx] = x;
 
-            barrier(Tile::this_tile());
+            Tile::this_tile().barrier();
 
             const auto sidx{(tidx / w * w) + src};
 
@@ -215,7 +215,8 @@ namespace hip
         inline
         T shuffle_down(T x, std::int32_t dx, std::int32_t w) noexcept
         {   // TODO: incorrect with large negative offsets, revisit.
-            const auto tidx{id(Fiber::this_fiber())};
+            const auto tidx{id(Fiber::this_fiber()) % warpSize};
+
             Tile::scratchpad<T>()[tidx] = x;
 
             Tile::this_tile().barrier();
@@ -233,14 +234,15 @@ namespace hip
         inline
         T shuffle_up(T x, std::int32_t dx, std::int32_t w) noexcept
         {   // TODO: incorrect with large negative offsets, revisit.
-            const auto tidx{id(Fiber::this_fiber())};
+            const auto tidx{id(Fiber::this_fiber()) % warpSize};
+
             Tile::scratchpad<T>()[tidx] = x;
 
             Tile::this_tile().barrier();
 
             const auto sidx{(tidx / w * w) + (tidx % w) - dx};
 
-            return (sidx < 0u || sidx >= (std::uint32_t)w) ? x : Tile::scratchpad<T>()[sidx];
+            return (sidx < 0 || sidx >= w) ? x : Tile::scratchpad<T>()[sidx];
         }
 
         template<
@@ -251,12 +253,15 @@ namespace hip
         inline
         T shuffle_xor(T x, std::int32_t src, std::int32_t w) noexcept
         {   // TODO: probably incorrect, revisit.
-            const auto tidx{id(Fiber::this_fiber())};
+            const auto tidx{id(Fiber::this_fiber()) % warpSize};
+
             Tile::scratchpad<T>()[tidx] = x;
 
             Tile::this_tile().barrier();
 
-            return (src < 0) ? x : Tile::scratchpad<T>()[(tidx / w * w) ^ src];
+            const auto sidx{((tidx / w * w) + (tidx % w)) ^ src};
+
+            return (src < 0) ? x : Tile::scratchpad<T>()[sidx];
         }
 
         inline
