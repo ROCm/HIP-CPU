@@ -46,6 +46,25 @@ namespace hip
         }
 
         inline
+        hipError_t allocate_async(void** p, std::size_t byte_cnt, Stream* s)
+        {   // TODO: handle invalid streams.
+            if (!p) return hipErrorInvalidValue;
+            if (byte_cnt == 0) {
+                *p = nullptr;
+
+                return hipSuccess;
+            }
+
+            if (!s) s = Runtime::null_stream();
+
+            s->apply([=](auto&& ts) {
+                ts.emplace_back([=](auto) { *p = std::malloc(byte_cnt); });
+            });
+
+            return hipSuccess;
+        }
+
+        inline
         hipError_t allocate_host(
             void** p, std::size_t byte_cnt, hipHostMallocKind /*flags*/)
         {
@@ -65,6 +84,25 @@ namespace hip
             *p = std::malloc(width * height);
 
             if (!p) return hipErrorOutOfMemory;
+
+            return hipSuccess;
+        }
+
+        hipError_t synchronize_device(); // Forward declaration.
+
+        inline
+        hipError_t copy(
+            void* dst,
+            const void* src,
+            std::size_t byte_cnt,
+            hipMemcpyKind kind)
+        {
+            if (byte_cnt == 0) return hipSuccess;
+            if (!dst || !src) return hipErrorInvalidValue;
+
+            synchronize_device();
+
+            std::memcpy(dst, src, byte_cnt);
 
             return hipSuccess;
         }
@@ -89,26 +127,29 @@ namespace hip
             return hipSuccess;
         }
 
-        hipError_t synchronize_device(); // Forward declaration.
-        hipError_t synchronize_stream(Stream*); // Forward declaration.
-
         inline
-        hipError_t copy(
+        hipError_t copy_2d(
             void* dst,
+            std::size_t d_pitch,
             const void* src,
-            std::size_t byte_cnt,
+            std::size_t s_pitch,
+            std::size_t width,
+            std::size_t height,
             hipMemcpyKind kind)
         {
-            if (byte_cnt == 0) return hipSuccess;
+            if (height * width == 0) return hipSuccess;
             if (!dst || !src) return hipErrorInvalidValue;
 
             synchronize_device();
 
-            const auto s{copy_async(dst, src, byte_cnt, kind, nullptr)};
+            for (auto i = 0u; i != height; ++i) {
+                std::memcpy(dst, src, width);
 
-            if (s != hipSuccess) return s;
+                reinterpret_cast<std::byte*&>(dst) += d_pitch;
+                reinterpret_cast<const std::byte*&>(src) += s_pitch;
+            }
 
-            return synchronize_stream(nullptr);
+            return hipSuccess;
         }
 
         inline
@@ -142,29 +183,6 @@ namespace hip
             });
 
             return hipSuccess;
-        }
-
-        inline
-        hipError_t copy_2d(
-            void* dst,
-            std::size_t d_pitch,
-            const void* src,
-            std::size_t s_pitch,
-            std::size_t width,
-            std::size_t height,
-            hipMemcpyKind kind)
-        {
-            if (height * width == 0) return hipSuccess;
-            if (!dst || !src) return hipErrorInvalidValue;
-
-            synchronize_device();
-
-            const auto s{copy_2d_async(
-                dst, d_pitch, src, s_pitch, width, height, kind, nullptr)};
-
-            if (s != hipSuccess) return s;
-
-            return synchronize_stream(nullptr);
         }
 
         inline
@@ -273,6 +291,18 @@ namespace hip
             synchronize_device();
 
             if (p) std::free(p);
+
+            return hipSuccess;
+        }
+
+        inline
+        hipError_t deallocate_async(void* p, Stream* s)
+        {
+            if (!s) s = Runtime::null_stream();
+
+            s->apply([=](auto&& ts) {
+                ts.emplace_back([=](auto) { if (p) std::free(p); });
+            });
 
             return hipSuccess;
         }
@@ -499,11 +529,7 @@ namespace hip
 
             synchronize_device();
 
-            const auto s{fill_n_async(p, n, x, Runtime::null_stream())};
-
-            if (s != hipSuccess) return s;
-
-            return synchronize_stream(Runtime::null_stream());
+            std::fill_n(p, n, x);
 
             return hipSuccess;
         }

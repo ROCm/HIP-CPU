@@ -16,6 +16,7 @@
 #include "../../../../include/hip/hip_enums.h"
 
 #include <algorithm>
+#include <atomic>
 #include <execution>
 #include <forward_list>
 #include <future>
@@ -25,6 +26,8 @@
 #include <thread>
 #include <utility>
 #include <vector>
+
+#include <iostream>
 
 #if defined(_MSC_VER)
     #pragma warning(push)
@@ -37,17 +40,10 @@ namespace hip
     {
         // BEGIN CLASS RUNTIME
         class __HIP_API__ Runtime final {
-            // NESTED TYPES
-            struct Cleaner_ {
-                // CREATORS
-                Cleaner_() noexcept;
-                ~Cleaner_();
-            };
-
             // DATA - STATICS
             inline static Stream internal_stream_{};
             inline static std::forward_list<Stream> streams_{};
-            inline static const Cleaner_ cleaner{};
+            inline static std::atomic<bool> done_{false};
 
             // IMPLEMENTATION - STATICS
             static
@@ -74,30 +70,6 @@ namespace hip
             void synchronize();
         };
 
-        // NESTED TYPES
-        // BEGIN CLASS RUNTIME::CLEANER_
-        inline
-        Runtime::Cleaner_::Cleaner_() noexcept
-        {
-            last_error_();
-        }
-
-        inline
-        Runtime::Cleaner_::~Cleaner_()
-        {
-            Task poison{[](auto&& p) { p = true; }};
-            auto fut{poison.get_future()};
-
-            internal_stream_.apply([&poison](auto&& x) {
-                x.push_back(std::move(poison));
-            });
-
-            if (processor_().joinable()) processor_().join();
-
-            fut.wait();
-        }
-        // END CLASS RUNTIME::CLEANER_
-
         // IMPLEMENTATION - STATICS
         inline
         hipError_t& Runtime::last_error_() noexcept
@@ -111,7 +83,6 @@ namespace hip
         std::thread& Runtime::processor_()
         {
             static std::thread r{[]() {
-                std::vector<Task> t;
                 do {
                     using T = typename Stream::value_type;
 
@@ -120,12 +91,7 @@ namespace hip
                         t = std::move(ts);
                     });
 
-                    bool maybe_poison{};
-                    for (auto&& x : t) {
-                        x(maybe_poison);
-
-                        if (maybe_poison) return wait_all_streams_();
-                    }
+                    for (auto&& x : t) { bool nop; x(nop); }
 
                     bool backoff{true};
                     null_stream()->apply([&backoff](auto&& ts) {
@@ -154,8 +120,9 @@ namespace hip
                             pause_or_yield();
                         }
                     }
-                } while (true);
+                } while (!done_);
             }};
+            static struct D { ~D() { done_ = true; r.join(); } } done{};
 
             return r;
         }
@@ -163,8 +130,6 @@ namespace hip
         inline
         void Runtime::wait_all_streams_()
         {
-            if (processor_().joinable()) processor_().detach();
-
             using T = typename Stream::value_type;
 
             auto f{std::async(std::launch::async, []() {
@@ -218,16 +183,16 @@ namespace hip
         inline
         std::future<Stream*> Runtime::make_stream_async()
         {   // TODO: use smart pointer.
-            auto p{new std::promise<Stream*>};
-            auto fut{p->get_future()};
+            std::promise<Stream*> p;
+            auto fut{p.get_future()};
 
-            internal_stream_.apply([=](auto&& ts) {
-                ts.emplace_back(Task{[=](auto&&) mutable {
-                    p->set_value(&streams_.emplace_front());
-                }});
+            internal_stream_.apply([&p](auto&& ts) {
+                ts.emplace_back([p = std::move(p)](auto&&) mutable {
+                    p.set_value(&streams_.emplace_front());
+                });
             });
 
-            if (processor_().joinable()) processor_().detach();
+            processor_();
 
             return fut;
         }
@@ -237,7 +202,7 @@ namespace hip
         {
             static auto& r{streams_.emplace_front()};
 
-            if (processor_().joinable()) processor_().detach();
+            processor_();
 
             return &r;
         }
@@ -272,7 +237,7 @@ namespace hip
                 ts.push_back(std::move(r));
             });
 
-            if (processor_().joinable()) processor_().detach();
+            processor_();
 
             return f.wait();
         }

@@ -270,7 +270,7 @@ hipError_t hipEventElapsedTime(float* ms, hipEvent_t start, hipEvent_t stop)
 }
 
 inline
-hipError_t hipEventRecord(hipEvent_t event, hipStream_t stream = nullptr)
+hipError_t hipEventRecord(hipEvent_t event, hipStream_t stream = {})
 {
     return hip::detail::insert_event(event, stream);
 }
@@ -285,6 +285,12 @@ inline
 hipError_t hipFree(void* ptr)
 {
     return hip::detail::deallocate(ptr);
+}
+
+inline
+hipError_t hipFreeAsync(void* ptr, hipStream_t stream = {})
+{
+    return hip::detail::deallocate_async(ptr, stream);
 }
 
 template<typename F>
@@ -429,6 +435,18 @@ hipError_t hipMalloc(T** ptr, std::size_t size)
 }
 
 inline
+hipError_t hipMallocAsync(void** ptr, std::size_t size, hipStream_t stream = {})
+{
+    return hip::detail::allocate_async(ptr, size, stream);
+}
+
+template<typename T>
+hipError_t hipMallocAsync(T** ptr, std::size_t size, hipStream_t stream = {})
+{
+    return hipMallocAsync(reinterpret_cast<void**>(ptr), size, stream);
+}
+
+inline
 hipError_t hipMallocManaged(
     void** ptr,
     std::size_t size,
@@ -496,7 +514,7 @@ hipError_t hipMemcpy2DAsync(
     std::size_t width,
     std::size_t height,
     hipMemcpyKind kind = hipMemcpyDefault,
-    hipStream_t stream = nullptr)
+    hipStream_t stream = {})
 {
     return hip::detail::copy_2d_async(
         dst, d_pitch, src, s_pitch, width, height, kind, stream);
@@ -508,7 +526,7 @@ hipError_t hipMemcpyAsync(
     const void* src,
     std::size_t size,
     hipMemcpyKind kind = hipMemcpyDefault,
-    hipStream_t stream = nullptr)
+    hipStream_t stream = {})
 {
     return hip::detail::copy_async(dst, src, size, kind, stream);
 }
@@ -537,7 +555,7 @@ hipError_t hipMemcpyFromSymbolAsync(
     std::size_t byte_cnt,
     std::size_t offset = 0,
     hipMemcpyKind kind = hipMemcpyDeviceToHost,
-    hipStream_t stream = nullptr)
+    hipStream_t stream = {})
 {
     return hip::detail::copy_to_symbol_async(
         dst, src, byte_cnt, offset, kind, stream);
@@ -581,7 +599,7 @@ hipError_t hipMemcpyToSymbolAsync(
     std::size_t byte_cnt,
     std::size_t offset = 0,
     hipMemcpyKind kind = hipMemcpyHostToDevice,
-    hipStream_t stream = nullptr)
+    hipStream_t stream = {})
 {
     return hip::detail::copy_to_symbol_async(
         dst, src, byte_cnt, offset, kind, stream);
@@ -596,7 +614,7 @@ hipError_t hipMemcpyToSymbolAsync(
     std::size_t byte_cnt,
     std::size_t offset = 0,
     hipMemcpyKind kind = hipMemcpyHostToDevice,
-    hipStream_t stream = nullptr)
+    hipStream_t stream = {})
 {
     return hipMemcpyToSymbolAsync(
         reinterpret_cast<void*>(&dst), src, byte_cnt, offset, kind, stream);
