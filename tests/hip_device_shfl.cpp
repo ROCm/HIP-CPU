@@ -196,7 +196,7 @@ void getFactor(int64_t* fact)
 }
 inline void getFactor(uint64_t* fact)
 {
-    *fact = static_cast<uint64_t>(__LONG_LONG_MAX__) + 1;
+    *fact = static_cast<uint64_t>(INT64_MAX) + 1;
 }
 
 constexpr int sz{32};
