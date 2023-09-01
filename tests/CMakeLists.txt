@@ -31,6 +31,7 @@ add_executable(
     legacy_tests
         catch_main.cpp
         hip_atomics.cpp
+        hip_device_all_any.cpp
         hip_device_ballot.cpp
         hip_device_clock.cpp
         hip_device_clz.cpp
@@ -71,6 +72,7 @@ add_executable(
 target_link_libraries(legacy_tests PRIVATE tests_common)
 
 add_test(NAME "legacy_atomic" COMMAND legacy_tests [device][atomic])
+add_test(NAME "legacy_any_all" COMMAND legacy_tests [device][all][any])
 add_test(NAME "legacy_ballot" COMMAND legacy_tests [device][ballot])
 add_test(NAME "legacy_clock" COMMAND legacy_tests [device][clock])
 add_test(NAME "legacy_clz" COMMAND legacy_tests [device][clz])

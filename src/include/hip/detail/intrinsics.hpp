@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------------
- * Copyright (c) 2020 Advanced Micro Devices, Inc. All Rights Reserved.
+ * Copyright (c) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
  * See 'LICENSE' in the project root for license information.
  * -------------------------------------------------------------------------- */
 #pragma once
@@ -31,13 +31,65 @@ namespace hip
         std::uint64_t ballot(std::int32_t x) noexcept
         {
             const auto tidx{id(Fiber::this_fiber()) % warpSize};
-            auto& lds{Tile::scratchpad<std::bitset<warpSize>, 1>()[0]};
 
-            lds[tidx] = static_cast<bool>(x);
+            Tile::predicate()[tidx] = x;
 
-            barrier(Tile::this_tile());
+            Tile::this_tile().barrier();
 
-            return lds.to_ullong();
+            const auto r{Tile::predicate().to_ullong()};
+
+            Tile::this_tile().barrier();
+
+            return r;
+        }
+
+        template<typename T, std::enable_if_t<std::is_integral_v<T>>* = nullptr>
+        inline
+        std::uint32_t pop_count(T x) noexcept
+        {
+            [[maybe_unused]]
+            constexpr auto popcnt{[](auto&& x) constexpr noexcept {
+                return std::bitset<sizeof(T) * CHAR_BIT>(x).count();
+            }};
+
+            if constexpr (sizeof(T) == sizeof(std::uint32_t)) {
+                #if defined(_MSC_VER)
+                    return __popcnt(x);
+                #elif defined(__has_builtin)
+                    #if __has_builtin(__builtin_popcount)
+                        return __builtin_popcount(x);
+                    #else
+                        return popcnt(x);
+                    #endif
+                #else
+                    return popcnt(x);
+                #endif
+            }
+            else {
+                #if defined(_MSC_VER)
+                    return static_cast<std::uint32_t>(__popcnt64(x));
+                #elif defined(__has_builtin)
+                    #if __has_builtin(__builtin_popcountll)
+                        return __builtin_popcountll(x);
+                    #else
+                        return popcnt(x);
+                    #endif
+                #else
+                    return popcnt(x);
+                #endif
+            }
+        }
+
+        inline
+        std::int32_t all(std::int32_t x) noexcept
+        {
+            return pop_count(ballot(x)) == warpSize;
+        }
+
+        inline
+        std::int32_t any(std::int32_t x) noexcept
+        {
+            return pop_count(ballot(x)) > 0;
         }
 
         template<
@@ -151,48 +203,7 @@ namespace hip
             }
         }
 
-        template<typename T, std::enable_if_t<std::is_integral_v<T>>* = nullptr>
-        inline
-        std::uint32_t pop_count(T x) noexcept
-        {
-            [[maybe_unused]]
-            constexpr auto popcnt{[](auto&& x) constexpr noexcept {
-                return std::bitset<sizeof(T) * CHAR_BIT>(x).count();
-            }};
-
-            if constexpr (sizeof(T) == sizeof(std::uint32_t)) {
-                #if defined(_MSC_VER)
-                    return __popcnt(x);
-                #elif defined(__has_builtin)
-                    #if __has_builtin(__builtin_popcount)
-                        return __builtin_popcount(x);
-                    #else
-                        return popcnt(x);
-                    #endif
-                #else
-                    return popcnt(x);
-                #endif
-            }
-            else {
-                #if defined(_MSC_VER)
-                    return static_cast<std::uint32_t>(__popcnt64(x));
-                #elif defined(__has_builtin)
-                    #if __has_builtin(__builtin_popcountll)
-                        return __builtin_popcountll(x);
-                    #else
-                        return popcnt(x);
-                    #endif
-                #else
-                    return popcnt(x);
-                #endif
-            }
-        }
-
-        template<
-            typename T,
-            std::enable_if_t<
-                (std::is_integral_v<T> || std::is_floating_point_v<T>) &&
-                (sizeof(T) >= 4 && sizeof(T) <= 8)>* = nullptr>
+        template<typename T>
         inline
         T shuffle(T x, std::int32_t src, std::int32_t w) noexcept
         {
@@ -203,18 +214,19 @@ namespace hip
             Tile::this_tile().barrier();
 
             const auto sidx{(tidx / w * w) + src};
+            const auto r{
+                (src < 0 || sidx >= w) ? x : Tile::scratchpad<T>()[sidx]};
 
-            return (src < 0 || sidx >= w) ? x : Tile::scratchpad<T>()[sidx];
+            Tile::this_tile().barrier();
+
+            return r;
         }
 
-        template<
-            typename T,
-            std::enable_if_t<
-                (std::is_integral_v<T> || std::is_floating_point_v<T>) &&
-                (sizeof(T) >= 4 && sizeof(T) <= 8)>* = nullptr>
+        template<typename T>
         inline
         T shuffle_down(T x, std::int32_t dx, std::int32_t w) noexcept
         {   // TODO: incorrect with large negative offsets, revisit.
+            // TODO: should probably consider using partial barriers.
             const auto tidx{id(Fiber::this_fiber()) % warpSize};
 
             Tile::scratchpad<T>()[tidx] = x;
@@ -222,18 +234,19 @@ namespace hip
             Tile::this_tile().barrier();
 
             const auto sidx{(tidx / w * w) + (tidx % w) + dx};
+            const auto r{
+                (sidx < 0 || sidx >= w) ? x : Tile::scratchpad<T>()[sidx]};
 
-            return (sidx < 0 || sidx >= w) ? x : Tile::scratchpad<T>()[sidx];
+            Tile::this_tile().barrier();
+
+            return r;
         }
 
-        template<
-            typename T,
-            std::enable_if_t<
-                (std::is_integral_v<T> || std::is_floating_point_v<T>) &&
-                (sizeof(T) >= 4 && sizeof(T) <= 8)>* = nullptr>
+        template<typename T>
         inline
         T shuffle_up(T x, std::int32_t dx, std::int32_t w) noexcept
         {   // TODO: incorrect with large negative offsets, revisit.
+            // TODO: should probably consider using partial barriers.
             const auto tidx{id(Fiber::this_fiber()) % warpSize};
 
             Tile::scratchpad<T>()[tidx] = x;
@@ -241,18 +254,19 @@ namespace hip
             Tile::this_tile().barrier();
 
             const auto sidx{(tidx / w * w) + (tidx % w) - dx};
+            const auto r{
+                (sidx < 0 || sidx >= w) ? x : Tile::scratchpad<T>()[sidx]};
 
-            return (sidx < 0 || sidx >= w) ? x : Tile::scratchpad<T>()[sidx];
+            Tile::this_tile().barrier();
+
+            return r;
         }
 
-        template<
-            typename T,
-            std::enable_if_t<
-                (std::is_integral_v<T> || std::is_floating_point_v<T>) &&
-                (sizeof(T) >= 4 && sizeof(T) <= 8)>* = nullptr>
+        template<typename T>
         inline
         T shuffle_xor(T x, std::int32_t src, std::int32_t w) noexcept
         {   // TODO: probably incorrect, revisit.
+            // TODO: should probably consider using partial barriers.
             const auto tidx{id(Fiber::this_fiber()) % warpSize};
 
             Tile::scratchpad<T>()[tidx] = x;
@@ -260,8 +274,11 @@ namespace hip
             Tile::this_tile().barrier();
 
             const auto sidx{((tidx / w * w) + (tidx % w)) ^ src};
+            const auto r{(src < 0) ? x : Tile::scratchpad<T>()[sidx]};
 
-            return (src < 0) ? x : Tile::scratchpad<T>()[sidx];
+            Tile::this_tile().barrier();
+
+            return r;
         }
 
         inline

@@ -26,6 +26,18 @@
 
 // BEGIN INTRINSICS
 inline
+std::int32_t __all(std::int32_t predicate) noexcept
+{
+    return hip::detail::all(predicate);
+}
+
+inline
+std::int32_t __any(std::int32_t predicate) noexcept
+{
+    return hip::detail::any(predicate);
+}
+
+inline
 std::uint64_t __ballot(std::int32_t predicate) noexcept
 {
     return hip::detail::ballot(predicate);
@@ -113,7 +125,7 @@ template<
     typename T,
     std::enable_if_t<
         (std::is_integral_v<T> || std::is_floating_point_v<T>) &&
-        (sizeof(T) >= 4 && sizeof(T) <= 8)>* = nullptr>
+        sizeof(T) <= 8>* = nullptr>
 inline
 T __shfl(T var, std::int32_t src_lane, std::int32_t width = warpSize) noexcept
 {
@@ -124,7 +136,7 @@ template<
     typename T,
     std::enable_if_t<
         (std::is_integral_v<T> || std::is_floating_point_v<T>) &&
-        (sizeof(T) >= 4 && sizeof(T) <= 8)>* = nullptr>
+        sizeof(T) <= 8>* = nullptr>
 inline
 T __shfl_down(
     T var, std::uint32_t delta, std::int32_t width = warpSize) noexcept
@@ -136,7 +148,7 @@ template<
     typename T,
     std::enable_if_t<
         (std::is_integral_v<T> || std::is_floating_point_v<T>) &&
-        (sizeof(T) >= 4 && sizeof(T) <= 8)>* = nullptr>
+        sizeof(T) <= 8>* = nullptr>
 inline
 T __shfl_up(
     T var, std::uint32_t delta, std::int32_t width = warpSize) noexcept
@@ -148,7 +160,7 @@ template<
     typename T,
     std::enable_if_t<
         (std::is_integral_v<T> || std::is_floating_point_v<T>) &&
-        (sizeof(T) >= 4 && sizeof(T) <= 8)>* = nullptr>
+        sizeof(T) <= 8>* = nullptr>
 inline
 T __shfl_xor(
     T var, std::int32_t src_lane, std::int32_t width = warpSize) noexcept

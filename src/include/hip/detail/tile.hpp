@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------------
- * Copyright (c) 2020 Advanced Micro Devices, Inc. All Rights Reserved.
+ * Copyright (c) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
  * See 'LICENSE' in the project root for license information.
  * -------------------------------------------------------------------------- */
 #pragma once
@@ -16,6 +16,8 @@
 #include "../../../../include/hip/hip_constants.h"
 
 #include <algorithm>
+#include <array>
+#include <bitset>
 #include <execution>
 #include <functional>
 #include <cstdint>
@@ -101,9 +103,11 @@ namespace hip
             static
             void for_each_fiber(
                 const F& fn, const std::tuple<Args...>& args) noexcept;
+            static
+            std::bitset<warpSize>& predicate() noexcept;
             template<typename T, std::size_t n = warpSize>
             static
-            decltype(auto) scratchpad() noexcept;
+            std::array<T, n>& scratchpad() noexcept;
             static
             const Tile& this_tile() noexcept;
 
@@ -164,15 +168,19 @@ namespace hip
             Fiber::this_fiber_().set_id_(0);
         }
 
+        inline
+        std::bitset<warpSize>& Tile::predicate() noexcept
+        {
+            return scratchpad<std::bitset<warpSize>, 1>()[0];
+        }
+
         template<typename T, std::size_t n>
         inline
-        decltype(auto) Tile::scratchpad() noexcept
+        std::array<T, n>& Tile::scratchpad() noexcept
         {   // TODO: use named variable for maximum block size.
-            thread_local static T r[1024 / warpSize][n];
+            thread_local static std::array<T, n> r[1024 / warpSize];
 
-            const auto widx{id(hip::detail::Fiber::this_fiber()) / warpSize};
-
-            return (r[widx]);
+            return (r[id(Fiber::this_fiber()) / warpSize]);
         }
 
         inline
