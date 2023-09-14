@@ -90,9 +90,6 @@ if (hip_cpu_rt_INSTALL_LIBRARY)
         DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
     install(DIRECTORY ${PROJECT_SOURCE_DIR}/external/half DESTINATION external)
     install(DIRECTORY ${PROJECT_SOURCE_DIR}/external/libco DESTINATION external)
-    install(
-        DIRECTORY
-            ${PROJECT_SOURCE_DIR}/external/moodycamel DESTINATION external)
     install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/hip DESTINATION include)
     install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/include DESTINATION src)
 endif ()
