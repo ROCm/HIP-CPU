@@ -363,6 +363,17 @@ namespace hip
         }
 
         inline
+        hipError_t query_event(Event* e)
+        {
+            if (!e) return hipErrorInvalidHandle;
+            //if (!is_done(*e).valid()) return hipErrorInvalidHandle;
+
+            if (!is_ready(*e)) return hipErrorNotReady;
+
+            return hipSuccess;
+        }
+
+        inline
         hipError_t query_stream(Stream* s)
         {
             if (!s) s = Runtime::null_stream();
