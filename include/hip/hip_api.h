@@ -282,6 +282,12 @@ hipError_t hipEventElapsedTime(float* ms, hipEvent_t start, hipEvent_t stop)
 }
 
 inline
+hipError_t hipEventQuery(hipEvent_t event)
+{
+    return hip::detail::query_event(event);
+}
+
+inline
 hipError_t hipEventRecord(hipEvent_t event, hipStream_t stream = {})
 {
     return hip::detail::insert_event(event, stream);

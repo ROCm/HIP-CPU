@@ -66,6 +66,12 @@ namespace hip
             }
             friend
             inline
+            decltype(auto) is_ready(const Event& x) noexcept
+            {
+                return x.is_ready();
+            }
+            friend
+            inline
             decltype(auto) timestamp(const Event& x) noexcept
             {
                 return x.timestamp();
@@ -93,6 +99,7 @@ namespace hip
             // ACCESSORS
             bool is_all_synchronising() const noexcept;
             const awaitable_type& is_done() const noexcept;
+            bool is_ready() const noexcept;
             time_type timestamp() const noexcept;
         };
 
@@ -132,6 +139,19 @@ namespace hip
         const typename Event::awaitable_type& Event::is_done() const noexcept
         {
             return is_done_;
+        }
+
+        inline
+        bool Event::is_ready() const noexcept
+        {
+            // a default-constructed event does not correspond to any work,
+            // so it is considered "ready"
+            if (not is_done_.valid())
+                return true;
+
+            // check if the event is "ready"
+            return is_done_.wait_for(std::chrono::seconds(0))
+                == std::future_status::ready;
         }
 
         inline
