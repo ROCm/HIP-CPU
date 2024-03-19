@@ -25,30 +25,25 @@
 
 // BEGIN ADD
 inline
-std::int32_t atomicAdd(std::int32_t* address, std::int32_t val) noexcept
+int atomicAdd(int* address, int val) noexcept
 {
     return hip::detail::atomic_add(address, val);
 }
 
 inline
-std::uint32_t atomicAdd(std::uint32_t* address, std::uint32_t val) noexcept
+unsigned int atomicAdd(unsigned int* address, unsigned int val) noexcept
 {
     return hip::detail::atomic_add(address, val);
 }
 
 inline
-std::uint64_t atomicAdd(std::uint64_t* address, std::uint64_t val) noexcept
+unsigned long atomicAdd(unsigned long* address, unsigned long val) noexcept
 {
     return hip::detail::atomic_add(address, val);
 }
 
-template<
-    typename T,
-    std::enable_if_t<
-        std::is_same_v<T, unsigned long long> &&
-        !std::is_same_v<unsigned long long, std::uint64_t>>* = nullptr>
 inline
-std::uint64_t atomicAdd(T* address, T val) noexcept
+unsigned long long atomicAdd(unsigned long long* address, unsigned long long val) noexcept
 {
     return hip::detail::atomic_add(address, val);
 }
@@ -71,79 +66,80 @@ double atomicAdd(double* address, double val) noexcept
 
 // BEGIN AND
 inline
-std::int32_t atomicAnd(std::int32_t* address, std::int32_t val) noexcept
+int atomicAnd(int* address, int val) noexcept
 {
     return hip::detail::atomic_and(address, val);
 }
 
 inline
-std::uint32_t atomicAnd(std::uint32_t* address, std::uint32_t val) noexcept
+unsigned int atomicAnd(unsigned int* address, unsigned int val) noexcept
 {
     return hip::detail::atomic_and(address, val);
 }
 
 inline
-std::uint64_t atomicAnd(std::uint64_t* address, std::uint64_t val) noexcept
+unsigned long atomicAnd(unsigned long* address, unsigned long val) noexcept
 {
     return hip::detail::atomic_and(address, val);
 }
 
-template<
-    typename T,
-    std::enable_if_t<
-        std::is_same_v<T, unsigned long long> &&
-        !std::is_same_v<unsigned long long, std::uint64_t>>* = nullptr>
+// FIXME: available in CUDA, not in HIP/ROCm
 inline
-T atomicAnd(T* address, T val) noexcept
+long long atomicAnd(long long* address, long long val) noexcept
+{
+    return hip::detail::atomic_and(address, val);
+}
+
+inline
+unsigned long long atomicAnd(unsigned long long* address, unsigned long long val) noexcept
 {
     return hip::detail::atomic_and(address, val);
 }
 // END AND
 
 // BEGIN CAS
+// FIXME: not available in CUDA or in HIP/ROCm
 inline
-std::uint16_t atomicCAS(
-    std::uint16_t* address, std::uint16_t compare, std::uint16_t val) noexcept
+unsigned short atomicCAS(
+    unsigned short* address, unsigned short compare, unsigned short val) noexcept
 {
     return hip::detail::atomic_cas(address, compare, val);
 }
 
 inline
-std::int32_t atomicCAS(
-    std::int32_t* address, std::int32_t compare, std::int32_t val) noexcept
+int atomicCAS(
+    int* address, int compare, int val) noexcept
 {
     return hip::detail::atomic_cas(address, compare, val);
 }
 
 inline
-std::uint32_t atomicCAS(
-    std::uint32_t* address, std::uint32_t compare, std::uint32_t val) noexcept
+unsigned int atomicCAS(
+    unsigned int* address, unsigned int compare, unsigned int val) noexcept
 {
     return hip::detail::atomic_cas(address, compare, val);
 }
 
 inline
-std::uint64_t atomicCAS(
-    std::uint64_t* address, std::uint64_t compare, std::uint64_t val) noexcept
+unsigned long atomicCAS(
+    unsigned long* address, unsigned long compare, unsigned long val) noexcept
 {
     return hip::detail::atomic_cas(address, compare, val);
 }
 
-template<
-    typename T,
-    std::enable_if_t<
-        std::is_same_v<T, unsigned long long> &&
-        !std::is_same_v<unsigned long long, std::uint64_t>>* = nullptr>
 inline
-T atomicCAS(T* address, T compare, T val) noexcept
+unsigned long long atomicCAS(
+    unsigned long long* address, unsigned long long compare, unsigned long long val) noexcept
 {
     return hip::detail::atomic_cas(address, compare, val);
 }
+// FIXME: HIP/ROCm supports also atomicCAS with float and double arguments
 // END CAS
 
 // BEGIN DECREMENT
+// FIXME: overflow/underflow handling is missing
 inline
-std::uint32_t atomicDec(std::uint32_t* address, std::uint32_t /*val*/) noexcept
+unsigned int atomicDec(unsigned int* address, unsigned int /*val*/) noexcept
 {
     return hip::detail::atomic_dec(address);
 }
@@ -151,30 +147,25 @@ std::uint32_t atomicDec(std::uint32_t* address, std::uint32_t /*val*/) noexcept
 
 // BEGIN EXCHANGE
 inline
-std::int32_t atomicExch(std::int32_t* address, std::int32_t val) noexcept
+int atomicExch(int* address, int val) noexcept
 {
     return hip::detail::atomic_exchange(address, val);
 }
 
 inline
-std::uint32_t atomicExch(std::uint32_t* address, std::uint32_t val) noexcept
+unsigned int atomicExch(unsigned int* address, unsigned int val) noexcept
 {
     return hip::detail::atomic_exchange(address, val);
 }
 
 inline
-std::uint64_t atomicExch(std::uint64_t* address, std::uint64_t val) noexcept
+unsigned long atomicExch(unsigned long* address, unsigned long val) noexcept
 {
     return hip::detail::atomic_exchange(address, val);
 }
 
-template<
-    typename T,
-    std::enable_if_t<
-        std::is_same_v<T, unsigned long long> &&
-        !std::is_same_v<unsigned long long, std::uint64_t>>* = nullptr>
 inline
-T atomicExch(T* address, T val) noexcept
+unsigned long long atomicExch(unsigned long long* address, unsigned long long val) noexcept
 {
     return hip::detail::atomic_exchange(address, val);
 }
@@ -184,11 +175,13 @@ float atomicExch(float* address, float val) noexcept
 {
     return hip::detail::atomic_exchange(address, val);
 }
+// FIXME: HIP/ROCm supports also atomicExch with double arguments
 // END EXCHANGE
 
 // BEGIN INCREMENT
+// FIXME: overflow handling is missing
 inline
-std::uint32_t atomicInc(std::uint32_t* address, std::uint32_t /*val*/) noexcept
+unsigned int atomicInc(unsigned int* address, unsigned int /*val*/) noexcept
 {
     return hip::detail::atomic_inc(address);
 }
@@ -196,92 +189,98 @@ std::uint32_t atomicInc(std::uint32_t* address, std::uint32_t /*val*/) noexcept
 
 // BEGIN MAX
 inline
-std::int32_t atomicMax(std::int32_t* address, std::int32_t val) noexcept
+int atomicMax(int* address, int val) noexcept
 {
     return hip::detail::atomic_max(address, val);
 }
 
 inline
-std::uint32_t atomicMax(std::uint32_t* address, std::uint32_t val) noexcept
+unsigned int atomicMax(unsigned int* address, unsigned int val) noexcept
 {
     return hip::detail::atomic_max(address, val);
 }
 
 inline
-std::uint64_t atomicMax(std::uint64_t* address, std::uint64_t val) noexcept
+unsigned long atomicMax(unsigned long* address, unsigned long val) noexcept
 {
     return hip::detail::atomic_max(address, val);
 }
 
-template<
-    typename T,
-    std::enable_if_t<
-        std::is_same_v<T, unsigned long long> &&
-        !std::is_same_v<unsigned long long, std::uint64_t>>* = nullptr>
 inline
-T atomicMax(T* address, T val) noexcept
+long long atomicMax(long long* address, long long val) noexcept
 {
     return hip::detail::atomic_max(address, val);
 }
+
+inline
+unsigned long long atomicMax(unsigned long long* address, unsigned long long val) noexcept
+{
+    return hip::detail::atomic_max(address, val);
+}
+// FIXME: HIP/ROCm supports also atomicMax with float and double arguments
 // END MAX
 
 // BEGIN MIN
 inline
-std::int32_t atomicMin(std::int32_t* address, std::int32_t val) noexcept
+int atomicMin(int* address, int val) noexcept
 {
     return hip::detail::atomic_min(address, val);
 }
 
 inline
-std::uint32_t atomicMin(std::uint32_t* address, std::uint32_t val) noexcept
+unsigned int atomicMin(unsigned int* address, unsigned int val) noexcept
 {
     return hip::detail::atomic_min(address, val);
 }
 
 inline
-std::uint64_t atomicMin(std::uint64_t* address, std::uint64_t val) noexcept
+unsigned long atomicMin(unsigned long* address, unsigned long val) noexcept
 {
     return hip::detail::atomic_min(address, val);
 }
 
-template<
-    typename T,
-    std::enable_if_t<
-        std::is_same_v<T, unsigned long long> &&
-        !std::is_same_v<unsigned long long, std::uint64_t>>* = nullptr>
 inline
-T atomicMin(T* address, T val) noexcept
+long long atomicMin(long long* address, long long val) noexcept
 {
     return hip::detail::atomic_min(address, val);
 }
+
+inline
+unsigned long long atomicMin(unsigned long long* address, unsigned long long val) noexcept
+{
+    return hip::detail::atomic_min(address, val);
+}
+// FIXME: HIP/ROCm supports also atomicMin with float and double arguments
 // END MIN
 
 // BEGIN OR
 inline
-std::int32_t atomicOr(std::int32_t* address, std::int32_t val) noexcept
+int atomicOr(int* address, int val) noexcept
 {
     return hip::detail::atomic_or(address, val);
 }
 
 inline
-std::uint32_t atomicOr(std::uint32_t* address, std::uint32_t val) noexcept
+unsigned int atomicOr(unsigned int* address, unsigned int val) noexcept
 {
     return hip::detail::atomic_or(address, val);
 }
 
 inline
-std::uint64_t atomicOr(std::uint64_t* address, std::uint64_t val) noexcept
+unsigned long atomicOr(unsigned long* address, unsigned long val) noexcept
 {
     return hip::detail::atomic_or(address, val);
 }
 
-template<
-    typename T,
-    std::enable_if_t<
-        std::is_same_v<T, unsigned long long> &&
-        !std::is_same_v<unsigned long long, std::uint64_t>>* = nullptr>
+// FIXME: available in CUDA, not in HIP/ROCm
 inline
-T atomicOr(T* address, T val) noexcept
+long long atomicOr(long long* address, long long val) noexcept
+{
+    return hip::detail::atomic_or(address, val);
+}
+
+inline
+unsigned long long atomicOr(unsigned long long* address, unsigned long long val) noexcept
 {
     return hip::detail::atomic_or(address, val);
 }
@@ -289,44 +288,59 @@ T atomicOr(T* address, T val) noexcept
 
 // BEGIN SUB
 inline
-std::int32_t atomicSub(std::int32_t* address, std::int32_t val) noexcept
+int atomicSub(int* address, int val) noexcept
 {
     return hip::detail::atomic_sub(address, val);
 }
 
 inline
-std::uint32_t atomicSub(std::uint32_t* address, std::uint32_t val) noexcept
+unsigned int atomicSub(unsigned int* address, unsigned int val) noexcept
 {
     return hip::detail::atomic_sub(address, val);
 }
+
+inline
+unsigned long atomicSub(unsigned long* address, unsigned long val) noexcept
+{
+    return hip::detail::atomic_sub(address, val);
+}
+
+inline
+unsigned long long atomicSub(unsigned long long* address, unsigned long long val) noexcept
+{
+    return hip::detail::atomic_sub(address, val);
+}
+// FIXME: HIP/ROCm supports also atomicSub with float and double arguments
 // END SUB
 
 // BEGIN XOR
 inline
-std::int32_t atomicXor(std::int32_t* address, std::int32_t val) noexcept
+int atomicXor(int* address, int val) noexcept
 {
     return hip::detail::atomic_xor(address, val);
 }
 
 inline
-std::uint32_t atomicXor(std::uint32_t* address, std::uint32_t val) noexcept
+unsigned int atomicXor(unsigned int* address, unsigned int val) noexcept
 {
     return hip::detail::atomic_xor(address, val);
 }
 
 inline
-std::uint64_t atomicXor(std::uint64_t* address, std::uint64_t val) noexcept
+unsigned long atomicXor(unsigned long* address, unsigned long val) noexcept
 {
     return hip::detail::atomic_xor(address, val);
 }
 
-template<
-    typename T,
-    std::enable_if_t<
-        std::is_same_v<T, unsigned long long> &&
-        !std::is_same_v<unsigned long long, std::uint64_t>>* = nullptr>
+// FIXME: available in CUDA, not in HIP/ROCm
 inline
-T atomicXor(T* address, T val) noexcept
+long long atomicXor(long long* address, long long val) noexcept
+{
+    return hip::detail::atomic_xor(address, val);
+}
+
+inline
+unsigned long long atomicXor(unsigned long long* address, unsigned long long val) noexcept
 {
     return hip::detail::atomic_xor(address, val);
 }
