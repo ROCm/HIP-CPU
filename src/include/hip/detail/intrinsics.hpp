@@ -213,7 +213,7 @@ namespace hip
 
             Tile::this_tile().barrier();
 
-            const auto sidx{(tidx / w * w) + src};
+            const auto sidx{static_cast<std::int32_t>((tidx / w * w) + src)};
             const auto r{
                 (src < 0 || sidx >= w) ? x : Tile::scratchpad<T>()[sidx]};
 
@@ -233,7 +233,7 @@ namespace hip
 
             Tile::this_tile().barrier();
 
-            const auto sidx{(tidx / w * w) + (tidx % w) + dx};
+            const auto sidx{static_cast<std::int32_t>((tidx / w * w) + (tidx % w) + dx)};
             const auto r{
                 (sidx < 0 || sidx >= w) ? x : Tile::scratchpad<T>()[sidx]};
 
@@ -253,7 +253,7 @@ namespace hip
 
             Tile::this_tile().barrier();
 
-            const auto sidx{(tidx / w * w) + (tidx % w) - dx};
+            const auto sidx{static_cast<std::int32_t>((tidx / w * w) + (tidx % w) - dx)};
             const auto r{
                 (sidx < 0 || sidx >= w) ? x : Tile::scratchpad<T>()[sidx]};
 
@@ -273,7 +273,7 @@ namespace hip
 
             Tile::this_tile().barrier();
 
-            const auto sidx{((tidx / w * w) + (tidx % w)) ^ src};
+            const auto sidx{static_cast<std::int32_t>(((tidx / w * w) + (tidx % w)) ^ src)};
             const auto r{(src < 0) ? x : Tile::scratchpad<T>()[sidx]};
 
             Tile::this_tile().barrier();

@@ -19,6 +19,7 @@
 #include "hip_device_launch_parameters.h"
 #include "hip_enums.h"
 #include "hip_fp16.h"
+#include "hip_ldg.h"
 #include "hip_math.h"
 #include "hip_types.h"
 #include "hip_vector_types.h"

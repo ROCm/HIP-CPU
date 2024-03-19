@@ -903,3 +903,19 @@ __half2 h2exp(__half2 x) noexcept
     return hip::detail::exp(x);
 }
 // END HALF2 MATH FUNCTIONS
+
+// BEGIN HALF LOAD PRIMITIVES
+inline
+__half __ldg(const __half* ptr) noexcept
+{
+    return *ptr;
+}
+// END HALF LOAD PRIMITIVES
+
+// BEGIN HALF2 LOAD PRIMITIVES
+inline
+__half2 __ldg(const __half2* ptr) noexcept
+{
+    return *ptr;
+}
+// END HALF2 LOAD PRIMITIVES
