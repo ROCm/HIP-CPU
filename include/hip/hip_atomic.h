@@ -43,7 +43,8 @@ unsigned long atomicAdd(unsigned long* address, unsigned long val) noexcept
 }
 
 inline
-unsigned long long atomicAdd(unsigned long long* address, unsigned long long val) noexcept
+unsigned long long atomicAdd(
+    unsigned long long* address, unsigned long long val) noexcept
 {
     return hip::detail::atomic_add(address, val);
 }
@@ -91,7 +92,8 @@ long long atomicAnd(long long* address, long long val) noexcept
 }
 
 inline
-unsigned long long atomicAnd(unsigned long long* address, unsigned long long val) noexcept
+unsigned long long atomicAnd(
+    unsigned long long* address, unsigned long long val) noexcept
 {
     return hip::detail::atomic_and(address, val);
 }
@@ -101,7 +103,9 @@ unsigned long long atomicAnd(unsigned long long* address, unsigned long long val
 // FIXME: not available in CUDA or in HIP/ROCm
 inline
 unsigned short atomicCAS(
-    unsigned short* address, unsigned short compare, unsigned short val) noexcept
+    unsigned short* address,
+    unsigned short compare,
+    unsigned short val) noexcept
 {
     return hip::detail::atomic_cas(address, compare, val);
 }
@@ -129,7 +133,9 @@ unsigned long atomicCAS(
 
 inline
 unsigned long long atomicCAS(
-    unsigned long long* address, unsigned long long compare, unsigned long long val) noexcept
+    unsigned long long* address,
+    unsigned long long compare,
+    unsigned long long val) noexcept
 {
     return hip::detail::atomic_cas(address, compare, val);
 }
@@ -165,7 +171,8 @@ unsigned long atomicExch(unsigned long* address, unsigned long val) noexcept
 }
 
 inline
-unsigned long long atomicExch(unsigned long long* address, unsigned long long val) noexcept
+unsigned long long atomicExch(
+    unsigned long long* address, unsigned long long val) noexcept
 {
     return hip::detail::atomic_exchange(address, val);
 }
@@ -213,7 +220,8 @@ long long atomicMax(long long* address, long long val) noexcept
 }
 
 inline
-unsigned long long atomicMax(unsigned long long* address, unsigned long long val) noexcept
+unsigned long long atomicMax(
+    unsigned long long* address, unsigned long long val) noexcept
 {
     return hip::detail::atomic_max(address, val);
 }
@@ -246,7 +254,8 @@ long long atomicMin(long long* address, long long val) noexcept
 }
 
 inline
-unsigned long long atomicMin(unsigned long long* address, unsigned long long val) noexcept
+unsigned long long atomicMin(
+    unsigned long long* address, unsigned long long val) noexcept
 {
     return hip::detail::atomic_min(address, val);
 }
@@ -306,7 +315,8 @@ unsigned long atomicSub(unsigned long* address, unsigned long val) noexcept
 }
 
 inline
-unsigned long long atomicSub(unsigned long long* address, unsigned long long val) noexcept
+unsigned long long atomicSub(
+    unsigned long long* address, unsigned long long val) noexcept
 {
     return hip::detail::atomic_sub(address, val);
 }
@@ -340,7 +350,8 @@ long long atomicXor(long long* address, long long val) noexcept
 }
 
 inline
-unsigned long long atomicXor(unsigned long long* address, unsigned long long val) noexcept
+unsigned long long atomicXor(
+    unsigned long long* address, unsigned long long val) noexcept
 {
     return hip::detail::atomic_xor(address, val);
 }
