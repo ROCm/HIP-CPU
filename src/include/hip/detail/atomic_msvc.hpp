@@ -26,13 +26,15 @@ namespace hip
         T atomic_add(T* p, T v) noexcept
         {
             using U = std::conditional_t<
-                std::is_same_v<T, long> || std::is_same_v<T, unsigned long> ||
-                    std::is_same_v<T, long long>,
+                std::is_same_v<T, long> || std::is_same_v<T, long long>,
                 T,
                 std::conditional_t<sizeof(T) == sizeof(long), long, long long>>;
 
             if constexpr (std::is_same_v<T, U>) {
-                return _InterlockedExchangeAdd(p, v);
+                if constexpr (sizeof(T) == sizeof(long)) {
+                    return _InterlockedExchangeAdd(p, v);
+                }
+                else return _InterlockedExchangeAdd64(p, v);
             }
             else if constexpr (sizeof(U) == sizeof(long)) {
                 return bit_cast<T>(_InterlockedExchangeAdd(
@@ -49,13 +51,15 @@ namespace hip
         T atomic_cas(T* p, T cmp, T v) noexcept
         {
             using U = std::conditional_t<
-                std::is_same_v<T, long long> ||
-                    std::is_same_v<T, unsigned long> || std::is_same_v<T, long>,
+                std::is_same_v<T, long> ||  std::is_same_v<T, long long>,
                 T,
                 std::conditional_t<sizeof(T) == sizeof(long), long, long long>>;
 
             if constexpr (std::is_same_v<T, U>) {
-                return _InterlockedCompareExchange(p, v, cmp);
+                if constexpr(sizeof(T) == sizeof(long)) {
+                    return _InterlockedCompareExchange(p, v, cmp);
+                }
+                else return _InterlockedCompareExchange64(p, v, cmp);
             }
             else if constexpr (sizeof(T) == sizeof(long)) {
                 return bit_cast<T>(_InterlockedCompareExchange(
@@ -157,9 +161,7 @@ namespace hip
         T atomic_exchange(T* p, T v) noexcept
         {
             using U = std::conditional_t<
-                std::is_same_v<T, long> ||
-                    std::is_same_v<T, unsigned long> ||
-                    std::is_same_v<T, long long>,
+                std::is_same_v<T, long> || std::is_same_v<T, long long>,
                 T,
                 std::conditional_t<sizeof(T) == sizeof(long), long, long long>>;
 
